@@ -38,11 +38,11 @@
       max-width:560px;
       margin:0 auto;
       min-height:100vh;
-      padding:14px 14px 110px;
+      padding:14px 14px 120px;
     }
 
     h1,h2,h3,p{margin:0}
-    button,input,select,textarea{
+    button,input,textarea{
       font:inherit;
       border:none;
       outline:none;
@@ -53,12 +53,16 @@
       top:0;
       z-index:30;
       backdrop-filter:blur(16px);
-      background:rgba(15,17,21,.85);
+      background:rgba(15,17,21,.86);
       padding:10px 0 12px;
       margin-bottom:10px;
     }
 
     .app-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
       margin-bottom:12px;
     }
 
@@ -76,7 +80,7 @@
 
     .tabs{
       display:grid;
-      grid-template-columns:1fr 1fr;
+      grid-template-columns:1fr 1fr 1fr;
       gap:10px;
     }
 
@@ -146,7 +150,7 @@
       padding:12px 14px;
       font-weight:800;
       cursor:pointer;
-      transition:.15s transform ease, .15s opacity ease;
+      transition:.15s transform ease;
     }
 
     .btn:active{transform:scale(.98)}
@@ -166,13 +170,13 @@
       background:linear-gradient(180deg,#8b3232,#672626);
       border-color:#a85050;
     }
-    .btn.full{width:100%}
     .btn.remind{
       background:linear-gradient(180deg,#6b5cff,#4c3ed6);
       border-color:#8578ff;
     }
+    .btn.full{width:100%}
 
-    .date-input,.text-input,.textarea,.main-task-input,.subtask-input,.reminder-input{
+    .date-input,.text-input,.textarea,.main-task-input,.subtask-input{
       width:100%;
       background:#0d121b;
       color:var(--text);
@@ -213,11 +217,18 @@
       margin-bottom:4px;
     }
 
-    .priority-card{
-      display:grid;
-      grid-template-columns:1fr auto;
-      gap:10px;
-      align-items:center;
+    .priority-box{
+      background:#1a2332;
+      border:1px solid #32405a;
+      border-radius:14px;
+      padding:14px;
+      margin-bottom:10px;
+    }
+
+    .priority-label{
+      font-weight:900;
+      color:#ffcc00;
+      margin-bottom:8px;
     }
 
     .switch-row{
@@ -225,7 +236,13 @@
       align-items:center;
       justify-content:space-between;
       gap:12px;
-      padding:4px 0;
+      padding:10px 0;
+      border-top:1px solid rgba(255,255,255,.06);
+    }
+
+    .switch-row:first-child{
+      border-top:none;
+      padding-top:0;
     }
 
     .switch{
@@ -259,6 +276,19 @@
 
     .switch.active::after{
       left:25px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:34px;
+      height:34px;
+      padding:0 10px;
+      border-radius:999px;
+      background:#202a39;
+      border:1px solid #33445f;
+      font-weight:900;
     }
 
     .block{
@@ -352,13 +382,9 @@
     .chip[data-cat="Cours"].active{background:#0d4c57;border-color:#06b6d4}
     .chip[data-cat="Muscu"].active{background:#6a1437;border-color:#ff3d7f}
 
-    .subtasks{
-      margin-top:4px;
-    }
-
     .task-row{
       display:grid;
-      grid-template-columns:auto 1fr auto;
+      grid-template-columns:auto 1fr auto auto;
       gap:10px;
       align-items:center;
       padding:8px 0;
@@ -405,7 +431,8 @@
       display:grid;
       grid-template-columns:1fr auto;
       gap:10px;
-      margin-top:8px;
+      margin-top:10px;
+      align-items:center;
     }
 
     .accordion-card{
@@ -458,18 +485,7 @@
       font-size:.9rem;
     }
 
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-width:34px;
-      height:34px;
-      padding:0 10px;
-      border-radius:999px;
-      background:#202a39;
-      border:1px solid #33445f;
-      font-weight:900;
-    }
+    .footer-space{height:20px}
   </style>
 </head>
 <body>
@@ -479,11 +495,13 @@
         <h1>MyPlann</h1>
         <p class="sub">Planning du Boss Atilla</p>
       </div>
+      <div class="badge" id="disciplineBadge">0%</div>
     </div>
 
     <div class="tabs">
       <button class="tab active" id="tabToday">Aujourd’hui</button>
       <button class="tab" id="tabLongTerm">Long terme</button>
+      <button class="tab" id="tabSettings">Réglages</button>
     </div>
   </div>
 
@@ -492,35 +510,27 @@
       <div class="panel-title">
         <div>
           <h2 id="todayTitle">Aujourd’hui</h2>
-          <p class="muted">Menu raccourci automatiquement</p>
+          <p class="muted">Simple, rapide, propre</p>
         </div>
-        <div class="badge" id="disciplineBadge">0%</div>
       </div>
 
       <div class="row" style="margin-bottom:10px">
         <input type="date" id="datePicker" class="date-input" />
       </div>
 
-      <div class="priority-card">
-        <input type="text" id="priorityInput" class="text-input" placeholder="Priorité du jour..." />
-        <button class="btn primary" id="savePriorityBtn">Sauver</button>
+      <div class="priority-box">
+        <div class="priority-label">🔥 PRIORITÉ DU JOUR</div>
+        <div class="row">
+          <input type="text" id="priorityInput" class="text-input" placeholder="Ex : finir annale AV..." />
+          <button class="btn primary" id="savePriorityBtn">Sauver</button>
+        </div>
       </div>
-
-      <div class="divider"></div>
 
       <div class="row">
-        <button class="btn primary" id="applyTemplateBtn">Appliquer le modèle du jour</button>
+        <button class="btn primary" id="applyTemplateBtn">Appliquer le modèle</button>
         <button class="btn success" id="prepareTomorrowBtn">Préparer demain</button>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="switch-row">
-        <div>
-          <strong>Masquer automatiquement les tâches finies</strong>
-          <div class="small">Les heures passées et les blocs terminés disparaissent aussi</div>
-        </div>
-        <div class="switch active" id="autoHideSwitch"></div>
+        <button class="btn" id="copyYesterdayBtn">Copier hier</button>
+        <button class="btn warning" id="fillWorkDayBtn">Journée travail</button>
       </div>
 
       <div class="divider"></div>
@@ -545,8 +555,8 @@
 
     <div class="panel">
       <div class="row">
-        <button class="btn warning" id="resetDoneBtn">Réafficher les tâches finies</button>
-        <button class="btn danger" id="resetDayBtn">Reset de la journée</button>
+        <button class="btn" id="resetDoneBtn">Réafficher les tâches finies</button>
+        <button class="btn danger" id="resetDayBtn">Reset journée</button>
       </div>
     </div>
   </section>
@@ -562,12 +572,12 @@
 
       <textarea id="longTermNotes" class="textarea" placeholder="Exemple :
 - Objectif BTS
-- Dossiers clients à ne pas oublier
+- Dossiers clients
 - Habitudes importantes
 - Objectifs du mois"></textarea>
 
       <div class="row" style="margin-top:10px">
-        <button class="btn success full" id="saveLongTermBtn">Sauvegarder mes données long terme</button>
+        <button class="btn success full" id="saveLongTermBtn">Sauvegarder</button>
       </div>
     </div>
 
@@ -585,8 +595,57 @@
     </div>
   </section>
 
+  <section id="settingsSection" class="section">
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Réglages</h2>
+          <p class="muted">Personnalise ton fonctionnement</p>
+        </div>
+      </div>
+
+      <div class="switch-row">
+        <div>
+          <strong>Appliquer le modèle automatiquement</strong>
+          <div class="small">Si le jour est vide, ton modèle se charge tout seul</div>
+        </div>
+        <div class="switch" id="toggleAutoTemplate"></div>
+      </div>
+
+      <div class="switch-row">
+        <div>
+          <strong>Les heures passées disparaissent</strong>
+          <div class="small">Le menu reste plus court</div>
+        </div>
+        <div class="switch" id="toggleHidePassed"></div>
+      </div>
+
+      <div class="switch-row">
+        <div>
+          <strong>Masquer automatiquement les tâches finies</strong>
+          <div class="small">Une tâche cochée disparaît</div>
+        </div>
+        <div class="switch" id="toggleHideDone"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Notifications</h2>
+          <p class="muted">Rappel par bloc</p>
+        </div>
+      </div>
+      <div class="small">
+        Sur GitHub Pages, les notifications web peuvent marcher sur Android si le navigateur les autorise.
+      </div>
+    </div>
+  </section>
+
+  <div class="footer-space"></div>
+
   <script>
-    const STORAGE_KEY = "myplann-final-atilla-v2";
+    const STORAGE_KEY = "myplann-boss-final-v3";
     const WEEK_DAYS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
     const HOURS = [
       "08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00",
@@ -595,7 +654,11 @@
     const CATEGORY_OPTIONS = ["À faire", "Travail", "Révisions", "Client", "Perso", "Cours", "Muscu"];
 
     const defaultState = {
-      autoHideDone: true,
+      settings: {
+        autoApplyTemplate: true,
+        hidePassedHours: true,
+        hideDoneTasks: true
+      },
       longTermNotes: "",
       templates: createEmptyTemplates(),
       days: {}
@@ -606,19 +669,27 @@
 
     const tabToday = document.getElementById("tabToday");
     const tabLongTerm = document.getElementById("tabLongTerm");
+    const tabSettings = document.getElementById("tabSettings");
+
     const todaySection = document.getElementById("todaySection");
     const longTermSection = document.getElementById("longTermSection");
+    const settingsSection = document.getElementById("settingsSection");
+
     const blocksContainer = document.getElementById("blocksContainer");
     const templatesContainer = document.getElementById("templatesContainer");
     const todayTitle = document.getElementById("todayTitle");
     const datePicker = document.getElementById("datePicker");
-    const autoHideSwitch = document.getElementById("autoHideSwitch");
     const longTermNotes = document.getElementById("longTermNotes");
     const priorityInput = document.getElementById("priorityInput");
+
     const statTotal = document.getElementById("statTotal");
     const statDone = document.getElementById("statDone");
     const statLeft = document.getElementById("statLeft");
     const disciplineBadge = document.getElementById("disciplineBadge");
+
+    const toggleAutoTemplate = document.getElementById("toggleAutoTemplate");
+    const toggleHidePassed = document.getElementById("toggleHidePassed");
+    const toggleHideDone = document.getElementById("toggleHideDone");
 
     function createEmptyTemplates() {
       const templates = {};
@@ -640,7 +711,11 @@
 
         const merged = {
           ...structuredClone(defaultState),
-          ...saved
+          ...saved,
+          settings: {
+            ...defaultState.settings,
+            ...(saved.settings || {})
+          }
         };
 
         const freshTemplates = createEmptyTemplates();
@@ -784,15 +859,18 @@
     }
 
     function switchTab(tab) {
-      const today = tab === "today";
-      tabToday.classList.toggle("active", today);
-      tabLongTerm.classList.toggle("active", !today);
-      todaySection.classList.toggle("active", today);
-      longTermSection.classList.toggle("active", !today);
+      tabToday.classList.toggle("active", tab === "today");
+      tabLongTerm.classList.toggle("active", tab === "longterm");
+      tabSettings.classList.toggle("active", tab === "settings");
+
+      todaySection.classList.toggle("active", tab === "today");
+      longTermSection.classList.toggle("active", tab === "longterm");
+      settingsSection.classList.toggle("active", tab === "settings");
     }
 
     tabToday.addEventListener("click", () => switchTab("today"));
-    tabLongTerm.addEventListener("click", () => switchTab("longTerm"));
+    tabLongTerm.addEventListener("click", () => switchTab("longterm"));
+    tabSettings.addEventListener("click", () => switchTab("settings"));
 
     function getCategoryClass(category) {
       if (category === "Travail") return "cat-work";
@@ -823,20 +901,13 @@
     }
 
     function isBlockCompleted(block) {
-      const hasMain = !!(block.mainTask && block.mainTask.trim());
       const hasSubtasks = block.tasks.length > 0;
-      const allSubDone = hasSubtasks ? block.tasks.every(t => t.done) : false;
-
-      if (hasMain && !hasSubtasks) return false;
-      if (!hasMain && hasSubtasks) return allSubDone;
-      if (hasMain && hasSubtasks) return allSubDone;
-      return false;
+      return hasSubtasks && block.tasks.every(t => t.done);
     }
 
     function shouldHideBlock(dateStr, block) {
-      if (!state.autoHideDone) return false;
-      if (isHourPassed(dateStr, block.hour)) return true;
-      if (isBlockCompleted(block)) return true;
+      if (state.settings.hidePassedHours && isHourPassed(dateStr, block.hour)) return true;
+      if (state.settings.hideDoneTasks && isBlockCompleted(block)) return true;
       return false;
     }
 
@@ -856,14 +927,17 @@
       datePicker.value = selectedDate;
       todayTitle.textContent = capitalize(formatDisplayDate(selectedDate));
       priorityInput.value = day.priority || "";
-      autoHideSwitch.classList.toggle("active", !!state.autoHideDone);
+
+      toggleAutoTemplate.classList.toggle("active", !!state.settings.autoApplyTemplate);
+      toggleHidePassed.classList.toggle("active", !!state.settings.hidePassedHours);
+      toggleHideDone.classList.toggle("active", !!state.settings.hideDoneTasks);
 
       blocksContainer.innerHTML = "";
 
       day.blocks.forEach((block) => {
         if (shouldHideBlock(selectedDate, block)) return;
 
-        const visibleTasks = state.autoHideDone
+        const visibleTasks = state.settings.hideDoneTasks
           ? block.tasks.filter(t => !t.done && !t.hidden)
           : block.tasks.filter(t => !t.hidden);
 
@@ -888,12 +962,13 @@
             </div>
           </div>
 
-          <div class="subtasks">
+          <div>
             ${visibleTasks.length === 0 ? `<div class="small" style="padding:2px 0 8px">Aucune sous-tâche</div>` : ""}
             ${visibleTasks.map(task => `
               <div class="task-row">
                 <input type="checkbox" class="checkbox" ${task.done ? "checked" : ""} data-action="toggle-task" data-block-id="${block.id}" data-task-id="${task.id}" />
                 <div class="task-text ${task.done ? "done" : ""}">${escapeHtml(task.text)}</div>
+                <button class="icon-btn" data-action="move-task" data-block-id="${block.id}" data-task-id="${task.id}">➡️</button>
                 <button class="icon-btn" data-action="delete-task" data-block-id="${block.id}" data-task-id="${task.id}">✕</button>
               </div>
             `).join("")}
@@ -920,11 +995,8 @@
 
     function updateStats() {
       const day = getCurrentDay();
-      const visibleBlocks = day.blocks.filter(block => !shouldHideBlock(selectedDate, block));
-      const allTasks = visibleBlocks.flatMap(b => b.tasks.filter(t => !t.hidden));
-      const doneTasks = day.blocks.flatMap(b => b.tasks).filter(t => t.done);
       const total = day.blocks.flatMap(b => b.tasks).length;
-      const done = doneTasks.length;
+      const done = day.blocks.flatMap(b => b.tasks).filter(t => t.done).length;
       const left = Math.max(0, total - done);
       const percent = total === 0 ? 0 : Math.round((done / total) * 100);
 
@@ -968,6 +1040,29 @@
       saveState();
     }
 
+    function fillWorkDay() {
+      const day = getCurrentDay();
+      day.blocks.forEach(block => {
+        if (block.hour >= "10:00" && block.hour <= "19:00") {
+          block.category = "Travail";
+          if (!block.mainTask.trim()) block.mainTask = "Travail";
+        }
+      });
+      saveState();
+      renderDay();
+    }
+
+    function copyYesterday() {
+      const yesterday = addDays(selectedDate, -1);
+      if (!state.days[yesterday]) {
+        alert("Aucune donnée hier.");
+        return;
+      }
+      state.days[selectedDate] = JSON.parse(JSON.stringify(state.days[yesterday]));
+      saveState();
+      renderDay();
+    }
+
     function prepareTomorrow() {
       const tomorrow = addDays(selectedDate, 1);
       ensureDay(tomorrow);
@@ -989,6 +1084,29 @@
         done: false,
         hidden: false
       });
+      saveState();
+      renderDay();
+    }
+
+    function moveTaskToTomorrow(blockId, taskId) {
+      const day = getCurrentDay();
+      const block = day.blocks.find(b => b.id === blockId);
+      const task = block?.tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const tomorrow = addDays(selectedDate, 1);
+      ensureDay(tomorrow);
+
+      const tomorrowBlock = state.days[tomorrow].blocks.find(b => b.hour === block.hour);
+      tomorrowBlock.tasks.push({
+        id: uid(),
+        text: task.text,
+        done: false,
+        hidden: false
+      });
+
+      block.tasks = block.tasks.filter(t => t.id !== taskId);
+
       saveState();
       renderDay();
     }
@@ -1026,6 +1144,17 @@
       `).join("");
     }
 
+    function fillTemplateWorkDay(dayKey) {
+      state.templates[dayKey].forEach(row => {
+        if (row.hour >= "10:00" && row.hour <= "19:00") {
+          row.category = "Travail";
+          if (!row.mainTask.trim()) row.mainTask = "Travail";
+        }
+      });
+      saveState();
+      renderTemplates();
+    }
+
     function renderTemplates() {
       templatesContainer.innerHTML = "";
 
@@ -1041,7 +1170,11 @@
             <span>${WEEK_DAYS[d]}</span>
             <span>▾</span>
           </button>
-          <div class="accordion-content" id="accordion-content-${key}"></div>
+          <div class="accordion-content" id="accordion-content-${key}">
+            <div style="margin-bottom:12px">
+              <button class="btn warning" data-template-fill-work="${key}">Appliquer 10h-19h Travail</button>
+            </div>
+          </div>
         `;
 
         templatesContainer.appendChild(card);
@@ -1108,6 +1241,7 @@
           const body = block.mainTask?.trim()
             ? `${block.hour} • ${block.mainTask}`
             : `${block.hour} • Tu as une tâche à faire`;
+
           try {
             new Notification("Planning du Boss Atilla", { body });
             block.remindedAt = now.date;
@@ -1119,7 +1253,7 @@
 
     function autoLoadTodayIfEmpty() {
       ensureDay(selectedDate);
-      if (!dayHasMeaningfulData(selectedDate)) {
+      if (state.settings.autoApplyTemplate && !dayHasMeaningfulData(selectedDate)) {
         applyTemplateToDate(selectedDate);
       }
     }
@@ -1142,18 +1276,14 @@
     });
 
     document.getElementById("prepareTomorrowBtn").addEventListener("click", prepareTomorrow);
+    document.getElementById("copyYesterdayBtn").addEventListener("click", copyYesterday);
+    document.getElementById("fillWorkDayBtn").addEventListener("click", fillWorkDay);
     document.getElementById("resetDayBtn").addEventListener("click", resetDay);
     document.getElementById("resetDoneBtn").addEventListener("click", resetDoneVisibility);
 
     document.getElementById("savePriorityBtn").addEventListener("click", () => {
       const day = getCurrentDay();
       day.priority = priorityInput.value.trim();
-      saveState();
-      renderDay();
-    });
-
-    autoHideSwitch.addEventListener("click", () => {
-      state.autoHideDone = !state.autoHideDone;
       saveState();
       renderDay();
     });
@@ -1193,11 +1323,35 @@
       alert("Modèles sauvegardés.");
     });
 
+    toggleAutoTemplate.addEventListener("click", () => {
+      state.settings.autoApplyTemplate = !state.settings.autoApplyTemplate;
+      saveState();
+      renderDay();
+    });
+
+    toggleHidePassed.addEventListener("click", () => {
+      state.settings.hidePassedHours = !state.settings.hidePassedHours;
+      saveState();
+      renderDay();
+    });
+
+    toggleHideDone.addEventListener("click", () => {
+      state.settings.hideDoneTasks = !state.settings.hideDoneTasks;
+      saveState();
+      renderDay();
+    });
+
     templatesContainer.addEventListener("click", (e) => {
       const acc = e.target.closest("[data-day-accordion]");
       if (acc) {
         const card = acc.closest(".accordion-card");
         card.classList.toggle("open");
+        return;
+      }
+
+      const fillBtn = e.target.closest("[data-template-fill-work]");
+      if (fillBtn) {
+        fillTemplateWorkDay(fillBtn.dataset.templateFillWork);
         return;
       }
 
@@ -1245,7 +1399,7 @@
         const task = block?.tasks.find(t => t.id === taskId);
         if (task) {
           task.done = !task.done;
-          if (state.autoHideDone && task.done) {
+          if (state.settings.hideDoneTasks && task.done) {
             task.hidden = true;
           }
         }
@@ -1261,6 +1415,11 @@
         }
         saveState();
         renderDay();
+        return;
+      }
+
+      if (action === "move-task") {
+        moveTaskToTomorrow(blockId, taskId);
         return;
       }
 
@@ -1308,4 +1467,4 @@
     init();
   </script>
 </body>
-  </html>
+</html>
