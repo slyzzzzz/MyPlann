@@ -566,7 +566,7 @@
       <button class="tab active" id="tabToday">Aujourd’hui</button>
       <button class="tab" id="tabProgress">Progression</button>
       <button class="tab" id="tabLongTerm">Long-terme</button>
-      <button class="tab" id="tabSettings">Réglage</button>
+      <button class="tab" id="tabSettings">⚙️</button>
     </div>
   </div>
 
@@ -598,6 +598,7 @@
       <div class="row">
         <button class="btn success" id="prepareTomorrowBtn">Préparer demain</button>
         <button class="btn" id="copyYesterdayBtn">Copier hier</button>
+        <button class="btn primary" id="goTodayBtn">Revenir à aujourd’hui</button>
       </div>
 
       <div class="divider"></div>
@@ -646,7 +647,7 @@
       <div class="panel-title">
         <div>
           <h2>Progression</h2>
-          <p class="muted">Suivi de ta progression dans la vie</p>
+          <p class="muted">Suivi de ta progression</p>
         </div>
       </div>
 
@@ -750,6 +751,14 @@
         </div>
         <div class="switch" id="toggleHideDone"></div>
       </div>
+
+      <div class="switch-row">
+        <div>
+          <strong>Modifier les tâches terminées</strong>
+          <div class="small">Affiche les tâches faites pour les corriger ou supprimer</div>
+        </div>
+        <div class="switch" id="toggleEditCompleted"></div>
+      </div>
     </div>
 
     <div class="panel">
@@ -800,6 +809,16 @@
     <div class="panel">
       <div class="panel-title">
         <div>
+          <h2>Tâches terminées</h2>
+          <p class="muted">Corriger ou supprimer une tâche faite par erreur</p>
+        </div>
+      </div>
+      <div id="completedTasksManager"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <div>
           <h2>Notifications</h2>
           <p class="muted">Rappel par bloc</p>
         </div>
@@ -813,7 +832,7 @@
   <div class="footer-space"></div>
 
   <script>
-    const STORAGE_KEY = "myplann-boss-complete-v1";
+    const STORAGE_KEY = "myplann-boss-complete-v2";
     const WEEK_DAYS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
     const HOURS = [
       "08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00",
@@ -825,7 +844,8 @@
       settings: {
         autoApplyTemplate: true,
         hidePassedHours: true,
-        hideDoneTasks: true
+        hideDoneTasks: true,
+        editCompletedTasks: false
       },
       presets: {
         work: { start: "10:00", end: "19:00", category: "Travail", label: "Travail" },
@@ -854,6 +874,7 @@
     const blocksContainer = document.getElementById("blocksContainer");
     const templatesContainer = document.getElementById("templatesContainer");
     const progressContainer = document.getElementById("progressContainer");
+    const completedTasksManager = document.getElementById("completedTasksManager");
 
     const todayTitle = document.getElementById("todayTitle");
     const datePicker = document.getElementById("datePicker");
@@ -877,6 +898,7 @@
     const toggleAutoTemplate = document.getElementById("toggleAutoTemplate");
     const toggleHidePassed = document.getElementById("toggleHidePassed");
     const toggleHideDone = document.getElementById("toggleHideDone");
+    const toggleEditCompleted = document.getElementById("toggleEditCompleted");
 
     const workStart = document.getElementById("workStart");
     const workEnd = document.getElementById("workEnd");
@@ -1070,6 +1092,7 @@
       settingsSection.classList.toggle("active", tab === "settings");
 
       if (tab === "progress") renderProgress();
+      if (tab === "settings") renderCompletedTasksManager();
     }
 
     tabToday.addEventListener("click", () => switchTab("today"));
@@ -1136,6 +1159,7 @@
       toggleAutoTemplate.classList.toggle("active", !!state.settings.autoApplyTemplate);
       toggleHidePassed.classList.toggle("active", !!state.settings.hidePassedHours);
       toggleHideDone.classList.toggle("active", !!state.settings.hideDoneTasks);
+      toggleEditCompleted.classList.toggle("active", !!state.settings.editCompletedTasks);
 
       workStart.value = state.presets.work.start;
       workEnd.value = state.presets.work.end;
@@ -1151,9 +1175,12 @@
       day.blocks.forEach((block) => {
         if (shouldHideBlock(selectedDate, block)) return;
 
-        const visibleTasks = state.settings.hideDoneTasks
-          ? block.tasks.filter(t => !t.done && !t.hidden)
-          : block.tasks.filter(t => !t.hidden);
+        const visibleTasks = block.tasks.filter(t => {
+          if (state.settings.editCompletedTasks) return true;
+          if (state.settings.hideDoneTasks && t.done) return false;
+          if (t.hidden) return false;
+          return true;
+        });
 
         const blockEl = document.createElement("div");
         blockEl.className = `block ${getCategoryClass(block.category)}`;
@@ -1284,9 +1311,34 @@
         alert("Aucune donnée hier.");
         return;
       }
-      state.days[selectedDate] = JSON.parse(JSON.stringify(state.days[yesterday]));
+
+      ensureDay(selectedDate);
+      const sourceDay = state.days[yesterday];
+
+      state.days[selectedDate] = {
+        priority: sourceDay.priority || "",
+        blocks: sourceDay.blocks.map(block => ({
+          id: uid(),
+          hour: block.hour,
+          category: block.category || "À faire",
+          mainTask: block.mainTask || "",
+          reminderEnabled: false,
+          remindedAt: "",
+          tasks: (block.tasks || [])
+            .filter(task => !task.done)
+            .map(task => ({
+              id: uid(),
+              text: task.text,
+              done: false,
+              hidden: false
+            }))
+        }))
+      };
+
       saveState();
       renderDay();
+      renderProgress();
+      renderCompletedTasksManager();
     }
 
     function prepareTomorrow() {
@@ -1297,7 +1349,21 @@
         applyTemplateToDate(tomorrow);
       }
 
+      selectedDate = tomorrow;
+      renderDay();
+      renderProgress();
+      renderCompletedTasksManager();
+
       alert(`Le ${formatDisplayDate(tomorrow)} est prêt.`);
+    }
+
+    function goToday() {
+      selectedDate = getTodayString();
+      ensureDay(selectedDate);
+      autoLoadTodayIfEmpty();
+      renderDay();
+      renderProgress();
+      renderCompletedTasksManager();
     }
 
     function addTask(blockId, text) {
@@ -1312,6 +1378,8 @@
       });
       saveState();
       renderDay();
+      renderProgress();
+      renderCompletedTasksManager();
     }
 
     function moveTaskToTomorrow(blockId, taskId) {
@@ -1335,6 +1403,8 @@
 
       saveState();
       renderDay();
+      renderProgress();
+      renderCompletedTasksManager();
     }
 
     function resetDay() {
@@ -1345,6 +1415,8 @@
       };
       saveState();
       renderDay();
+      renderProgress();
+      renderCompletedTasksManager();
     }
 
     function resetDoneVisibility() {
@@ -1356,6 +1428,8 @@
       });
       saveState();
       renderDay();
+      renderProgress();
+      renderCompletedTasksManager();
     }
 
     function renderTemplateCategoryChips(dayKey, index, currentCat) {
@@ -1547,13 +1621,43 @@
           .forEach(([cat, count]) => {
             const card = document.createElement("div");
             card.className = "progress-card";
+
+            const catKey = normalizeLabel(cat);
+            const taskMap = {};
+
+            entries
+              .filter(e => e.category === cat)
+              .forEach(e => {
+                const key = normalizeLabel(e.task);
+                if (!taskMap[key]) {
+                  taskMap[key] = {
+                    label: displayLabel(e.task),
+                    count: 0
+                  };
+                }
+                taskMap[key].count += 1;
+              });
+
+            const detailsHtml = Object.values(taskMap)
+              .sort((a,b) => b.count - a.count)
+              .map(item => `
+                <div class="progress-line">
+                  <span>${escapeHtml(item.label)}</span>
+                  <strong>${item.count}</strong>
+                </div>
+              `)
+              .join("");
+
             card.innerHTML = `
               <h3>${escapeHtml(cat)}</h3>
               <div class="progress-line">
                 <span>Séances validées</span>
                 <strong>${count}</strong>
               </div>
-              <div class="small" style="margin-top:8px;">*voir plus de stats*</div>
+              <button class="btn full" data-progress-toggle="${catKey}">Voir plus</button>
+              <div id="progress-details-${catKey}" style="display:none; margin-top:10px;">
+                ${detailsHtml || `<div class="small">Aucun détail.</div>`}
+              </div>
             `;
             progressContainer.appendChild(card);
           });
@@ -1600,6 +1704,77 @@
           progressContainer.appendChild(card);
         });
       }
+    }
+
+    function renderCompletedTasksManager() {
+      completedTasksManager.innerHTML = "";
+
+      const completedByDate = {};
+
+      Object.entries(state.days).forEach(([dateKey, day]) => {
+        const completed = [];
+
+        day.blocks.forEach(block => {
+          block.tasks.forEach(task => {
+            if (task.done) {
+              completed.push({
+                date: dateKey,
+                hour: block.hour,
+                category: block.category,
+                mainTask: block.mainTask || "",
+                text: task.text,
+                taskId: task.id,
+                blockId: block.id
+              });
+            }
+          });
+        });
+
+        if (completed.length > 0) {
+          completedByDate[dateKey] = completed;
+        }
+      });
+
+      const dates = Object.keys(completedByDate).sort().reverse();
+
+      if (dates.length === 0) {
+        completedTasksManager.innerHTML = `<div class="small">Aucune tâche terminée.</div>`;
+        return;
+      }
+
+      dates.forEach(dateKey => {
+        const tasks = completedByDate[dateKey];
+
+        const card = document.createElement("div");
+        card.className = "accordion-card";
+        card.innerHTML = `
+          <button class="accordion-head" data-completed-date="${dateKey}">
+            <span>${dateKey} : ${tasks.length} tâche(s) faite(s)</span>
+            <span>▾</span>
+          </button>
+          <div class="accordion-content" id="completed-content-${dateKey}"></div>
+        `;
+
+        completedTasksManager.appendChild(card);
+
+        const holder = card.querySelector(`#completed-content-${dateKey}`);
+
+        tasks.forEach(item => {
+          const row = document.createElement("div");
+          row.className = "progress-line";
+          row.innerHTML = `
+            <div>
+              <strong>${escapeHtml(item.mainTask || item.text)}</strong><br>
+              <span class="small">${escapeHtml(item.category)} • ${escapeHtml(item.hour)} • ${escapeHtml(item.text)}</span>
+            </div>
+            <div class="row">
+              <button class="btn" data-completed-action="restore" data-date="${item.date}" data-block="${item.blockId}" data-task="${item.taskId}">Modifier</button>
+              <button class="btn danger" data-completed-action="delete" data-date="${item.date}" data-block="${item.blockId}" data-task="${item.taskId}">Supprimer</button>
+            </div>
+          `;
+          holder.appendChild(row);
+        });
+      });
     }
 
     async function toggleReminderForBlock(blockId) {
@@ -1691,10 +1866,13 @@
     document.getElementById("applyTemplateBtn").addEventListener("click", () => {
       applyTemplateToDate(selectedDate);
       renderDay();
+      renderProgress();
+      renderCompletedTasksManager();
     });
 
     document.getElementById("prepareTomorrowBtn").addEventListener("click", prepareTomorrow);
     document.getElementById("copyYesterdayBtn").addEventListener("click", copyYesterday);
+    document.getElementById("goTodayBtn").addEventListener("click", goToday);
     document.getElementById("resetDayBtn").addEventListener("click", resetDay);
     document.getElementById("resetDoneBtn").addEventListener("click", resetDoneVisibility);
     document.getElementById("savePresetSettingsBtn").addEventListener("click", savePresetSettings);
@@ -1704,6 +1882,8 @@
       day.priority = priorityInput.value.trim();
       saveState();
       renderDay();
+      renderProgress();
+      renderCompletedTasksManager();
     });
 
     datePicker.addEventListener("change", (e) => {
@@ -1711,6 +1891,8 @@
       ensureDay(selectedDate);
       autoLoadTodayIfEmpty();
       renderDay();
+      renderProgress();
+      renderCompletedTasksManager();
     });
 
     progressRange.addEventListener("change", renderProgress);
@@ -1762,6 +1944,12 @@
       renderDay();
     });
 
+    toggleEditCompleted.addEventListener("click", () => {
+      state.settings.editCompletedTasks = !state.settings.editCompletedTasks;
+      saveState();
+      renderDay();
+    });
+
     templatesContainer.addEventListener("click", (e) => {
       const acc = e.target.closest("[data-day-accordion]");
       if (acc) {
@@ -1787,6 +1975,59 @@
       renderTemplates();
     });
 
+    progressContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-progress-toggle]");
+      if (!btn) return;
+
+      const key = btn.dataset.progressToggle;
+      const box = document.getElementById(`progress-details-${key}`);
+      if (!box) return;
+
+      const isOpen = box.style.display === "block";
+      box.style.display = isOpen ? "none" : "block";
+      btn.textContent = isOpen ? "Voir plus" : "Voir moins";
+    });
+
+    completedTasksManager.addEventListener("click", (e) => {
+      const acc = e.target.closest("[data-completed-date]");
+      if (acc) {
+        const card = acc.closest(".accordion-card");
+        card.classList.toggle("open");
+        return;
+      }
+
+      const btn = e.target.closest("[data-completed-action]");
+      if (!btn) return;
+
+      const action = btn.dataset.completedAction;
+      const date = btn.dataset.date;
+      const blockId = btn.dataset.block;
+      const taskId = btn.dataset.task;
+
+      const day = state.days[date];
+      if (!day) return;
+
+      const block = day.blocks.find(b => b.id === blockId);
+      if (!block) return;
+
+      const task = block.tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      if (action === "restore") {
+        task.done = false;
+        task.hidden = false;
+      }
+
+      if (action === "delete") {
+        block.tasks = block.tasks.filter(t => t.id !== taskId);
+      }
+
+      saveState();
+      renderDay();
+      renderProgress();
+      renderCompletedTasksManager();
+    });
+
     blocksContainer.addEventListener("click", async (e) => {
       const btn = e.target.closest("[data-action]");
       if (!btn) return;
@@ -1802,6 +2043,8 @@
           block.category = btn.dataset.cat;
           saveState();
           renderDay();
+          renderProgress();
+          renderCompletedTasksManager();
         }
         return;
       }
@@ -1826,6 +2069,8 @@
         }
         saveState();
         renderDay();
+        renderProgress();
+        renderCompletedTasksManager();
         return;
       }
 
@@ -1836,6 +2081,8 @@
         }
         saveState();
         renderDay();
+        renderProgress();
+        renderCompletedTasksManager();
         return;
       }
 
@@ -1859,6 +2106,8 @@
         if (block) {
           block.mainTask = target.value;
           saveState();
+          renderProgress();
+          renderCompletedTasksManager();
         }
       }
     });
@@ -1882,6 +2131,7 @@
       renderTemplates();
       renderDay();
       renderProgress();
+      renderCompletedTasksManager();
       maybeSendBlockReminders();
       setInterval(maybeSendBlockReminders, 60000);
     }
