@@ -1,1 +1,844 @@
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyPlann</title>
+  <style>
+    :root{
+      --bg:#0f1115;
+      --panel:#171a21;
+      --panel-2:#1e2430;
+      --text:#f5f7fb;
+      --muted:#a7b0c0;
+      --line:#2a3242;
+      --accent:#5da2ff;
+      --accent-2:#7ee2a8;
+      --danger:#ff6b6b;
+      --warning:#ffcf66;
+      --shadow:0 10px 30px rgba(0,0,0,.25);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      padding:0;
+      background:linear-gradient(180deg,#0d1015 0%, #111521 100%);
+      color:var(--text);
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    }
+
+    body{
+      max-width:560px;
+      margin:0 auto;
+      min-height:100vh;
+      padding:14px 14px 90px;
+    }
+
+    h1,h2,h3,p{margin:0}
+    button,input,select,textarea{
+      font:inherit;
+      border:none;
+      outline:none;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter: blur(14px);
+      background:rgba(15,17,21,.75);
+      padding:10px 0 12px;
+      margin-bottom:10px;
+    }
+
+    .app-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .app-title h1{
+      font-size:1.5rem;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:.92rem;
+      margin-top:4px;
+    }
+
+    .tabs{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .tab{
+      padding:12px 14px;
+      border-radius:14px;
+      background:var(--panel);
+      color:var(--muted);
+      font-weight:700;
+      border:1px solid var(--line);
+      cursor:pointer;
+    }
+
+    .tab.active{
+      background:linear-gradient(180deg,#21304d,#182234);
+      color:#fff;
+      border-color:#365482;
+    }
+
+    .panel{
+      background:rgba(23,26,33,.95);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+      padding:14px;
+      margin-bottom:14px;
+    }
+
+    .panel-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .panel-title h2{
+      font-size:1.02rem;
+      font-weight:800;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:.9rem;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      background:var(--panel-2);
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.15s transform ease, .15s opacity ease, .15s background ease;
+    }
+
+    .btn:active{transform:scale(.98)}
+    .btn.primary{
+      background:linear-gradient(180deg,#4d8ef0,#3c74c5);
+      border-color:#5b93e8;
+    }
+    .btn.success{
+      background:linear-gradient(180deg,#2c8d63,#226a4b);
+      border-color:#39a674;
+    }
+    .btn.warning{
+      background:linear-gradient(180deg,#8d6a1f,#654d17);
+      border-color:#ad8332;
+    }
+    .btn.danger{
+      background:linear-gradient(180deg,#8b3232,#672626);
+      border-color:#a34d4d;
+    }
+    .btn.full{width:100%}
+
+    .switch-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 0 2px;
+    }
+
+    .switch{
+      position:relative;
+      width:54px;
+      height:32px;
+      background:#2c3444;
+      border-radius:999px;
+      cursor:pointer;
+      border:1px solid #3a4558;
+      transition:.2s;
+      flex-shrink:0;
+    }
+
+    .switch::after{
+      content:"";
+      position:absolute;
+      top:3px;
+      left:3px;
+      width:24px;
+      height:24px;
+      background:#fff;
+      border-radius:50%;
+      transition:.2s;
+    }
+
+    .switch.active{
+      background:#2d7ff0;
+      border-color:#5ea0ff;
+    }
+
+    .switch.active::after{
+      left:25px;
+    }
+
+    .block{
+      background:#11161f;
+      border:1px solid #273043;
+      border-radius:16px;
+      padding:12px;
+      margin-bottom:12px;
+    }
+
+    .block-head{
+      display:grid;
+      grid-template-columns:92px 1fr auto;
+      gap:10px;
+      align-items:center;
+      margin-bottom:10px;
+    }
+
+    .hour-input,.category-select,.task-input,.date-input,.textarea,.template-area{
+      width:100%;
+      background:#0c1018;
+      color:var(--text);
+      border:1px solid #2c3647;
+      border-radius:12px;
+      padding:12px;
+    }
+
+    .task-row{
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      gap:10px;
+      align-items:center;
+      padding:8px 0;
+      border-top:1px solid rgba(255,255,255,.05);
+    }
+
+    .task-row:first-child{
+      border-top:none;
+    }
+
+    .checkbox{
+      width:22px;
+      height:22px;
+      accent-color:#4e90f5;
+      cursor:pointer;
+    }
+
+    .task-text.done{
+      text-decoration:line-through;
+      opacity:.55;
+    }
+
+    .icon-btn{
+      width:38px;
+      height:38px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:#1b2230;
+      color:#fff;
+      border:1px solid #32405a;
+      cursor:pointer;
+      flex-shrink:0;
+    }
+
+    .task-add{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      margin-top:8px;
+    }
+
+    .section{display:none}
+    .section.active{display:block}
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+
+    .stat{
+      background:#101621;
+      border:1px solid #273043;
+      border-radius:15px;
+      padding:12px;
+      text-align:center;
+    }
+
+    .stat .n{
+      display:block;
+      font-size:1.15rem;
+      font-weight:800;
+      margin-bottom:4px;
+    }
+
+    .divider{
+      height:1px;
+      background:rgba(255,255,255,.07);
+      margin:14px 0;
+    }
+
+    .template-card{
+      background:#11161f;
+      border:1px solid #273043;
+      border-radius:16px;
+      padding:12px;
+      margin-bottom:12px;
+    }
+
+    .template-card h3{
+      font-size:1rem;
+      margin-bottom:8px;
+    }
+
+    .template-help{
+      color:var(--muted);
+      font-size:.85rem;
+      line-height:1.5;
+      margin-top:8px;
+    }
+
+    .textarea,.template-area{
+      min-height:120px;
+      resize:vertical;
+    }
+
+    .footer-space{height:16px}
+
+    .small{
+      font-size:.84rem;
+      color:var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="app-title">
+      <div>
+        <h1>MyPlann</h1>
+        <p class="sub">Planning téléphone • BTS • travail • clients</p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tabToday">Aujourd’hui</button>
+      <button class="tab" id="tabLongTerm">Long terme</button>
+    </div>
+  </div>
+
+  <section id="todaySection" class="section active">
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2 id="todayTitle">Aujourd’hui</h2>
+          <p class="muted">Ta journée heure par heure</p>
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom:10px">
+        <input type="date" id="datePicker" class="date-input" />
+      </div>
+
+      <div class="row">
+        <button class="btn primary" id="applyTemplateBtn">Appliquer le modèle du jour</button>
+        <button class="btn" id="addBlockBtn">+ Ajouter une heure</button>
+      </div>
+
+      <div class="switch-row">
+        <div>
+          <strong>Masquer automatiquement les tâches finies</strong>
+          <div class="small">Quand tu coches, elles disparaissent de la vue</div>
+        </div>
+        <div class="switch" id="autoHideSwitch"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="n" id="statTotal">0</span>
+          <span class="small">Tâches</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="statDone">0</span>
+          <span class="small">Finies</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="statLeft">0</span>
+          <span class="small">Restantes</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="blocksContainer"></div>
+
+    <div class="panel">
+      <div class="row">
+        <button class="btn warning" id="resetDoneBtn">Réafficher les tâches finies</button>
+        <button class="btn danger" id="resetDayBtn">Reset de la journée</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="longTermSection" class="section">
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Données long terme</h2>
+          <p class="muted">Tes objectifs, rappels, infos fixes, dossiers clients</p>
+        </div>
+      </div>
+
+      <textarea id="longTermNotes" class="textarea" placeholder="Exemple :
+- Réviser AV tous les mercredis
+- Appeler tel client
+- Priorité BTS : annales + gestion comptable
+- Objectifs du mois
+- Choses à ne pas oublier"></textarea>
+
+      <div class="row" style="margin-top:10px">
+        <button class="btn success full" id="saveLongTermBtn">Sauvegarder mes données long terme</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Modèles par jour de semaine</h2>
+          <p class="muted">1 ligne = 1 heure</p>
+        </div>
+      </div>
+
+      <div id="templatesContainer"></div>
+
+      <button class="btn success full" id="saveTemplatesBtn">Sauvegarder les modèles</button>
+    </div>
+  </section>
+
+  <script>
+    const STORAGE_KEY = "myplann-alpha-v1";
+    const WEEK_DAYS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
+    const TEMPLATE_KEYS = ["0","1","2","3","4","5","6"];
+
+    const defaultTemplates = {
+      "0": "09:00 | Révisions | AV; OG\n14:00 | Révisions | Gestion; Annale BTS\n20:00 | Perso | Préparer demain",
+      "1": "08:30 | Perso | Réveil; Petit-déj\n10:00 | Travail | Magasin; Clients\n19:30 | Révisions | 30 min AV\n21:00 | Perso | Préparer demain",
+      "2": "08:30 | Perso | Réveil; Petit-déj\n10:00 | Travail | Magasin; Dossiers clients\n19:30 | Révisions | Annale ou correction\n21:00 | Perso | Préparer demain",
+      "3": "10:00 | Travail | Matinée\n14:00 | Révisions | AV; Gestion\n20:30 | Perso | Préparer demain",
+      "4": "08:30 | Perso | Réveil; Petit-déj\n10:00 | Travail | Magasin; Clients\n19:30 | Révisions | OG ou AV\n21:00 | Perso | Préparer demain",
+      "5": "08:30 | Perso | Réveil; Petit-déj\n10:00 | Travail | Magasin; Suivi dossiers\n19:30 | Révisions | Gestion\n21:00 | Perso | Préparer demain",
+      "6": "08:30 | Cours | BTS\n19:30 | Perso | Repos; Préparer demain"
+    };
+
+    const defaultState = {
+      autoHideDone: false,
+      longTermNotes: "",
+      templates: {...defaultTemplates},
+      days: {}
+    };
+
+    let state = loadState();
+    let selectedDate = getTodayString();
+
+    const tabToday = document.getElementById("tabToday");
+    const tabLongTerm = document.getElementById("tabLongTerm");
+    const todaySection = document.getElementById("todaySection");
+    const longTermSection = document.getElementById("longTermSection");
+    const blocksContainer = document.getElementById("blocksContainer");
+    const templatesContainer = document.getElementById("templatesContainer");
+    const todayTitle = document.getElementById("todayTitle");
+    const datePicker = document.getElementById("datePicker");
+    const autoHideSwitch = document.getElementById("autoHideSwitch");
+    const longTermNotes = document.getElementById("longTermNotes");
+    const statTotal = document.getElementById("statTotal");
+    const statDone = document.getElementById("statDone");
+    const statLeft = document.getElementById("statLeft");
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (!saved) return structuredClone(defaultState);
+        return {
+          ...structuredClone(defaultState),
+          ...saved,
+          templates: {...defaultTemplates, ...(saved.templates || {})},
+          days: saved.days || {}
+        };
+      } catch {
+        return structuredClone(defaultState);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function getTodayString(date = new Date()) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function formatDisplayDate(dateStr) {
+      const d = new Date(dateStr + "T00:00:00");
+      return d.toLocaleDateString("fr-FR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+      });
+    }
+
+    function ensureDay(dateStr) {
+      if (!state.days[dateStr]) {
+        state.days[dateStr] = { blocks: [] };
+      }
+    }
+
+    function getCurrentDay() {
+      ensureDay(selectedDate);
+      return state.days[selectedDate];
+    }
+
+    function uid() {
+      return Math.random().toString(36).slice(2, 10);
+    }
+
+    function switchTab(tab) {
+      const onToday = tab === "today";
+      tabToday.classList.toggle("active", onToday);
+      tabLongTerm.classList.toggle("active", !onToday);
+      todaySection.classList.toggle("active", onToday);
+      longTermSection.classList.toggle("active", !onToday);
+    }
+
+    tabToday.addEventListener("click", () => switchTab("today"));
+    tabLongTerm.addEventListener("click", () => switchTab("longTerm"));
+
+    function renderTemplates() {
+      templatesContainer.innerHTML = "";
+      TEMPLATE_KEYS.forEach((key) => {
+        const card = document.createElement("div");
+        card.className = "template-card";
+        card.innerHTML = `
+          <h3>${WEEK_DAYS[Number(key)]}</h3>
+          <textarea class="template-area" data-day="${key}" placeholder="Exemple :
+08:30 | Travail | Ouverture; Appels
+14:00 | Révisions | AV; OG
+20:00 | Perso | Préparer demain">${escapeHtml(state.templates[key] || "")}</textarea>
+          <div class="template-help">
+            Format : <strong>heure | catégorie | tâche 1; tâche 2; tâche 3</strong>
+          </div>
+        `;
+        templatesContainer.appendChild(card);
+      });
+    }
+
+    function parseTemplate(text) {
+      const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+      const blocks = [];
+
+      for (const line of lines) {
+        const parts = line.split("|").map(p => p.trim());
+        const hour = parts[0] || "08:00";
+        const category = parts[1] || "À faire";
+        const tasksPart = parts[2] || "";
+        const tasks = tasksPart
+          .split(";")
+          .map(t => t.trim())
+          .filter(Boolean)
+          .map(text => ({ id: uid(), text, done: false, hidden: false }));
+
+        blocks.push({
+          id: uid(),
+          hour,
+          category,
+          tasks
+        });
+      }
+
+      return blocks;
+    }
+
+    function applyTodayTemplate() {
+      const dayIndex = new Date(selectedDate + "T00:00:00").getDay();
+      const templateText = state.templates[String(dayIndex)] || "";
+      const day = getCurrentDay();
+      day.blocks = parseTemplate(templateText);
+      saveState();
+      renderDay();
+    }
+
+    function renderDay() {
+      const day = getCurrentDay();
+      datePicker.value = selectedDate;
+      todayTitle.textContent = capitalize(formatDisplayDate(selectedDate));
+      autoHideSwitch.classList.toggle("active", !!state.autoHideDone);
+
+      blocksContainer.innerHTML = "";
+
+      day.blocks.sort((a, b) => a.hour.localeCompare(b.hour));
+
+      day.blocks.forEach((block) => {
+        const visibleTasks = state.autoHideDone
+          ? block.tasks.filter(t => !t.done && !t.hidden)
+          : block.tasks.filter(t => !t.hidden);
+
+        const blockEl = document.createElement("div");
+        blockEl.className = "block";
+
+        blockEl.innerHTML = `
+          <div class="block-head">
+            <input class="hour-input" value="${escapeAttr(block.hour)}" data-action="edit-hour" data-id="${block.id}" />
+            <select class="category-select" data-action="edit-category" data-id="${block.id}">
+              ${renderCategoryOptions(block.category)}
+            </select>
+            <button class="icon-btn" data-action="delete-block" data-id="${block.id}">🗑️</button>
+          </div>
+
+          <div class="tasks-zone">
+            ${visibleTasks.length === 0 ? `<div class="small" style="padding:4px 0 8px">Aucune tâche visible dans ce bloc</div>` : ""}
+            ${visibleTasks.map(task => `
+              <div class="task-row">
+                <input type="checkbox" class="checkbox" ${task.done ? "checked" : ""} data-action="toggle-task" data-block-id="${block.id}" data-task-id="${task.id}" />
+                <div class="task-text ${task.done ? "done" : ""}">${escapeHtml(task.text)}</div>
+                <button class="icon-btn" data-action="delete-task" data-block-id="${block.id}" data-task-id="${task.id}">✕</button>
+              </div>
+            `).join("")}
+          </div>
+
+          <div class="task-add">
+            <input class="task-input" placeholder="Ajouter une tâche..." data-input-task="${block.id}" />
+            <button class="btn" data-action="add-task" data-id="${block.id}">+ tâche</button>
+          </div>
+        `;
+
+        blocksContainer.appendChild(blockEl);
+      });
+
+      updateStats();
+    }
+
+    function renderCategoryOptions(current) {
+      const options = ["À faire", "Travail", "Révisions", "Client", "Perso", "Cours"];
+      if (!options.includes(current)) options.push(current);
+      return options.map(opt =>
+        `<option value="${escapeAttr(opt)}" ${opt === current ? "selected" : ""}>${escapeHtml(opt)}</option>`
+      ).join("");
+    }
+
+    function updateStats() {
+      const day = getCurrentDay();
+      const allTasks = day.blocks.flatMap(b => b.tasks.filter(t => !t.hidden));
+      const doneTasks = allTasks.filter(t => t.done);
+      statTotal.textContent = allTasks.length;
+      statDone.textContent = doneTasks.length;
+      statLeft.textContent = Math.max(0, allTasks.length - doneTasks.length);
+    }
+
+    function addBlock() {
+      const day = getCurrentDay();
+      day.blocks.push({
+        id: uid(),
+        hour: "08:00",
+        category: "À faire",
+        tasks: []
+      });
+      saveState();
+      renderDay();
+    }
+
+    function addTask(blockId, text) {
+      if (!text.trim()) return;
+      const block = getCurrentDay().blocks.find(b => b.id === blockId);
+      if (!block) return;
+      block.tasks.push({
+        id: uid(),
+        text: text.trim(),
+        done: false,
+        hidden: false
+      });
+      saveState();
+      renderDay();
+    }
+
+    function resetDay() {
+      if (!confirm("Tu veux vraiment vider toute la journée ?")) return;
+      state.days[selectedDate] = { blocks: [] };
+      saveState();
+      renderDay();
+    }
+
+    function resetDoneVisibility() {
+      const day = getCurrentDay();
+      day.blocks.forEach(block => {
+        block.tasks.forEach(task => {
+          task.hidden = false;
+        });
+      });
+      saveState();
+      renderDay();
+    }
+
+    function capitalize(s) {
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function escapeAttr(str) {
+      return escapeHtml(str);
+    }
+
+    document.getElementById("addBlockBtn").addEventListener("click", addBlock);
+    document.getElementById("applyTemplateBtn").addEventListener("click", applyTodayTemplate);
+    document.getElementById("resetDayBtn").addEventListener("click", resetDay);
+    document.getElementById("resetDoneBtn").addEventListener("click", resetDoneVisibility);
+
+    autoHideSwitch.addEventListener("click", () => {
+      state.autoHideDone = !state.autoHideDone;
+      saveState();
+      renderDay();
+    });
+
+    datePicker.addEventListener("change", (e) => {
+      selectedDate = e.target.value || getTodayString();
+      ensureDay(selectedDate);
+      renderDay();
+    });
+
+    longTermNotes.addEventListener("input", (e) => {
+      state.longTermNotes = e.target.value;
+      saveState();
+    });
+
+    document.getElementById("saveLongTermBtn").addEventListener("click", () => {
+      state.longTermNotes = longTermNotes.value;
+      saveState();
+      alert("Données long terme sauvegardées.");
+    });
+
+    document.getElementById("saveTemplatesBtn").addEventListener("click", () => {
+      document.querySelectorAll(".template-area").forEach(area => {
+        state.templates[area.dataset.day] = area.value;
+      });
+      saveState();
+      alert("Modèles de la semaine sauvegardés.");
+    });
+
+    blocksContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-action]");
+      if (!btn) return;
+
+      const action = btn.dataset.action;
+      const blockId = btn.dataset.id || btn.dataset.blockId;
+      const taskId = btn.dataset.taskId;
+      const day = getCurrentDay();
+
+      if (action === "delete-block") {
+        day.blocks = day.blocks.filter(b => b.id !== blockId);
+      }
+
+      if (action === "add-task") {
+        const input = document.querySelector(`[data-input-task="${blockId}"]`);
+        if (input) {
+          addTask(blockId, input.value);
+          input.value = "";
+        }
+        return;
+      }
+
+      if (action === "toggle-task") {
+        const block = day.blocks.find(b => b.id === blockId);
+        const task = block?.tasks.find(t => t.id === taskId);
+        if (task) {
+          task.done = !task.done;
+          if (state.autoHideDone && task.done) {
+            task.hidden = true;
+          }
+        }
+      }
+
+      if (action === "delete-task") {
+        const block = day.blocks.find(b => b.id === blockId);
+        if (block) {
+          block.tasks = block.tasks.filter(t => t.id !== taskId);
+        }
+      }
+
+      saveState();
+      renderDay();
+    });
+
+    blocksContainer.addEventListener("change", (e) => {
+      const target = e.target;
+      const day = getCurrentDay();
+
+      if (target.dataset.action === "edit-hour") {
+        const block = day.blocks.find(b => b.id === target.dataset.id);
+        if (block) {
+          block.hour = target.value;
+          saveState();
+          renderDay();
+        }
+      }
+
+      if (target.dataset.action === "edit-category") {
+        const block = day.blocks.find(b => b.id === target.dataset.id);
+        if (block) {
+          block.category = target.value;
+          saveState();
+          renderDay();
+        }
+      }
+    });
+
+    blocksContainer.addEventListener("keydown", (e) => {
+      const input = e.target;
+      if (input.classList.contains("task-input") && e.key === "Enter") {
+        const blockId = input.dataset.inputTask;
+        addTask(blockId, input.value);
+        input.value = "";
+      }
+    });
+
+    function init() {
+      selectedDate = getTodayString();
+      ensureDay(selectedDate);
+      longTermNotes.value = state.longTermNotes || "";
+      renderTemplates();
+      renderDay();
+    }
+
+    init();
+  </script>
+</body>
+</html>
