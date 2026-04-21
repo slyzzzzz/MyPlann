@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -14,11 +13,15 @@
       --muted:#a7b0c0;
       --line:#2a3242;
       --accent:#5da2ff;
-      --accent-2:#7ee2a8;
-      --danger:#ff6b6b;
-      --warning:#ffcf66;
       --shadow:0 10px 30px rgba(0,0,0,.25);
       --radius:18px;
+
+      --cat-default:#5da2ff;
+      --cat-work:#f59e0b;
+      --cat-study:#22c55e;
+      --cat-client:#a855f7;
+      --cat-perso:#ef4444;
+      --cat-course:#06b6d4;
     }
 
     *{box-sizing:border-box}
@@ -201,22 +204,57 @@
     }
 
     .block{
-      background:#11161f;
-      border:1px solid #273043;
       border-radius:16px;
       padding:12px;
       margin-bottom:12px;
+      border:1px solid #273043;
+      background:#11161f;
+    }
+
+    .cat-default{
+      border-left:6px solid var(--cat-default);
+      background:linear-gradient(90deg, rgba(93,162,255,.14), rgba(17,22,31,1) 30%);
+    }
+    .cat-work{
+      border-left:6px solid var(--cat-work);
+      background:linear-gradient(90deg, rgba(245,158,11,.14), rgba(17,22,31,1) 30%);
+    }
+    .cat-study{
+      border-left:6px solid var(--cat-study);
+      background:linear-gradient(90deg, rgba(34,197,94,.14), rgba(17,22,31,1) 30%);
+    }
+    .cat-client{
+      border-left:6px solid var(--cat-client);
+      background:linear-gradient(90deg, rgba(168,85,247,.14), rgba(17,22,31,1) 30%);
+    }
+    .cat-perso{
+      border-left:6px solid var(--cat-perso);
+      background:linear-gradient(90deg, rgba(239,68,68,.14), rgba(17,22,31,1) 30%);
+    }
+    .cat-course{
+      border-left:6px solid var(--cat-course);
+      background:linear-gradient(90deg, rgba(6,182,212,.14), rgba(17,22,31,1) 30%);
     }
 
     .block-head{
       display:grid;
-      grid-template-columns:92px 1fr auto;
+      grid-template-columns:88px 1fr;
       gap:10px;
       align-items:center;
       margin-bottom:10px;
     }
 
-    .hour-input,.category-select,.task-input,.date-input,.textarea,.template-area{
+    .hour-label{
+      background:#0c1018;
+      color:#fff;
+      border:1px solid #2c3647;
+      border-radius:12px;
+      padding:12px;
+      text-align:center;
+      font-weight:800;
+    }
+
+    .category-select,.date-input,.textarea,.task-inline-input{
       width:100%;
       background:#0c1018;
       color:var(--text);
@@ -300,32 +338,47 @@
       margin:14px 0;
     }
 
-    .template-card{
+    .textarea{
+      min-height:140px;
+      resize:vertical;
+    }
+
+    .template-day-card{
       background:#11161f;
       border:1px solid #273043;
       border-radius:16px;
       padding:12px;
-      margin-bottom:12px;
+      margin-bottom:14px;
     }
 
-    .template-card h3{
+    .template-day-card h3{
+      margin-bottom:10px;
       font-size:1rem;
+    }
+
+    .template-row{
+      display:grid;
+      grid-template-columns:72px 1fr;
+      gap:8px;
+      align-items:center;
       margin-bottom:8px;
     }
 
-    .template-help{
-      color:var(--muted);
-      font-size:.85rem;
-      line-height:1.5;
-      margin-top:8px;
+    .template-hour{
+      text-align:center;
+      padding:10px 6px;
+      border-radius:10px;
+      background:#0c1018;
+      border:1px solid #2c3647;
+      font-weight:700;
+      font-size:.9rem;
     }
 
-    .textarea,.template-area{
-      min-height:120px;
-      resize:vertical;
+    .template-controls{
+      display:grid;
+      grid-template-columns:110px 1fr;
+      gap:8px;
     }
-
-    .footer-space{height:16px}
 
     .small{
       font-size:.84rem;
@@ -353,7 +406,7 @@
       <div class="panel-title">
         <div>
           <h2 id="todayTitle">Aujourd’hui</h2>
-          <p class="muted">Ta journée heure par heure</p>
+          <p class="muted">Toutes tes heures sont déjà affichées</p>
         </div>
       </div>
 
@@ -363,7 +416,6 @@
 
       <div class="row">
         <button class="btn primary" id="applyTemplateBtn">Appliquer le modèle du jour</button>
-        <button class="btn" id="addBlockBtn">+ Ajouter une heure</button>
       </div>
 
       <div class="switch-row">
@@ -407,16 +459,15 @@
       <div class="panel-title">
         <div>
           <h2>Données long terme</h2>
-          <p class="muted">Tes objectifs, rappels, infos fixes, dossiers clients</p>
+          <p class="muted">Objectifs, rappels, idées, dossiers</p>
         </div>
       </div>
 
       <textarea id="longTermNotes" class="textarea" placeholder="Exemple :
 - Réviser AV tous les mercredis
-- Appeler tel client
-- Priorité BTS : annales + gestion comptable
-- Objectifs du mois
-- Choses à ne pas oublier"></textarea>
+- Relancer tel client
+- Priorité BTS : annales + gestion
+- Objectifs du mois"></textarea>
 
       <div class="row" style="margin-top:10px">
         <button class="btn success full" id="saveLongTermBtn">Sauvegarder mes données long terme</button>
@@ -426,8 +477,8 @@
     <div class="panel">
       <div class="panel-title">
         <div>
-          <h2>Modèles par jour de semaine</h2>
-          <p class="muted">1 ligne = 1 heure</p>
+          <h2>Planning type par jour</h2>
+          <p class="muted">Champs simples, vides par défaut, heure déjà affichée</p>
         </div>
       </div>
 
@@ -438,26 +489,33 @@
   </section>
 
   <script>
-    const STORAGE_KEY = "myplann-alpha-v1";
+    const STORAGE_KEY = "myplann-alpha-v2";
     const WEEK_DAYS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
-    const TEMPLATE_KEYS = ["0","1","2","3","4","5","6"];
+    const HOURS = [
+      "08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00",
+      "17:00","18:00","19:00","20:00","21:00","22:00","23:00","00:00"
+    ];
 
-    const defaultTemplates = {
-      "0": "09:00 | Révisions | AV; OG\n14:00 | Révisions | Gestion; Annale BTS\n20:00 | Perso | Préparer demain",
-      "1": "08:30 | Perso | Réveil; Petit-déj\n10:00 | Travail | Magasin; Clients\n19:30 | Révisions | 30 min AV\n21:00 | Perso | Préparer demain",
-      "2": "08:30 | Perso | Réveil; Petit-déj\n10:00 | Travail | Magasin; Dossiers clients\n19:30 | Révisions | Annale ou correction\n21:00 | Perso | Préparer demain",
-      "3": "10:00 | Travail | Matinée\n14:00 | Révisions | AV; Gestion\n20:30 | Perso | Préparer demain",
-      "4": "08:30 | Perso | Réveil; Petit-déj\n10:00 | Travail | Magasin; Clients\n19:30 | Révisions | OG ou AV\n21:00 | Perso | Préparer demain",
-      "5": "08:30 | Perso | Réveil; Petit-déj\n10:00 | Travail | Magasin; Suivi dossiers\n19:30 | Révisions | Gestion\n21:00 | Perso | Préparer demain",
-      "6": "08:30 | Cours | BTS\n19:30 | Perso | Repos; Préparer demain"
-    };
+    const CATEGORY_OPTIONS = ["À faire", "Travail", "Révisions", "Client", "Perso", "Cours"];
 
     const defaultState = {
       autoHideDone: false,
       longTermNotes: "",
-      templates: {...defaultTemplates},
+      templates: createEmptyTemplates(),
       days: {}
     };
+
+    function createEmptyTemplates() {
+      const templates = {};
+      for (let d = 0; d < 7; d++) {
+        templates[String(d)] = HOURS.map(hour => ({
+          hour,
+          category: "À faire",
+          taskText: ""
+        }));
+      }
+      return templates;
+    }
 
     let state = loadState();
     let selectedDate = getTodayString();
@@ -480,12 +538,36 @@
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
         if (!saved) return structuredClone(defaultState);
-        return {
+
+        const merged = {
           ...structuredClone(defaultState),
-          ...saved,
-          templates: {...defaultTemplates, ...(saved.templates || {})},
-          days: saved.days || {}
+          ...saved
         };
+
+        if (!saved.templates || typeof saved.templates !== "object") {
+          merged.templates = createEmptyTemplates();
+        } else {
+          const defaults = createEmptyTemplates();
+          for (let d = 0; d < 7; d++) {
+            const key = String(d);
+            if (!Array.isArray(saved.templates[key])) {
+              defaults[key] = createEmptyTemplates()[key];
+            } else {
+              defaults[key] = HOURS.map((hour, i) => {
+                const row = saved.templates[key][i] || {};
+                return {
+                  hour,
+                  category: row.category || "À faire",
+                  taskText: row.taskText || ""
+                };
+              });
+            }
+          }
+          merged.templates = defaults;
+        }
+
+        merged.days = saved.days || {};
+        return merged;
       } catch {
         return structuredClone(defaultState);
       }
@@ -511,19 +593,62 @@
       });
     }
 
+    function capitalize(s) {
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    function uid() {
+      return Math.random().toString(36).slice(2, 10);
+    }
+
+    function createEmptyDayBlocks() {
+      return HOURS.map(hour => ({
+        id: uid(),
+        hour,
+        category: "À faire",
+        tasks: []
+      }));
+    }
+
     function ensureDay(dateStr) {
       if (!state.days[dateStr]) {
-        state.days[dateStr] = { blocks: [] };
+        state.days[dateStr] = { blocks: createEmptyDayBlocks() };
+      } else {
+        normalizeDay(dateStr);
       }
+    }
+
+    function normalizeDay(dateStr) {
+      const day = state.days[dateStr];
+      if (!day.blocks || !Array.isArray(day.blocks)) {
+        day.blocks = createEmptyDayBlocks();
+        return;
+      }
+
+      const byHour = {};
+      day.blocks.forEach(block => {
+        byHour[block.hour] = {
+          id: block.id || uid(),
+          hour: block.hour,
+          category: block.category || "À faire",
+          tasks: Array.isArray(block.tasks) ? block.tasks : []
+        };
+      });
+
+      day.blocks = HOURS.map(hour => {
+        if (byHour[hour]) return byHour[hour];
+        return {
+          id: uid(),
+          hour,
+          category: "À faire",
+          tasks: []
+        };
+      });
     }
 
     function getCurrentDay() {
       ensureDay(selectedDate);
       return state.days[selectedDate];
-    }
-
-    function uid() {
-      return Math.random().toString(36).slice(2, 10);
     }
 
     function switchTab(tab) {
@@ -537,58 +662,19 @@
     tabToday.addEventListener("click", () => switchTab("today"));
     tabLongTerm.addEventListener("click", () => switchTab("longTerm"));
 
-    function renderTemplates() {
-      templatesContainer.innerHTML = "";
-      TEMPLATE_KEYS.forEach((key) => {
-        const card = document.createElement("div");
-        card.className = "template-card";
-        card.innerHTML = `
-          <h3>${WEEK_DAYS[Number(key)]}</h3>
-          <textarea class="template-area" data-day="${key}" placeholder="Exemple :
-08:30 | Travail | Ouverture; Appels
-14:00 | Révisions | AV; OG
-20:00 | Perso | Préparer demain">${escapeHtml(state.templates[key] || "")}</textarea>
-          <div class="template-help">
-            Format : <strong>heure | catégorie | tâche 1; tâche 2; tâche 3</strong>
-          </div>
-        `;
-        templatesContainer.appendChild(card);
-      });
+    function getCategoryClass(category) {
+      if (category === "Travail") return "cat-work";
+      if (category === "Révisions") return "cat-study";
+      if (category === "Client") return "cat-client";
+      if (category === "Perso") return "cat-perso";
+      if (category === "Cours") return "cat-course";
+      return "cat-default";
     }
 
-    function parseTemplate(text) {
-      const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
-      const blocks = [];
-
-      for (const line of lines) {
-        const parts = line.split("|").map(p => p.trim());
-        const hour = parts[0] || "08:00";
-        const category = parts[1] || "À faire";
-        const tasksPart = parts[2] || "";
-        const tasks = tasksPart
-          .split(";")
-          .map(t => t.trim())
-          .filter(Boolean)
-          .map(text => ({ id: uid(), text, done: false, hidden: false }));
-
-        blocks.push({
-          id: uid(),
-          hour,
-          category,
-          tasks
-        });
-      }
-
-      return blocks;
-    }
-
-    function applyTodayTemplate() {
-      const dayIndex = new Date(selectedDate + "T00:00:00").getDay();
-      const templateText = state.templates[String(dayIndex)] || "";
-      const day = getCurrentDay();
-      day.blocks = parseTemplate(templateText);
-      saveState();
-      renderDay();
+    function renderCategoryOptions(current) {
+      return CATEGORY_OPTIONS.map(opt =>
+        `<option value="${escapeHtml(opt)}" ${opt === current ? "selected" : ""}>${escapeHtml(opt)}</option>`
+      ).join("");
     }
 
     function renderDay() {
@@ -599,27 +685,24 @@
 
       blocksContainer.innerHTML = "";
 
-      day.blocks.sort((a, b) => a.hour.localeCompare(b.hour));
-
       day.blocks.forEach((block) => {
         const visibleTasks = state.autoHideDone
           ? block.tasks.filter(t => !t.done && !t.hidden)
           : block.tasks.filter(t => !t.hidden);
 
         const blockEl = document.createElement("div");
-        blockEl.className = "block";
+        blockEl.className = `block ${getCategoryClass(block.category)}`;
 
         blockEl.innerHTML = `
           <div class="block-head">
-            <input class="hour-input" value="${escapeAttr(block.hour)}" data-action="edit-hour" data-id="${block.id}" />
+            <div class="hour-label">${block.hour}</div>
             <select class="category-select" data-action="edit-category" data-id="${block.id}">
               ${renderCategoryOptions(block.category)}
             </select>
-            <button class="icon-btn" data-action="delete-block" data-id="${block.id}">🗑️</button>
           </div>
 
           <div class="tasks-zone">
-            ${visibleTasks.length === 0 ? `<div class="small" style="padding:4px 0 8px">Aucune tâche visible dans ce bloc</div>` : ""}
+            ${visibleTasks.length === 0 ? `<div class="small" style="padding:4px 0 8px">Aucune tâche pour cette heure</div>` : ""}
             ${visibleTasks.map(task => `
               <div class="task-row">
                 <input type="checkbox" class="checkbox" ${task.done ? "checked" : ""} data-action="toggle-task" data-block-id="${block.id}" data-task-id="${task.id}" />
@@ -630,7 +713,7 @@
           </div>
 
           <div class="task-add">
-            <input class="task-input" placeholder="Ajouter une tâche..." data-input-task="${block.id}" />
+            <input class="task-inline-input" placeholder="Ajouter une tâche..." data-input-task="${block.id}" />
             <button class="btn" data-action="add-task" data-id="${block.id}">+ tâche</button>
           </div>
         `;
@@ -639,14 +722,6 @@
       });
 
       updateStats();
-    }
-
-    function renderCategoryOptions(current) {
-      const options = ["À faire", "Travail", "Révisions", "Client", "Perso", "Cours"];
-      if (!options.includes(current)) options.push(current);
-      return options.map(opt =>
-        `<option value="${escapeAttr(opt)}" ${opt === current ? "selected" : ""}>${escapeHtml(opt)}</option>`
-      ).join("");
     }
 
     function updateStats() {
@@ -658,14 +733,32 @@
       statLeft.textContent = Math.max(0, allTasks.length - doneTasks.length);
     }
 
-    function addBlock() {
+    function applyTodayTemplate() {
+      const dayIndex = new Date(selectedDate + "T00:00:00").getDay();
+      const template = state.templates[String(dayIndex)] || [];
       const day = getCurrentDay();
-      day.blocks.push({
-        id: uid(),
-        hour: "08:00",
-        category: "À faire",
-        tasks: []
+
+      day.blocks = HOURS.map((hour, i) => {
+        const row = template[i] || { category: "À faire", taskText: "" };
+        const tasks = (row.taskText || "")
+          .split(";")
+          .map(t => t.trim())
+          .filter(Boolean)
+          .map(text => ({
+            id: uid(),
+            text,
+            done: false,
+            hidden: false
+          }));
+
+        return {
+          id: uid(),
+          hour,
+          category: row.category || "À faire",
+          tasks
+        };
       });
+
       saveState();
       renderDay();
     }
@@ -686,7 +779,7 @@
 
     function resetDay() {
       if (!confirm("Tu veux vraiment vider toute la journée ?")) return;
-      state.days[selectedDate] = { blocks: [] };
+      state.days[selectedDate] = { blocks: createEmptyDayBlocks() };
       saveState();
       renderDay();
     }
@@ -702,8 +795,41 @@
       renderDay();
     }
 
-    function capitalize(s) {
-      return s.charAt(0).toUpperCase() + s.slice(1);
+    function renderTemplates() {
+      templatesContainer.innerHTML = "";
+
+      for (let d = 0; d < 7; d++) {
+        const key = String(d);
+        const dayTemplate = state.templates[key];
+
+        const card = document.createElement("div");
+        card.className = "template-day-card";
+
+        card.innerHTML = `
+          <h3>${WEEK_DAYS[d]}</h3>
+          <div class="small" style="margin-bottom:10px">1 ligne = 1 heure • dans la tâche tu peux écrire plusieurs éléments séparés par ;</div>
+          <div id="template-day-${key}"></div>
+        `;
+
+        templatesContainer.appendChild(card);
+
+        const holder = card.querySelector(`#template-day-${key}`);
+
+        dayTemplate.forEach((row, index) => {
+          const line = document.createElement("div");
+          line.className = "template-row";
+          line.innerHTML = `
+            <div class="template-hour">${row.hour}</div>
+            <div class="template-controls">
+              <select class="category-select template-category" data-day="${key}" data-index="${index}">
+                ${renderCategoryOptions(row.category)}
+              </select>
+              <input class="task-inline-input template-task" data-day="${key}" data-index="${index}" value="${escapeAttr(row.taskText || "")}" placeholder="Ex : AV; OG; appeler client" />
+            </div>
+          `;
+          holder.appendChild(line);
+        });
+      }
     }
 
     function escapeHtml(str) {
@@ -718,7 +844,6 @@
       return escapeHtml(str);
     }
 
-    document.getElementById("addBlockBtn").addEventListener("click", addBlock);
     document.getElementById("applyTemplateBtn").addEventListener("click", applyTodayTemplate);
     document.getElementById("resetDayBtn").addEventListener("click", resetDay);
     document.getElementById("resetDoneBtn").addEventListener("click", resetDoneVisibility);
@@ -747,11 +872,20 @@
     });
 
     document.getElementById("saveTemplatesBtn").addEventListener("click", () => {
-      document.querySelectorAll(".template-area").forEach(area => {
-        state.templates[area.dataset.day] = area.value;
+      document.querySelectorAll(".template-category").forEach(select => {
+        const day = select.dataset.day;
+        const index = Number(select.dataset.index);
+        state.templates[day][index].category = select.value;
       });
+
+      document.querySelectorAll(".template-task").forEach(input => {
+        const day = input.dataset.day;
+        const index = Number(input.dataset.index);
+        state.templates[day][index].taskText = input.value;
+      });
+
       saveState();
-      alert("Modèles de la semaine sauvegardés.");
+      alert("Planning type sauvegardé.");
     });
 
     blocksContainer.addEventListener("click", (e) => {
@@ -762,10 +896,6 @@
       const blockId = btn.dataset.id || btn.dataset.blockId;
       const taskId = btn.dataset.taskId;
       const day = getCurrentDay();
-
-      if (action === "delete-block") {
-        day.blocks = day.blocks.filter(b => b.id !== blockId);
-      }
 
       if (action === "add-task") {
         const input = document.querySelector(`[data-input-task="${blockId}"]`);
@@ -802,15 +932,6 @@
       const target = e.target;
       const day = getCurrentDay();
 
-      if (target.dataset.action === "edit-hour") {
-        const block = day.blocks.find(b => b.id === target.dataset.id);
-        if (block) {
-          block.hour = target.value;
-          saveState();
-          renderDay();
-        }
-      }
-
       if (target.dataset.action === "edit-category") {
         const block = day.blocks.find(b => b.id === target.dataset.id);
         if (block) {
@@ -823,10 +944,12 @@
 
     blocksContainer.addEventListener("keydown", (e) => {
       const input = e.target;
-      if (input.classList.contains("task-input") && e.key === "Enter") {
+      if (input.classList.contains("task-inline-input") && e.key === "Enter") {
         const blockId = input.dataset.inputTask;
-        addTask(blockId, input.value);
-        input.value = "";
+        if (blockId) {
+          addTask(blockId, input.value);
+          input.value = "";
+        }
       }
     });
 
