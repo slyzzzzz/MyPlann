@@ -22,7 +22,7 @@
       --cat-client:#a855f7;
       --cat-perso:#ef4444;
       --cat-course:#06b6d4;
-      --cat-muscu:#ff3d7f;
+      --cat-muscu:#7c5cff;
     }
 
     *{box-sizing:border-box}
@@ -175,7 +175,6 @@
       border-color:#8578ff;
     }
     .btn.full{width:100%}
-    .btn.preset{flex:1 1 30%}
 
     .date-input,.text-input,.textarea,.main-task-input,.subtask-input,.time-input{
       width:100%;
@@ -326,7 +325,7 @@
     }
     .cat-muscu{
       border-left:6px solid var(--cat-muscu);
-      background:linear-gradient(90deg, rgba(255,61,127,.14), rgba(17,22,31,1) 32%);
+      background:linear-gradient(90deg, rgba(124,92,255,.14), rgba(17,22,31,1) 32%);
     }
 
     .block-top{
@@ -381,7 +380,7 @@
     .chip[data-cat="Client"].active{background:#4b2372;border-color:#a855f7}
     .chip[data-cat="Perso"].active{background:#6c1d1d;border-color:#ef4444}
     .chip[data-cat="Cours"].active{background:#0d4c57;border-color:#06b6d4}
-    .chip[data-cat="Muscu"].active{background:#6a1437;border-color:#ff3d7f}
+    .chip[data-cat="Muscu"].active{background:#4a36b8;border-color:#7c5cff}
 
     .task-row{
       display:grid;
@@ -550,14 +549,6 @@
         <button class="btn primary full" id="applyTemplateBtn">Appliquer le modèle</button>
       </div>
 
-      <div class="row" style="margin-bottom:8px">
-        <button class="btn warning preset" id="presetWorkBtn">Travail</button>
-        <button class="btn preset" id="presetRestBtn">Repos</button>
-        <button class="btn primary preset" id="presetSchoolBtn">École</button>
-        <button class="btn success preset" id="presetStudyBtn">Révisions</button>
-        <button class="btn remind preset" id="presetMuscuBtn">Muscu</button>
-      </div>
-
       <div class="row">
         <button class="btn success" id="prepareTomorrowBtn">Préparer demain</button>
         <button class="btn" id="copyYesterdayBtn">Copier hier</button>
@@ -720,7 +711,7 @@
   <div class="footer-space"></div>
 
   <script>
-    const STORAGE_KEY = "myplann-boss-final-v4";
+    const STORAGE_KEY = "myplann-boss-final-v5";
     const WEEK_DAYS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
     const HOURS = [
       "08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00",
@@ -1143,34 +1134,6 @@
       saveState();
     }
 
-    function applyPresetToToday(presetKey) {
-      const preset = state.presets[presetKey];
-      const day = getCurrentDay();
-
-      if (presetKey === "rest") {
-        day.blocks.forEach(block => {
-          block.category = "À faire";
-          block.mainTask = "";
-          block.tasks = [];
-          block.reminderEnabled = false;
-          block.remindedAt = "";
-        });
-        saveState();
-        renderDay();
-        return;
-      }
-
-      day.blocks.forEach(block => {
-        if (block.hour >= preset.start && block.hour <= preset.end) {
-          block.category = preset.category;
-          block.mainTask = preset.label;
-        }
-      });
-
-      saveState();
-      renderDay();
-    }
-
     function copyYesterday() {
       const yesterday = addDays(selectedDate, -1);
       if (!state.days[yesterday]) {
@@ -1264,8 +1227,6 @@
     }
 
     function fillTemplateWithPreset(dayKey, presetKey) {
-      const preset = state.presets[presetKey];
-
       if (presetKey === "rest") {
         state.templates[dayKey].forEach(row => {
           row.category = "À faire";
@@ -1277,6 +1238,7 @@
         return;
       }
 
+      const preset = state.presets[presetKey];
       state.templates[dayKey].forEach(row => {
         if (row.hour >= preset.start && row.hour <= preset.end) {
           row.category = preset.category;
@@ -1432,13 +1394,6 @@
 
     document.getElementById("prepareTomorrowBtn").addEventListener("click", prepareTomorrow);
     document.getElementById("copyYesterdayBtn").addEventListener("click", copyYesterday);
-
-    document.getElementById("presetWorkBtn").addEventListener("click", () => applyPresetToToday("work"));
-    document.getElementById("presetRestBtn").addEventListener("click", () => applyPresetToToday("rest"));
-    document.getElementById("presetSchoolBtn").addEventListener("click", () => applyPresetToToday("school"));
-    document.getElementById("presetStudyBtn").addEventListener("click", () => applyPresetToToday("study"));
-    document.getElementById("presetMuscuBtn").addEventListener("click", () => applyPresetToToday("muscu"));
-
     document.getElementById("resetDayBtn").addEventListener("click", resetDay);
     document.getElementById("resetDoneBtn").addEventListener("click", resetDoneVisibility);
     document.getElementById("savePresetSettingsBtn").addEventListener("click", savePresetSettings);
