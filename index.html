@@ -42,7 +42,7 @@
     }
 
     h1,h2,h3,p{margin:0}
-    button,input,textarea{
+    button,input,textarea,select{
       font:inherit;
       border:none;
       outline:none;
@@ -51,9 +51,9 @@
     .topbar{
       position:sticky;
       top:0;
-      z-index:30;
+      z-index:50;
       backdrop-filter:blur(16px);
-      background:rgba(15,17,21,.88);
+      background:rgba(15,17,21,.9);
       padding:10px 0 12px;
       margin-bottom:10px;
     }
@@ -80,18 +80,19 @@
 
     .tabs{
       display:grid;
-      grid-template-columns:1fr 1fr 1fr;
+      grid-template-columns:1fr 1fr 1fr 1fr;
       gap:10px;
     }
 
     .tab{
-      padding:12px 14px;
+      padding:12px 10px;
       border-radius:14px;
       background:var(--panel);
       color:var(--muted);
       font-weight:800;
       border:1px solid var(--line);
       cursor:pointer;
+      text-align:center;
     }
 
     .tab.active{
@@ -176,7 +177,7 @@
     }
     .btn.full{width:100%}
 
-    .date-input,.text-input,.textarea,.main-task-input,.subtask-input,.time-input{
+    .date-input,.text-input,.textarea,.main-task-input,.subtask-input,.time-input,.filter-select{
       width:100%;
       background:#0d121b;
       color:var(--text);
@@ -504,6 +505,50 @@
       gap:10px;
     }
 
+    .progress-cards{
+      display:grid;
+      gap:12px;
+    }
+
+    .progress-card{
+      background:#11161f;
+      border:1px solid #273043;
+      border-radius:16px;
+      padding:12px;
+    }
+
+    .progress-card h3{
+      margin-bottom:8px;
+      font-size:1rem;
+    }
+
+    .progress-line{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:8px 0;
+      border-top:1px solid rgba(255,255,255,.05);
+    }
+
+    .progress-line:first-child{
+      border-top:none;
+      padding-top:0;
+    }
+
+    .progress-filter{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .highlight-box{
+      background:#1a2332;
+      border:1px solid #32405a;
+      border-radius:14px;
+      padding:12px;
+      margin-bottom:12px;
+    }
+
     .footer-space{height:20px}
   </style>
 </head>
@@ -519,8 +564,9 @@
 
     <div class="tabs">
       <button class="tab active" id="tabToday">Aujourd’hui</button>
-      <button class="tab" id="tabLongTerm">Long terme</button>
-      <button class="tab" id="tabSettings">Réglages</button>
+      <button class="tab" id="tabProgress">Progression</button>
+      <button class="tab" id="tabLongTerm">Long-terme</button>
+      <button class="tab" id="tabSettings">Réglage</button>
     </div>
   </div>
 
@@ -572,6 +618,19 @@
       </div>
     </div>
 
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Aujourd’hui vs Hier</h2>
+          <p class="muted">Petit boost de motivation</p>
+        </div>
+      </div>
+      <div class="highlight-box">
+        <div id="compareNumbers" class="small"></div>
+        <div id="compareMessage" style="margin-top:8px;font-weight:900;"></div>
+      </div>
+    </div>
+
     <div id="blocksContainer"></div>
 
     <div class="panel">
@@ -582,11 +641,54 @@
     </div>
   </section>
 
+  <section id="progressSection" class="section">
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Progression</h2>
+          <p class="muted">Suivi de ta progression dans la vie</p>
+        </div>
+      </div>
+
+      <div class="progress-filter">
+        <select id="progressRange" class="filter-select">
+          <option value="week">Semaine</option>
+          <option value="month">Mois</option>
+          <option value="total">Total</option>
+        </select>
+
+        <select id="progressMode" class="filter-select">
+          <option value="categories">Par catégorie</option>
+          <option value="tasks">Par tâches</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="stats">
+        <div class="stat">
+          <span class="n" id="progressCompleted">0</span>
+          <span class="small">Terminées</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="progressDays">0</span>
+          <span class="small">Jours actifs</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="progressTop">-</span>
+          <span class="small">Top catégorie</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="progressContainer" class="progress-cards"></div>
+  </section>
+
   <section id="longTermSection" class="section">
     <div class="panel">
       <div class="panel-title">
         <div>
-          <h2>Données long terme</h2>
+          <h2>Données long-terme</h2>
           <p class="muted">Objectifs, idées, rappels, dossiers</p>
         </div>
       </div>
@@ -711,7 +813,7 @@
   <div class="footer-space"></div>
 
   <script>
-    const STORAGE_KEY = "myplann-boss-final-v5";
+    const STORAGE_KEY = "myplann-boss-complete-v1";
     const WEEK_DAYS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
     const HOURS = [
       "08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00",
@@ -740,15 +842,19 @@
     let selectedDate = getTodayString();
 
     const tabToday = document.getElementById("tabToday");
+    const tabProgress = document.getElementById("tabProgress");
     const tabLongTerm = document.getElementById("tabLongTerm");
     const tabSettings = document.getElementById("tabSettings");
 
     const todaySection = document.getElementById("todaySection");
+    const progressSection = document.getElementById("progressSection");
     const longTermSection = document.getElementById("longTermSection");
     const settingsSection = document.getElementById("settingsSection");
 
     const blocksContainer = document.getElementById("blocksContainer");
     const templatesContainer = document.getElementById("templatesContainer");
+    const progressContainer = document.getElementById("progressContainer");
+
     const todayTitle = document.getElementById("todayTitle");
     const datePicker = document.getElementById("datePicker");
     const longTermNotes = document.getElementById("longTermNotes");
@@ -758,6 +864,15 @@
     const statDone = document.getElementById("statDone");
     const statLeft = document.getElementById("statLeft");
     const disciplineBadge = document.getElementById("disciplineBadge");
+
+    const compareNumbers = document.getElementById("compareNumbers");
+    const compareMessage = document.getElementById("compareMessage");
+
+    const progressRange = document.getElementById("progressRange");
+    const progressMode = document.getElementById("progressMode");
+    const progressCompleted = document.getElementById("progressCompleted");
+    const progressDays = document.getElementById("progressDays");
+    const progressTop = document.getElementById("progressTop");
 
     const toggleAutoTemplate = document.getElementById("toggleAutoTemplate");
     const toggleHidePassed = document.getElementById("toggleHidePassed");
@@ -945,15 +1060,20 @@
 
     function switchTab(tab) {
       tabToday.classList.toggle("active", tab === "today");
+      tabProgress.classList.toggle("active", tab === "progress");
       tabLongTerm.classList.toggle("active", tab === "longterm");
       tabSettings.classList.toggle("active", tab === "settings");
 
       todaySection.classList.toggle("active", tab === "today");
+      progressSection.classList.toggle("active", tab === "progress");
       longTermSection.classList.toggle("active", tab === "longterm");
       settingsSection.classList.toggle("active", tab === "settings");
+
+      if (tab === "progress") renderProgress();
     }
 
     tabToday.addEventListener("click", () => switchTab("today"));
+    tabProgress.addEventListener("click", () => switchTab("progress"));
     tabLongTerm.addEventListener("click", () => switchTab("longterm"));
     tabSettings.addEventListener("click", () => switchTab("settings"));
 
@@ -1085,6 +1205,7 @@
       });
 
       updateStats();
+      renderCompare();
     }
 
     function updateStats() {
@@ -1098,6 +1219,29 @@
       statDone.textContent = done;
       statLeft.textContent = left;
       disciplineBadge.textContent = `${percent}%`;
+    }
+
+    function renderCompare() {
+      const today = getCurrentDay();
+      const todayDone = today.blocks.flatMap(b => b.tasks).filter(t => t.done).length;
+
+      const yesterdayKey = addDays(selectedDate, -1);
+      ensureDay(yesterdayKey);
+      const yesterday = state.days[yesterdayKey];
+      const yesterdayDone = yesterday.blocks.flatMap(b => b.tasks).filter(t => t.done).length;
+
+      compareNumbers.innerHTML = `Aujourd’hui : <strong>${todayDone}</strong> tâches finies • Hier : <strong>${yesterdayDone}</strong>`;
+
+      let msg = "";
+      if (todayDone > yesterdayDone) {
+        msg = "Tu es incroyablement incroyable boss 😎";
+      } else if (todayDone === yesterdayDone) {
+        msg = "Solide. Même niveau qu’hier 👀";
+      } else {
+        msg = "Peux mieux faire 🙄";
+      }
+
+      compareMessage.textContent = msg;
     }
 
     function applyTemplateToDate(dateStr) {
@@ -1301,6 +1445,163 @@
       }
     }
 
+    function normalizeLabel(str) {
+      return String(str || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+    }
+
+    function displayLabel(str) {
+      const s = String(str || "").trim();
+      return s ? s : "Sans nom";
+    }
+
+    function getRangeDates(range) {
+      const today = new Date();
+      const end = getTodayString(today);
+
+      if (range === "total") {
+        return { start: null, end };
+      }
+
+      if (range === "week") {
+        const startDate = new Date();
+        startDate.setDate(today.getDate() - 6);
+        return { start: getTodayString(startDate), end };
+      }
+
+      if (range === "month") {
+        const startDate = new Date();
+        startDate.setDate(today.getDate() - 29);
+        return { start: getTodayString(startDate), end };
+      }
+
+      return { start: null, end };
+    }
+
+    function collectCompletedEntries(range) {
+      const { start, end } = getRangeDates(range);
+      const entries = [];
+
+      Object.entries(state.days).forEach(([dateKey, day]) => {
+        if (start && dateKey < start) return;
+        if (dateKey > end) return;
+
+        day.blocks.forEach(block => {
+          block.tasks.forEach(task => {
+            if (!task.done) return;
+
+            const category = block.category || "À faire";
+            const sourceName = block.mainTask && block.mainTask.trim()
+              ? block.mainTask.trim()
+              : task.text.trim();
+
+            entries.push({
+              date: dateKey,
+              category,
+              task: sourceName,
+              rawTask: task.text.trim()
+            });
+          });
+        });
+      });
+
+      return entries;
+    }
+
+    function renderProgress() {
+      const range = progressRange.value;
+      const mode = progressMode.value;
+      const entries = collectCompletedEntries(range);
+
+      const activeDaysSet = new Set(entries.map(e => e.date));
+      progressCompleted.textContent = entries.length;
+      progressDays.textContent = activeDaysSet.size;
+
+      const categoryCount = {};
+      entries.forEach(e => {
+        categoryCount[e.category] = (categoryCount[e.category] || 0) + 1;
+      });
+
+      let topCategory = "-";
+      let topValue = 0;
+      Object.entries(categoryCount).forEach(([cat, count]) => {
+        if (count > topValue) {
+          topValue = count;
+          topCategory = cat;
+        }
+      });
+      progressTop.textContent = topCategory;
+
+      progressContainer.innerHTML = "";
+
+      if (mode === "categories") {
+        if (Object.keys(categoryCount).length === 0) {
+          progressContainer.innerHTML = `<div class="progress-card"><div class="small">Aucune tâche terminée sur cette période.</div></div>`;
+          return;
+        }
+
+        Object.entries(categoryCount)
+          .sort((a,b) => b[1] - a[1])
+          .forEach(([cat, count]) => {
+            const card = document.createElement("div");
+            card.className = "progress-card";
+            card.innerHTML = `
+              <h3>${escapeHtml(cat)}</h3>
+              <div class="progress-line">
+                <span>Séances validées</span>
+                <strong>${count}</strong>
+              </div>
+              <div class="small" style="margin-top:8px;">*voir plus de stats*</div>
+            `;
+            progressContainer.appendChild(card);
+          });
+      } else {
+        const grouped = {};
+
+        entries.forEach(e => {
+          const cat = e.category;
+          if (!grouped[cat]) grouped[cat] = {};
+
+          const key = normalizeLabel(e.task);
+          if (!grouped[cat][key]) {
+            grouped[cat][key] = {
+              label: displayLabel(e.task),
+              count: 0
+            };
+          }
+          grouped[cat][key].count += 1;
+        });
+
+        if (Object.keys(grouped).length === 0) {
+          progressContainer.innerHTML = `<div class="progress-card"><div class="small">Aucune tâche terminée sur cette période.</div></div>`;
+          return;
+        }
+
+        Object.entries(grouped).forEach(([cat, tasks]) => {
+          const card = document.createElement("div");
+          card.className = "progress-card";
+
+          const lines = Object.values(tasks)
+            .sort((a,b) => b.count - a.count)
+            .map(item => `
+              <div class="progress-line">
+                <span>${escapeHtml(item.label)}</span>
+                <strong>${item.count}</strong>
+              </div>
+            `)
+            .join("");
+
+          card.innerHTML = `
+            <h3>${escapeHtml(cat)}</h3>
+            ${lines}
+          `;
+          progressContainer.appendChild(card);
+        });
+      }
+    }
+
     async function toggleReminderForBlock(blockId) {
       const block = getCurrentDay().blocks.find(b => b.id === blockId);
       if (!block) return;
@@ -1412,6 +1713,9 @@
       renderDay();
     });
 
+    progressRange.addEventListener("change", renderProgress);
+    progressMode.addEventListener("change", renderProgress);
+
     longTermNotes.addEventListener("input", (e) => {
       state.longTermNotes = e.target.value;
       saveState();
@@ -1420,7 +1724,7 @@
     document.getElementById("saveLongTermBtn").addEventListener("click", () => {
       state.longTermNotes = longTermNotes.value;
       saveState();
-      alert("Données long terme sauvegardées.");
+      alert("Données long-terme sauvegardées.");
     });
 
     document.getElementById("saveTemplatesBtn").addEventListener("click", () => {
@@ -1577,6 +1881,7 @@
       longTermNotes.value = state.longTermNotes || "";
       renderTemplates();
       renderDay();
+      renderProgress();
       maybeSendBlockReminders();
       setInterval(maybeSendBlockReminders, 60000);
     }
