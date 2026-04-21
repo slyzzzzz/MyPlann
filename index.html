@@ -53,7 +53,7 @@
       top:0;
       z-index:30;
       backdrop-filter:blur(16px);
-      background:rgba(15,17,21,.86);
+      background:rgba(15,17,21,.88);
       padding:10px 0 12px;
       margin-bottom:10px;
     }
@@ -175,8 +175,9 @@
       border-color:#8578ff;
     }
     .btn.full{width:100%}
+    .btn.preset{flex:1 1 30%}
 
-    .date-input,.text-input,.textarea,.main-task-input,.subtask-input{
+    .date-input,.text-input,.textarea,.main-task-input,.subtask-input,.time-input{
       width:100%;
       background:#0d121b;
       color:var(--text);
@@ -485,6 +486,25 @@
       font-size:.9rem;
     }
 
+    .preset-setting{
+      border:1px solid #2b3648;
+      border-radius:14px;
+      padding:12px;
+      margin-top:10px;
+      background:#121823;
+    }
+
+    .preset-setting h3{
+      font-size:1rem;
+      margin-bottom:10px;
+    }
+
+    .preset-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
     .footer-space{height:20px}
   </style>
 </head>
@@ -526,11 +546,21 @@
         </div>
       </div>
 
+      <div class="row" style="margin-bottom:8px">
+        <button class="btn primary full" id="applyTemplateBtn">Appliquer le modèle</button>
+      </div>
+
+      <div class="row" style="margin-bottom:8px">
+        <button class="btn warning preset" id="presetWorkBtn">Travail</button>
+        <button class="btn preset" id="presetRestBtn">Repos</button>
+        <button class="btn primary preset" id="presetSchoolBtn">École</button>
+        <button class="btn success preset" id="presetStudyBtn">Révisions</button>
+        <button class="btn remind preset" id="presetMuscuBtn">Muscu</button>
+      </div>
+
       <div class="row">
-        <button class="btn primary" id="applyTemplateBtn">Appliquer le modèle</button>
         <button class="btn success" id="prepareTomorrowBtn">Préparer demain</button>
         <button class="btn" id="copyYesterdayBtn">Copier hier</button>
-        <button class="btn warning" id="fillWorkDayBtn">Journée travail</button>
       </div>
 
       <div class="divider"></div>
@@ -632,6 +662,51 @@
     <div class="panel">
       <div class="panel-title">
         <div>
+          <h2>Presets rapides</h2>
+          <p class="muted">Définis les heures une fois pour toutes</p>
+        </div>
+      </div>
+
+      <div class="preset-setting">
+        <h3>Travail</h3>
+        <div class="preset-grid">
+          <input type="time" id="workStart" class="time-input" />
+          <input type="time" id="workEnd" class="time-input" />
+        </div>
+      </div>
+
+      <div class="preset-setting">
+        <h3>École</h3>
+        <div class="preset-grid">
+          <input type="time" id="schoolStart" class="time-input" />
+          <input type="time" id="schoolEnd" class="time-input" />
+        </div>
+      </div>
+
+      <div class="preset-setting">
+        <h3>Révisions</h3>
+        <div class="preset-grid">
+          <input type="time" id="studyStart" class="time-input" />
+          <input type="time" id="studyEnd" class="time-input" />
+        </div>
+      </div>
+
+      <div class="preset-setting">
+        <h3>Muscu</h3>
+        <div class="preset-grid">
+          <input type="time" id="muscuStart" class="time-input" />
+          <input type="time" id="muscuEnd" class="time-input" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button class="btn success full" id="savePresetSettingsBtn">Sauvegarder les presets</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <div>
           <h2>Notifications</h2>
           <p class="muted">Rappel par bloc</p>
         </div>
@@ -645,7 +720,7 @@
   <div class="footer-space"></div>
 
   <script>
-    const STORAGE_KEY = "myplann-boss-final-v3";
+    const STORAGE_KEY = "myplann-boss-final-v4";
     const WEEK_DAYS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
     const HOURS = [
       "08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00",
@@ -658,6 +733,12 @@
         autoApplyTemplate: true,
         hidePassedHours: true,
         hideDoneTasks: true
+      },
+      presets: {
+        work: { start: "10:00", end: "19:00", category: "Travail", label: "Travail" },
+        school: { start: "08:00", end: "18:00", category: "Cours", label: "École" },
+        study: { start: "19:00", end: "22:00", category: "Révisions", label: "Révisions" },
+        muscu: { start: "20:00", end: "21:00", category: "Muscu", label: "Muscu" }
       },
       longTermNotes: "",
       templates: createEmptyTemplates(),
@@ -691,6 +772,15 @@
     const toggleHidePassed = document.getElementById("toggleHidePassed");
     const toggleHideDone = document.getElementById("toggleHideDone");
 
+    const workStart = document.getElementById("workStart");
+    const workEnd = document.getElementById("workEnd");
+    const schoolStart = document.getElementById("schoolStart");
+    const schoolEnd = document.getElementById("schoolEnd");
+    const studyStart = document.getElementById("studyStart");
+    const studyEnd = document.getElementById("studyEnd");
+    const muscuStart = document.getElementById("muscuStart");
+    const muscuEnd = document.getElementById("muscuEnd");
+
     function createEmptyTemplates() {
       const templates = {};
       for (let d = 0; d < 7; d++) {
@@ -715,6 +805,10 @@
           settings: {
             ...defaultState.settings,
             ...(saved.settings || {})
+          },
+          presets: {
+            ...defaultState.presets,
+            ...(saved.presets || {})
           }
         };
 
@@ -901,8 +995,8 @@
     }
 
     function isBlockCompleted(block) {
-      const hasSubtasks = block.tasks.length > 0;
-      return hasSubtasks && block.tasks.every(t => t.done);
+      const hasTasks = block.tasks.length > 0;
+      return hasTasks && block.tasks.every(t => t.done);
     }
 
     function shouldHideBlock(dateStr, block) {
@@ -931,6 +1025,15 @@
       toggleAutoTemplate.classList.toggle("active", !!state.settings.autoApplyTemplate);
       toggleHidePassed.classList.toggle("active", !!state.settings.hidePassedHours);
       toggleHideDone.classList.toggle("active", !!state.settings.hideDoneTasks);
+
+      workStart.value = state.presets.work.start;
+      workEnd.value = state.presets.work.end;
+      schoolStart.value = state.presets.school.start;
+      schoolEnd.value = state.presets.school.end;
+      studyStart.value = state.presets.study.start;
+      studyEnd.value = state.presets.study.end;
+      muscuStart.value = state.presets.muscu.start;
+      muscuEnd.value = state.presets.muscu.end;
 
       blocksContainer.innerHTML = "";
 
@@ -1040,14 +1143,30 @@
       saveState();
     }
 
-    function fillWorkDay() {
+    function applyPresetToToday(presetKey) {
+      const preset = state.presets[presetKey];
       const day = getCurrentDay();
+
+      if (presetKey === "rest") {
+        day.blocks.forEach(block => {
+          block.category = "À faire";
+          block.mainTask = "";
+          block.tasks = [];
+          block.reminderEnabled = false;
+          block.remindedAt = "";
+        });
+        saveState();
+        renderDay();
+        return;
+      }
+
       day.blocks.forEach(block => {
-        if (block.hour >= "10:00" && block.hour <= "19:00") {
-          block.category = "Travail";
-          if (!block.mainTask.trim()) block.mainTask = "Travail";
+        if (block.hour >= preset.start && block.hour <= preset.end) {
+          block.category = preset.category;
+          block.mainTask = preset.label;
         }
       });
+
       saveState();
       renderDay();
     }
@@ -1144,13 +1263,31 @@
       `).join("");
     }
 
-    function fillTemplateWorkDay(dayKey) {
+    function fillTemplateWithPreset(dayKey, presetKey) {
+      const preset = state.presets[presetKey];
+
+      if (presetKey === "rest") {
+        state.templates[dayKey].forEach(row => {
+          row.category = "À faire";
+          row.mainTask = "";
+          row.subTaskText = "";
+        });
+        saveState();
+        renderTemplates();
+        return;
+      }
+
       state.templates[dayKey].forEach(row => {
-        if (row.hour >= "10:00" && row.hour <= "19:00") {
-          row.category = "Travail";
-          if (!row.mainTask.trim()) row.mainTask = "Travail";
+        if (row.hour >= preset.start && row.hour <= preset.end) {
+          row.category = preset.category;
+          row.mainTask = preset.label;
+        } else {
+          row.category = "À faire";
+          row.mainTask = "";
+          row.subTaskText = "";
         }
       });
+
       saveState();
       renderTemplates();
     }
@@ -1171,8 +1308,12 @@
             <span>▾</span>
           </button>
           <div class="accordion-content" id="accordion-content-${key}">
-            <div style="margin-bottom:12px">
-              <button class="btn warning" data-template-fill-work="${key}">Appliquer 10h-19h Travail</button>
+            <div class="row" style="margin-bottom:12px">
+              <button class="btn warning" data-template-preset="${key}" data-preset="work">Travail</button>
+              <button class="btn" data-template-preset="${key}" data-preset="rest">Repos</button>
+              <button class="btn primary" data-template-preset="${key}" data-preset="school">École</button>
+              <button class="btn success" data-template-preset="${key}" data-preset="study">Révisions</button>
+              <button class="btn remind" data-template-preset="${key}" data-preset="muscu">Muscu</button>
             </div>
           </div>
         `;
@@ -1258,6 +1399,20 @@
       }
     }
 
+    function savePresetSettings() {
+      state.presets.work.start = workStart.value || "10:00";
+      state.presets.work.end = workEnd.value || "19:00";
+      state.presets.school.start = schoolStart.value || "08:00";
+      state.presets.school.end = schoolEnd.value || "18:00";
+      state.presets.study.start = studyStart.value || "19:00";
+      state.presets.study.end = studyEnd.value || "22:00";
+      state.presets.muscu.start = muscuStart.value || "20:00";
+      state.presets.muscu.end = muscuEnd.value || "21:00";
+
+      saveState();
+      alert("Presets sauvegardés.");
+    }
+
     function escapeHtml(str) {
       return String(str)
         .replaceAll("&", "&amp;")
@@ -1277,9 +1432,16 @@
 
     document.getElementById("prepareTomorrowBtn").addEventListener("click", prepareTomorrow);
     document.getElementById("copyYesterdayBtn").addEventListener("click", copyYesterday);
-    document.getElementById("fillWorkDayBtn").addEventListener("click", fillWorkDay);
+
+    document.getElementById("presetWorkBtn").addEventListener("click", () => applyPresetToToday("work"));
+    document.getElementById("presetRestBtn").addEventListener("click", () => applyPresetToToday("rest"));
+    document.getElementById("presetSchoolBtn").addEventListener("click", () => applyPresetToToday("school"));
+    document.getElementById("presetStudyBtn").addEventListener("click", () => applyPresetToToday("study"));
+    document.getElementById("presetMuscuBtn").addEventListener("click", () => applyPresetToToday("muscu"));
+
     document.getElementById("resetDayBtn").addEventListener("click", resetDay);
     document.getElementById("resetDoneBtn").addEventListener("click", resetDoneVisibility);
+    document.getElementById("savePresetSettingsBtn").addEventListener("click", savePresetSettings);
 
     document.getElementById("savePriorityBtn").addEventListener("click", () => {
       const day = getCurrentDay();
@@ -1349,9 +1511,9 @@
         return;
       }
 
-      const fillBtn = e.target.closest("[data-template-fill-work]");
-      if (fillBtn) {
-        fillTemplateWorkDay(fillBtn.dataset.templateFillWork);
+      const presetBtn = e.target.closest("[data-template-preset]");
+      if (presetBtn) {
+        fillTemplateWithPreset(presetBtn.dataset.templatePreset, presetBtn.dataset.preset);
         return;
       }
 
