@@ -7,14 +7,14 @@
   <style>
     :root{
       --bg:#0f1115;
-      --panel:#171a21;
-      --panel-2:#1e2430;
+      --bg2:#121722;
+      --panel:#171c26;
+      --panel2:#1d2431;
       --text:#f5f7fb;
-      --muted:#a7b0c0;
-      --line:#2a3242;
-      --accent:#5da2ff;
-      --shadow:0 10px 30px rgba(0,0,0,.25);
+      --muted:#9aa7bd;
+      --line:#2a3447;
       --radius:18px;
+      --shadow:0 12px 28px rgba(0,0,0,.28);
 
       --cat-default:#5da2ff;
       --cat-work:#f59e0b;
@@ -22,13 +22,14 @@
       --cat-client:#a855f7;
       --cat-perso:#ef4444;
       --cat-course:#06b6d4;
+      --cat-muscu:#ff3d7f;
     }
 
     *{box-sizing:border-box}
     html,body{
       margin:0;
       padding:0;
-      background:linear-gradient(180deg,#0d1015 0%, #111521 100%);
+      background:linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
       color:var(--text);
       font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     }
@@ -37,7 +38,7 @@
       max-width:560px;
       margin:0 auto;
       min-height:100vh;
-      padding:14px 14px 90px;
+      padding:14px 14px 110px;
     }
 
     h1,h2,h3,p{margin:0}
@@ -50,17 +51,1178 @@
     .topbar{
       position:sticky;
       top:0;
-      z-index:20;
-      backdrop-filter: blur(14px);
-      background:rgba(15,17,21,.75);
+      z-index:30;
+      backdrop-filter:blur(16px);
+      background:rgba(15,17,21,.8);
       padding:10px 0 12px;
       margin-bottom:10px;
     }
 
     .app-title{
+      margin-bottom:12px;
+    }
+
+    .app-title h1{
+      font-size:1.55rem;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:.93rem;
+      margin-top:4px;
+    }
+
+    .tabs{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .tab{
+      padding:12px 14px;
+      border-radius:14px;
+      background:var(--panel);
+      color:var(--muted);
+      font-weight:800;
+      border:1px solid var(--line);
+      cursor:pointer;
+    }
+
+    .tab.active{
+      background:linear-gradient(180deg,#22314d,#182235);
+      color:#fff;
+      border-color:#385788;
+    }
+
+    .section{display:none}
+    .section.active{display:block}
+
+    .panel{
+      background:rgba(23,28,38,.96);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+      margin-bottom:14px;
+    }
+
+    .panel-title{
       display:flex;
       align-items:center;
       justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .panel-title h2{
+      font-size:1.04rem;
+      font-weight:900;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:.9rem;
+    }
+
+    .small{
+      font-size:.83rem;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      background:var(--panel2);
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.15s transform ease, .15s opacity ease;
+    }
+
+    .btn:active{transform:scale(.98)}
+    .btn.primary{
+      background:linear-gradient(180deg,#4d8ef0,#3d73c2);
+      border-color:#5d96ee;
+    }
+    .btn.success{
+      background:linear-gradient(180deg,#2c8d63,#226a4b);
+      border-color:#3faa78;
+    }
+    .btn.warning{
+      background:linear-gradient(180deg,#8d6a1f,#654d17);
+      border-color:#b38a39;
+    }
+    .btn.danger{
+      background:linear-gradient(180deg,#8b3232,#672626);
+      border-color:#a85050;
+    }
+    .btn.full{width:100%}
+
+    .date-input,.text-input,.textarea,.main-task-input,.subtask-input,.time-input,.reminder-input,.category-select{
+      width:100%;
+      background:#0d121b;
+      color:var(--text);
+      border:1px solid #2b3648;
+      border-radius:12px;
+      padding:12px;
+    }
+
+    .textarea{
+      min-height:120px;
+      resize:vertical;
+    }
+
+    .divider{
+      height:1px;
+      background:rgba(255,255,255,.07);
+      margin:14px 0;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+
+    .stat{
+      background:#101722;
+      border:1px solid #283244;
+      border-radius:15px;
+      padding:12px;
+      text-align:center;
+    }
+
+    .stat .n{
+      display:block;
+      font-size:1.15rem;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+
+    .priority-card{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:center;
+    }
+
+    .switch-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:4px 0;
+    }
+
+    .switch{
+      position:relative;
+      width:54px;
+      height:32px;
+      background:#2c3444;
+      border-radius:999px;
+      cursor:pointer;
+      border:1px solid #3a4558;
+      transition:.2s;
+      flex-shrink:0;
+    }
+
+    .switch::after{
+      content:"";
+      position:absolute;
+      top:3px;
+      left:3px;
+      width:24px;
+      height:24px;
+      background:#fff;
+      border-radius:50%;
+      transition:.2s;
+    }
+
+    .switch.active{
+      background:#2d7ff0;
+      border-color:#5ea0ff;
+    }
+
+    .switch.active::after{
+      left:25px;
+    }
+
+    .block{
+      border-radius:16px;
+      padding:12px;
+      margin-bottom:12px;
+      border:1px solid #273043;
+      background:#11161f;
+      transition:.15s ease;
+    }
+
+    .cat-default{
+      border-left:6px solid var(--cat-default);
+      background:linear-gradient(90deg, rgba(93,162,255,.14), rgba(17,22,31,1) 32%);
+    }
+    .cat-work{
+      border-left:6px solid var(--cat-work);
+      background:linear-gradient(90deg, rgba(245,158,11,.14), rgba(17,22,31,1) 32%);
+    }
+    .cat-study{
+      border-left:6px solid var(--cat-study);
+      background:linear-gradient(90deg, rgba(34,197,94,.14), rgba(17,22,31,1) 32%);
+    }
+    .cat-client{
+      border-left:6px solid var(--cat-client);
+      background:linear-gradient(90deg, rgba(168,85,247,.14), rgba(17,22,31,1) 32%);
+    }
+    .cat-perso{
+      border-left:6px solid var(--cat-perso);
+      background:linear-gradient(90deg, rgba(239,68,68,.14), rgba(17,22,31,1) 32%);
+    }
+    .cat-course{
+      border-left:6px solid var(--cat-course);
+      background:linear-gradient(90deg, rgba(6,182,212,.14), rgba(17,22,31,1) 32%);
+    }
+    .cat-muscu{
+      border-left:6px solid var(--cat-muscu);
+      background:linear-gradient(90deg, rgba(255,61,127,.14), rgba(17,22,31,1) 32%);
+    }
+
+    .block-top{
+      display:grid;
+      grid-template-columns:74px 1fr;
+      gap:10px;
+      align-items:center;
+      margin-bottom:10px;
+    }
+
+    .hour-badge{
+      text-align:center;
+      padding:12px 8px;
+      border-radius:12px;
+      background:#0d121b;
+      border:1px solid #2b3648;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+
+    .main-task-wrap{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .subtasks{
+      margin-top:4px;
+    }
+
+    .task-row{
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      gap:10px;
+      align-items:center;
+      padding:8px 0;
+      border-top:1px solid rgba(255,255,255,.05);
+    }
+
+    .task-row:first-child{
+      border-top:none;
+    }
+
+    .checkbox{
+      width:22px;
+      height:22px;
+      accent-color:#4e90f5;
+      cursor:pointer;
+    }
+
+    .task-text.done{
+      text-decoration:line-through;
+      opacity:.55;
+    }
+
+    .icon-btn{
+      width:38px;
+      height:38px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:#1b2230;
+      color:#fff;
+      border:1px solid #32405a;
+      cursor:pointer;
+      flex-shrink:0;
+    }
+
+    .task-add{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      margin-top:8px;
+    }
+
+    .accordion-card{
+      background:#11161f;
+      border:1px solid #273043;
+      border-radius:16px;
+      overflow:hidden;
+      margin-bottom:12px;
+    }
+
+    .accordion-head{
+      width:100%;
+      text-align:left;
+      padding:14px;
+      background:#141a24;
+      color:#fff;
+      border:none;
+      font-weight:900;
+      cursor:pointer;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .accordion-content{
+      display:none;
+      padding:12px;
+      border-top:1px solid #273043;
+    }
+
+    .accordion-card.open .accordion-content{
+      display:block;
+    }
+
+    .template-row{
+      display:grid;
+      grid-template-columns:70px 110px 1fr;
+      gap:8px;
+      align-items:center;
+      margin-bottom:8px;
+    }
+
+    .template-hour{
+      text-align:center;
+      padding:10px 6px;
+      border-radius:10px;
+      background:#0d121b;
+      border:1px solid #2b3648;
+      font-weight:800;
+      font-size:.9rem;
+    }
+
+    .notif-box{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:center;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:34px;
+      height:34px;
+      padding:0 10px;
+      border-radius:999px;
+      background:#202a39;
+      border:1px solid #33445f;
+      font-weight:900;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="app-title">
+      <div>
+        <h1>MyPlann</h1>
+        <p class="sub">Planning du Boss Atilla</p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tabToday">Aujourd’hui</button>
+      <button class="tab" id="tabLongTerm">Long terme</button>
+    </div>
+  </div>
+
+  <section id="todaySection" class="section active">
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2 id="todayTitle">Aujourd’hui</h2>
+          <p class="muted">Journée heure par heure, déjà prête</p>
+        </div>
+        <div class="badge" id="disciplineBadge">0%</div>
+      </div>
+
+      <div class="row" style="margin-bottom:10px">
+        <input type="date" id="datePicker" class="date-input" />
+      </div>
+
+      <div class="priority-card">
+        <input type="text" id="priorityInput" class="text-input" placeholder="Priorité du jour..." />
+        <button class="btn primary" id="savePriorityBtn">Sauver</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <button class="btn primary" id="applyTemplateBtn">Appliquer le modèle du jour</button>
+        <button class="btn success" id="prepareTomorrowBtn">Préparer demain</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="switch-row">
+        <div>
+          <strong>Masquer automatiquement les tâches finies</strong>
+          <div class="small">Quand tu coches une sous-tâche, elle disparaît si l’option est activée</div>
+        </div>
+        <div class="switch" id="autoHideSwitch"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="n" id="statTotal">0</span>
+          <span class="small">Tâches</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="statDone">0</span>
+          <span class="small">Finies</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="statLeft">0</span>
+          <span class="small">Restantes</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Rappel du soir</h2>
+          <p class="muted">Notification locale quand le site est ouvert ou utilisé en PWA</p>
+        </div>
+      </div>
+
+      <div class="notif-box">
+        <input type="time" id="reminderTimeInput" class="reminder-input" value="21:00" />
+        <button class="btn" id="enableReminderBtn">Activer</button>
+      </div>
+      <div class="small" style="margin-top:10px">
+        Sur GitHub Pages, les notifications web dépendent du navigateur. Elles ne sont pas aussi fiables qu’une vraie appli native, mais sur Android ça peut marcher correctement.
+      </div>
+    </div>
+
+    <div id="blocksContainer"></div>
+
+    <div class="panel">
+      <div class="row">
+        <button class="btn warning" id="resetDoneBtn">Réafficher les tâches finies</button>
+        <button class="btn danger" id="resetDayBtn">Reset de la journée</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="longTermSection" class="section">
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Données long terme</h2>
+          <p class="muted">Objectifs, idées, rappels, dossiers</p>
+        </div>
+      </div>
+
+      <textarea id="longTermNotes" class="textarea" placeholder="Exemple :
+- Objectif BTS
+- Dossiers clients à ne pas oublier
+- Habitudes importantes
+- Objectifs du mois"></textarea>
+
+      <div class="row" style="margin-top:10px">
+        <button class="btn success full" id="saveLongTermBtn">Sauvegarder mes données long terme</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Planning type par jour</h2>
+          <p class="muted">Un jour à la fois, simple à modifier</p>
+        </div>
+      </div>
+
+      <div id="templatesContainer"></div>
+
+      <button class="btn success full" id="saveTemplatesBtn">Sauvegarder les modèles</button>
+    </div>
+  </section>
+
+  <script>
+    const STORAGE_KEY = "myplann-final-atilla-v1";
+    const WEEK_DAYS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
+    const HOURS = [
+      "08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00",
+      "17:00","18:00","19:00","20:00","21:00","22:00","23:00","00:00"
+    ];
+
+    const CATEGORY_OPTIONS = ["À faire", "Travail", "Révisions", "Client", "Perso", "Cours", "Muscu"];
+
+    const defaultState = {
+      autoHideDone: false,
+      longTermNotes: "",
+      reminderEnabled: false,
+      reminderTime: "21:00",
+      reminderLastSentDate: "",
+      templates: createEmptyTemplates(),
+      days: {}
+    };
+
+    let state = loadState();
+    let selectedDate = getTodayString();
+
+    const tabToday = document.getElementById("tabToday");
+    const tabLongTerm = document.getElementById("tabLongTerm");
+    const todaySection = document.getElementById("todaySection");
+    const longTermSection = document.getElementById("longTermSection");
+    const blocksContainer = document.getElementById("blocksContainer");
+    const templatesContainer = document.getElementById("templatesContainer");
+    const todayTitle = document.getElementById("todayTitle");
+    const datePicker = document.getElementById("datePicker");
+    const autoHideSwitch = document.getElementById("autoHideSwitch");
+    const longTermNotes = document.getElementById("longTermNotes");
+    const priorityInput = document.getElementById("priorityInput");
+    const statTotal = document.getElementById("statTotal");
+    const statDone = document.getElementById("statDone");
+    const statLeft = document.getElementById("statLeft");
+    const disciplineBadge = document.getElementById("disciplineBadge");
+    const reminderTimeInput = document.getElementById("reminderTimeInput");
+    const enableReminderBtn = document.getElementById("enableReminderBtn");
+
+    function createEmptyTemplates() {
+      const templates = {};
+      for (let d = 0; d < 7; d++) {
+        templates[String(d)] = HOURS.map(hour => ({
+          hour,
+          category: "À faire",
+          mainTask: "",
+          subTaskText: ""
+        }));
+      }
+      return templates;
+    }
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (!saved) return structuredClone(defaultState);
+
+        const merged = {
+          ...structuredClone(defaultState),
+          ...saved
+        };
+
+        const freshTemplates = createEmptyTemplates();
+        if (saved.templates && typeof saved.templates === "object") {
+          for (let d = 0; d < 7; d++) {
+            const key = String(d);
+            const rows = Array.isArray(saved.templates[key]) ? saved.templates[key] : [];
+            freshTemplates[key] = HOURS.map((hour, i) => {
+              const row = rows[i] || {};
+              return {
+                hour,
+                category: row.category || "À faire",
+                mainTask: row.mainTask || "",
+                subTaskText: row.subTaskText || ""
+              };
+            });
+          }
+        }
+        merged.templates = freshTemplates;
+        merged.days = saved.days || {};
+        return merged;
+      } catch {
+        return structuredClone(defaultState);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function getTodayString(date = new Date()) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function addDays(dateStr, amount) {
+      const d = new Date(dateStr + "T00:00:00");
+      d.setDate(d.getDate() + amount);
+      return getTodayString(d);
+    }
+
+    function formatDisplayDate(dateStr) {
+      const d = new Date(dateStr + "T00:00:00");
+      return d.toLocaleDateString("fr-FR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+      });
+    }
+
+    function capitalize(s) {
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    function uid() {
+      return Math.random().toString(36).slice(2, 10);
+    }
+
+    function createEmptyDayBlocks() {
+      return HOURS.map(hour => ({
+        id: uid(),
+        hour,
+        category: "À faire",
+        mainTask: "",
+        tasks: []
+      }));
+    }
+
+    function normalizeTask(task) {
+      return {
+        id: task.id || uid(),
+        text: task.text || "",
+        done: !!task.done,
+        hidden: !!task.hidden
+      };
+    }
+
+    function ensureDay(dateStr) {
+      if (!state.days[dateStr]) {
+        state.days[dateStr] = {
+          priority: "",
+          blocks: createEmptyDayBlocks()
+        };
+      } else {
+        normalizeDay(dateStr);
+      }
+    }
+
+    function normalizeDay(dateStr) {
+      const day = state.days[dateStr];
+      if (!day.blocks || !Array.isArray(day.blocks)) {
+        day.blocks = createEmptyDayBlocks();
+      }
+
+      const existingByHour = {};
+      day.blocks.forEach(block => {
+        existingByHour[block.hour] = {
+          id: block.id || uid(),
+          hour: block.hour,
+          category: block.category || "À faire",
+          mainTask: block.mainTask || "",
+          tasks: Array.isArray(block.tasks) ? block.tasks.map(normalizeTask) : []
+        };
+      });
+
+      day.blocks = HOURS.map(hour => {
+        if (existingByHour[hour]) return existingByHour[hour];
+        return {
+          id: uid(),
+          hour,
+          category: "À faire",
+          mainTask: "",
+          tasks: []
+        };
+      });
+
+      if (typeof day.priority !== "string") day.priority = "";
+    }
+
+    function getCurrentDay() {
+      ensureDay(selectedDate);
+      return state.days[selectedDate];
+    }
+
+    function dayHasMeaningfulData(dateStr) {
+      ensureDay(dateStr);
+      const day = state.days[dateStr];
+      if (day.priority && day.priority.trim()) return true;
+      return day.blocks.some(block =>
+        (block.mainTask && block.mainTask.trim()) ||
+        (Array.isArray(block.tasks) && block.tasks.some(t => t.text && t.text.trim()))
+      );
+    }
+
+    function switchTab(tab) {
+      const today = tab === "today";
+      tabToday.classList.toggle("active", today);
+      tabLongTerm.classList.toggle("active", !today);
+      todaySection.classList.toggle("active", today);
+      longTermSection.classList.toggle("active", !today);
+    }
+
+    tabToday.addEventListener("click", () => switchTab("today"));
+    tabLongTerm.addEventListener("click", () => switchTab("longTerm"));
+
+    function getCategoryClass(category) {
+      if (category === "Travail") return "cat-work";
+      if (category === "Révisions") return "cat-study";
+      if (category === "Client") return "cat-client";
+      if (category === "Perso") return "cat-perso";
+      if (category === "Cours") return "cat-course";
+      if (category === "Muscu") return "cat-muscu";
+      return "cat-default";
+    }
+
+    function renderCategoryOptions(current) {
+      return CATEGORY_OPTIONS.map(opt =>
+        `<option value="${escapeHtml(opt)}" ${opt === current ? "selected" : ""}>${escapeHtml(opt)}</option>`
+      ).join("");
+    }
+
+    function renderDay() {
+      const day = getCurrentDay();
+      datePicker.value = selectedDate;
+      todayTitle.textContent = capitalize(formatDisplayDate(selectedDate));
+      priorityInput.value = day.priority || "";
+      autoHideSwitch.classList.toggle("active", !!state.autoHideDone);
+      reminderTimeInput.value = state.reminderTime || "21:00";
+      enableReminderBtn.textContent = state.reminderEnabled ? "Rappel activé" : "Activer";
+
+      blocksContainer.innerHTML = "";
+
+      day.blocks.forEach((block) => {
+        const visibleTasks = state.autoHideDone
+          ? block.tasks.filter(t => !t.done && !t.hidden)
+          : block.tasks.filter(t => !t.hidden);
+
+        const blockEl = document.createElement("div");
+        blockEl.className = `block ${getCategoryClass(block.category)}`;
+
+        blockEl.innerHTML = `
+          <div class="block-top">
+            <div class="hour-badge">${block.hour}</div>
+            <select class="category-select" data-action="edit-category" data-id="${block.id}">
+              ${renderCategoryOptions(block.category)}
+            </select>
+          </div>
+
+          <div class="main-task-wrap">
+            <input
+              class="main-task-input"
+              type="text"
+              value="${escapeAttr(block.mainTask || "")}"
+              placeholder="Tâche principale..."
+              data-action="edit-main-task"
+              data-id="${block.id}"
+            />
+          </div>
+
+          <div class="subtasks">
+            ${visibleTasks.length === 0 ? `<div class="small" style="padding:2px 0 8px">Aucune sous-tâche</div>` : ""}
+            ${visibleTasks.map(task => `
+              <div class="task-row">
+                <input type="checkbox" class="checkbox" ${task.done ? "checked" : ""} data-action="toggle-task" data-block-id="${block.id}" data-task-id="${task.id}" />
+                <div class="task-text ${task.done ? "done" : ""}">${escapeHtml(task.text)}</div>
+                <button class="icon-btn" data-action="delete-task" data-block-id="${block.id}" data-task-id="${task.id}">✕</button>
+              </div>
+            `).join("")}
+          </div>
+
+          <div class="task-add">
+            <input class="subtask-input" placeholder="Ajouter une sous-tâche..." data-input-task="${block.id}" />
+            <button class="btn" data-action="add-task" data-id="${block.id}">+ sous-tâche</button>
+          </div>
+        `;
+
+        blocksContainer.appendChild(blockEl);
+      });
+
+      updateStats();
+    }
+
+    function updateStats() {
+      const day = getCurrentDay();
+      const allTasks = day.blocks.flatMap(b => b.tasks.filter(t => !t.hidden));
+      const doneTasks = allTasks.filter(t => t.done);
+      const total = allTasks.length;
+      const done = doneTasks.length;
+      const left = Math.max(0, total - done);
+      const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
+      statTotal.textContent = total;
+      statDone.textContent = done;
+      statLeft.textContent = left;
+      disciplineBadge.textContent = `${percent}%`;
+    }
+
+    function applyTemplateToDate(dateStr) {
+      ensureDay(dateStr);
+      const dayIndex = new Date(dateStr + "T00:00:00").getDay();
+      const template = state.templates[String(dayIndex)] || [];
+      const day = state.days[dateStr];
+
+      day.blocks = HOURS.map((hour, i) => {
+        const row = template[i] || { category: "À faire", mainTask: "", subTaskText: "" };
+        const tasks = (row.subTaskText || "")
+          .split(";")
+          .map(t => t.trim())
+          .filter(Boolean)
+          .map(text => ({
+            id: uid(),
+            text,
+            done: false,
+            hidden: false
+          }));
+
+        return {
+          id: uid(),
+          hour,
+          category: row.category || "À faire",
+          mainTask: row.mainTask || "",
+          tasks
+        };
+      });
+
+      if (!day.priority) day.priority = "";
+      saveState();
+    }
+
+    function prepareTomorrow() {
+      const tomorrow = addDays(selectedDate, 1);
+      ensureDay(tomorrow);
+
+      if (!dayHasMeaningfulData(tomorrow)) {
+        applyTemplateToDate(tomorrow);
+      }
+
+      alert(`Le ${formatDisplayDate(tomorrow)} est prêt.`);
+    }
+
+    function addTask(blockId, text) {
+      if (!text.trim()) return;
+      const block = getCurrentDay().blocks.find(b => b.id === blockId);
+      if (!block) return;
+      block.tasks.push({
+        id: uid(),
+        text: text.trim(),
+        done: false,
+        hidden: false
+      });
+      saveState();
+      renderDay();
+    }
+
+    function resetDay() {
+      if (!confirm("Tu veux vraiment vider toute la journée ?")) return;
+      state.days[selectedDate] = {
+        priority: "",
+        blocks: createEmptyDayBlocks()
+      };
+      saveState();
+      renderDay();
+    }
+
+    function resetDoneVisibility() {
+      const day = getCurrentDay();
+      day.blocks.forEach(block => {
+        block.tasks.forEach(task => {
+          task.hidden = false;
+        });
+      });
+      saveState();
+      renderDay();
+    }
+
+    function renderTemplates() {
+      templatesContainer.innerHTML = "";
+
+      for (let d = 0; d < 7; d++) {
+        const key = String(d);
+        const rows = state.templates[key];
+
+        const card = document.createElement("div");
+        card.className = "accordion-card" + (d === 1 ? " open" : "");
+
+        card.innerHTML = `
+          <button class="accordion-head" data-day-accordion="${key}">
+            <span>${WEEK_DAYS[d]}</span>
+            <span>▾</span>
+          </button>
+          <div class="accordion-content" id="accordion-content-${key}"></div>
+        `;
+
+        templatesContainer.appendChild(card);
+        const content = card.querySelector(`#accordion-content-${key}`);
+
+        rows.forEach((row, index) => {
+          const line = document.createElement("div");
+          line.className = "template-row";
+          line.innerHTML = `
+            <div class="template-hour">${row.hour}</div>
+            <select class="category-select template-category" data-day="${key}" data-index="${index}">
+              ${renderCategoryOptions(row.category)}
+            </select>
+            <div style="display:grid; gap:8px;">
+              <input class="main-task-input template-main-task" data-day="${key}" data-index="${index}" value="${escapeAttr(row.mainTask || "")}" placeholder="Tâche principale..." />
+              <input class="subtask-input template-subtask" data-day="${key}" data-index="${index}" value="${escapeAttr(row.subTaskText || "")}" placeholder="Sous-tâches séparées par ;" />
+            </div>
+          `;
+          content.appendChild(line);
+        });
+      }
+    }
+
+    async function enableReminder() {
+      state.reminderTime = reminderTimeInput.value || "21:00";
+
+      if (!("Notification" in window)) {
+        alert("Ton navigateur ne gère pas les notifications.");
+        state.reminderEnabled = false;
+        saveState();
+        renderDay();
+        return;
+      }
+
+      let permission = Notification.permission;
+      if (permission === "default") {
+        permission = await Notification.requestPermission();
+      }
+
+      if (permission !== "granted") {
+        alert("Notifications refusées.");
+        state.reminderEnabled = false;
+        saveState();
+        renderDay();
+        return;
+      }
+
+      state.reminderEnabled = true;
+      saveState();
+      renderDay();
+      alert("Rappel activé.");
+    }
+
+    function maybeSendReminder() {
+      if (!state.reminderEnabled) return;
+      if (!("Notification" in window)) return;
+      if (Notification.permission !== "granted") return;
+
+      const now = new Date();
+      const today = getTodayString(now);
+      const current = `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+      const reminderTime = state.reminderTime || "21:00";
+
+      if (current >= reminderTime && state.reminderLastSentDate !== today) {
+        const body = "Prépare demain dans MyPlann.";
+        try {
+          new Notification("Planning du Boss Atilla", { body });
+          state.reminderLastSentDate = today;
+          saveState();
+        } catch {}
+      }
+    }
+
+    function autoLoadTodayIfEmpty() {
+      ensureDay(selectedDate);
+      if (!dayHasMeaningfulData(selectedDate)) {
+        applyTemplateToDate(selectedDate);
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function escapeAttr(str) {
+      return escapeHtml(str);
+    }
+
+    document.getElementById("applyTemplateBtn").addEventListener("click", () => {
+      applyTemplateToDate(selectedDate);
+      renderDay();
+    });
+
+    document.getElementById("prepareTomorrowBtn").addEventListener("click", prepareTomorrow);
+    document.getElementById("resetDayBtn").addEventListener("click", resetDay);
+    document.getElementById("resetDoneBtn").addEventListener("click", resetDoneVisibility);
+
+    document.getElementById("savePriorityBtn").addEventListener("click", () => {
+      const day = getCurrentDay();
+      day.priority = priorityInput.value.trim();
+      saveState();
+      renderDay();
+    });
+
+    autoHideSwitch.addEventListener("click", () => {
+      state.autoHideDone = !state.autoHideDone;
+      saveState();
+      renderDay();
+    });
+
+    datePicker.addEventListener("change", (e) => {
+      selectedDate = e.target.value || getTodayString();
+      ensureDay(selectedDate);
+      autoLoadTodayIfEmpty();
+      renderDay();
+    });
+
+    longTermNotes.addEventListener("input", (e) => {
+      state.longTermNotes = e.target.value;
+      saveState();
+    });
+
+    document.getElementById("saveLongTermBtn").addEventListener("click", () => {
+      state.longTermNotes = longTermNotes.value;
+      saveState();
+      alert("Données long terme sauvegardées.");
+    });
+
+    document.getElementById("saveTemplatesBtn").addEventListener("click", () => {
+      document.querySelectorAll(".template-category").forEach(select => {
+        const day = select.dataset.day;
+        const index = Number(select.dataset.index);
+        state.templates[day][index].category = select.value;
+      });
+
+      document.querySelectorAll(".template-main-task").forEach(input => {
+        const day = input.dataset.day;
+        const index = Number(input.dataset.index);
+        state.templates[day][index].mainTask = input.value;
+      });
+
+      document.querySelectorAll(".template-subtask").forEach(input => {
+        const day = input.dataset.day;
+        const index = Number(input.dataset.index);
+        state.templates[day][index].subTaskText = input.value;
+      });
+
+      saveState();
+      alert("Modèles sauvegardés.");
+    });
+
+    enableReminderBtn.addEventListener("click", enableReminder);
+
+    templatesContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-day-accordion]");
+      if (!btn) return;
+
+      const card = btn.closest(".accordion-card");
+      card.classList.toggle("open");
+    });
+
+    blocksContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-action]");
+      if (!btn) return;
+
+      const action = btn.dataset.action;
+      const blockId = btn.dataset.id || btn.dataset.blockId;
+      const taskId = btn.dataset.taskId;
+      const day = getCurrentDay();
+
+      if (action === "add-task") {
+        const input = document.querySelector(`[data-input-task="${blockId}"]`);
+        if (input) {
+          addTask(blockId, input.value);
+          input.value = "";
+        }
+        return;
+      }
+
+      if (action === "toggle-task") {
+        const block = day.blocks.find(b => b.id === blockId);
+        const task = block?.tasks.find(t => t.id === taskId);
+        if (task) {
+          task.done = !task.done;
+          if (state.autoHideDone && task.done) {
+            task.hidden = true;
+          }
+        }
+      }
+
+      if (action === "delete-task") {
+        const block = day.blocks.find(b => b.id === blockId);
+        if (block) {
+          block.tasks = block.tasks.filter(t => t.id !== taskId);
+        }
+      }
+
+      saveState();
+      renderDay();
+    });
+
+    blocksContainer.addEventListener("change", (e) => {
+      const target = e.target;
+      const day = getCurrentDay();
+
+      if (target.dataset.action === "edit-category") {
+        const block = day.blocks.find(b => b.id === target.dataset.id);
+        if (block) {
+          block.category = target.value;
+          saveState();
+          renderDay();
+        }
+      }
+    });
+
+    blocksContainer.addEventListener("input", (e) => {
+      const target = e.target;
+      const day = getCurrentDay();
+
+      if (target.dataset.action === "edit-main-task") {
+        const block = day.blocks.find(b => b.id === target.dataset.id);
+        if (block) {
+          block.mainTask = target.value;
+          saveState();
+        }
+      }
+    });
+
+    blocksContainer.addEventListener("keydown", (e) => {
+      const input = e.target;
+      if (input.classList.contains("subtask-input") && e.key === "Enter") {
+        const blockId = input.dataset.inputTask;
+        if (blockId) {
+          addTask(blockId, input.value);
+          input.value = "";
+        }
+      }
+    });
+
+    function init() {
+      selectedDate = getTodayString();
+      ensureDay(selectedDate);
+      autoLoadTodayIfEmpty();
+      longTermNotes.value = state.longTermNotes || "";
+      renderTemplates();
+      renderDay();
+      maybeSendReminder();
+      setInterval(maybeSendReminder, 60000);
+    }
+
+    init();
+  </script>
+</body>
+</html>      justify-content:space-between;
       gap:12px;
       margin-bottom:12px;
     }
