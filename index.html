@@ -53,7 +53,7 @@
       top:0;
       z-index:30;
       backdrop-filter:blur(16px);
-      background:rgba(15,17,21,.8);
+      background:rgba(15,17,21,.85);
       padding:10px 0 12px;
       margin-bottom:10px;
     }
@@ -167,8 +167,12 @@
       border-color:#a85050;
     }
     .btn.full{width:100%}
+    .btn.remind{
+      background:linear-gradient(180deg,#6b5cff,#4c3ed6);
+      border-color:#8578ff;
+    }
 
-    .date-input,.text-input,.textarea,.main-task-input,.subtask-input,.time-input,.reminder-input,.category-select{
+    .date-input,.text-input,.textarea,.main-task-input,.subtask-input,.reminder-input{
       width:100%;
       background:#0d121b;
       color:var(--text);
@@ -263,7 +267,6 @@
       margin-bottom:12px;
       border:1px solid #273043;
       background:#11161f;
-      transition:.15s ease;
     }
 
     .cat-default{
@@ -299,7 +302,7 @@
       display:grid;
       grid-template-columns:74px 1fr;
       gap:10px;
-      align-items:center;
+      align-items:start;
       margin-bottom:10px;
     }
 
@@ -315,10 +318,39 @@
 
     .main-task-wrap{
       display:grid;
-      grid-template-columns:1fr;
       gap:8px;
       margin-bottom:10px;
     }
+
+    .category-chips{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .chip{
+      padding:9px 11px;
+      border-radius:999px;
+      border:1px solid #33435d;
+      background:#151d2a;
+      color:#d9e2f3;
+      font-weight:800;
+      font-size:.84rem;
+      cursor:pointer;
+    }
+
+    .chip.active{
+      background:#2b446d;
+      border-color:#6ca4ff;
+      color:#fff;
+    }
+
+    .chip[data-cat="Travail"].active{background:#6c4708;border-color:#f59e0b}
+    .chip[data-cat="Révisions"].active{background:#12492a;border-color:#22c55e}
+    .chip[data-cat="Client"].active{background:#4b2372;border-color:#a855f7}
+    .chip[data-cat="Perso"].active{background:#6c1d1d;border-color:#ef4444}
+    .chip[data-cat="Cours"].active{background:#0d4c57;border-color:#06b6d4}
+    .chip[data-cat="Muscu"].active{background:#6a1437;border-color:#ff3d7f}
 
     .subtasks{
       margin-top:4px;
@@ -369,6 +401,13 @@
       margin-top:8px;
     }
 
+    .block-actions{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      margin-top:8px;
+    }
+
     .accordion-card{
       background:#11161f;
       border:1px solid #273043;
@@ -403,10 +442,10 @@
 
     .template-row{
       display:grid;
-      grid-template-columns:70px 110px 1fr;
+      grid-template-columns:70px 1fr;
       gap:8px;
-      align-items:center;
-      margin-bottom:8px;
+      align-items:start;
+      margin-bottom:12px;
     }
 
     .template-hour{
@@ -417,13 +456,6 @@
       border:1px solid #2b3648;
       font-weight:800;
       font-size:.9rem;
-    }
-
-    .notif-box{
-      display:grid;
-      grid-template-columns:1fr auto;
-      gap:10px;
-      align-items:center;
     }
 
     .badge{
@@ -460,7 +492,7 @@
       <div class="panel-title">
         <div>
           <h2 id="todayTitle">Aujourd’hui</h2>
-          <p class="muted">Journée heure par heure, déjà prête</p>
+          <p class="muted">Menu raccourci automatiquement</p>
         </div>
         <div class="badge" id="disciplineBadge">0%</div>
       </div>
@@ -486,9 +518,9 @@
       <div class="switch-row">
         <div>
           <strong>Masquer automatiquement les tâches finies</strong>
-          <div class="small">Quand tu coches une sous-tâche, elle disparaît si l’option est activée</div>
+          <div class="small">Les heures passées et les blocs terminés disparaissent aussi</div>
         </div>
-        <div class="switch" id="autoHideSwitch"></div>
+        <div class="switch active" id="autoHideSwitch"></div>
       </div>
 
       <div class="divider"></div>
@@ -506,23 +538,6 @@
           <span class="n" id="statLeft">0</span>
           <span class="small">Restantes</span>
         </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">
-        <div>
-          <h2>Rappel du soir</h2>
-          <p class="muted">Notification locale quand le site est ouvert ou utilisé en PWA</p>
-        </div>
-      </div>
-
-      <div class="notif-box">
-        <input type="time" id="reminderTimeInput" class="reminder-input" value="21:00" />
-        <button class="btn" id="enableReminderBtn">Activer</button>
-      </div>
-      <div class="small" style="margin-top:10px">
-        Sur GitHub Pages, les notifications web dépendent du navigateur. Elles ne sont pas aussi fiables qu’une vraie appli native, mais sur Android ça peut marcher correctement.
       </div>
     </div>
 
@@ -560,7 +575,7 @@
       <div class="panel-title">
         <div>
           <h2>Planning type par jour</h2>
-          <p class="muted">Un jour à la fois, simple à modifier</p>
+          <p class="muted">Un jour à la fois</p>
         </div>
       </div>
 
@@ -571,21 +586,17 @@
   </section>
 
   <script>
-    const STORAGE_KEY = "myplann-final-atilla-v1";
+    const STORAGE_KEY = "myplann-final-atilla-v2";
     const WEEK_DAYS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
     const HOURS = [
       "08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00",
       "17:00","18:00","19:00","20:00","21:00","22:00","23:00","00:00"
     ];
-
     const CATEGORY_OPTIONS = ["À faire", "Travail", "Révisions", "Client", "Perso", "Cours", "Muscu"];
 
     const defaultState = {
-      autoHideDone: false,
+      autoHideDone: true,
       longTermNotes: "",
-      reminderEnabled: false,
-      reminderTime: "21:00",
-      reminderLastSentDate: "",
       templates: createEmptyTemplates(),
       days: {}
     };
@@ -608,8 +619,6 @@
     const statDone = document.getElementById("statDone");
     const statLeft = document.getElementById("statLeft");
     const disciplineBadge = document.getElementById("disciplineBadge");
-    const reminderTimeInput = document.getElementById("reminderTimeInput");
-    const enableReminderBtn = document.getElementById("enableReminderBtn");
 
     function createEmptyTemplates() {
       const templates = {};
@@ -698,7 +707,9 @@
         hour,
         category: "À faire",
         mainTask: "",
-        tasks: []
+        tasks: [],
+        reminderEnabled: false,
+        remindedAt: ""
       }));
     }
 
@@ -735,7 +746,9 @@
           hour: block.hour,
           category: block.category || "À faire",
           mainTask: block.mainTask || "",
-          tasks: Array.isArray(block.tasks) ? block.tasks.map(normalizeTask) : []
+          tasks: Array.isArray(block.tasks) ? block.tasks.map(normalizeTask) : [],
+          reminderEnabled: !!block.reminderEnabled,
+          remindedAt: block.remindedAt || ""
         };
       });
 
@@ -746,7 +759,9 @@
           hour,
           category: "À faire",
           mainTask: "",
-          tasks: []
+          tasks: [],
+          reminderEnabled: false,
+          remindedAt: ""
         };
       });
 
@@ -789,10 +804,51 @@
       return "cat-default";
     }
 
-    function renderCategoryOptions(current) {
-      return CATEGORY_OPTIONS.map(opt =>
-        `<option value="${escapeHtml(opt)}" ${opt === current ? "selected" : ""}>${escapeHtml(opt)}</option>`
-      ).join("");
+    function getNowInfo() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      return {
+        date: getTodayString(now),
+        time: `${hh}:${mm}`
+      };
+    }
+
+    function isHourPassed(dateStr, hourStr) {
+      const now = getNowInfo();
+      if (dateStr < now.date) return true;
+      if (dateStr > now.date) return false;
+      if (hourStr === "00:00") return false;
+      return hourStr < now.time;
+    }
+
+    function isBlockCompleted(block) {
+      const hasMain = !!(block.mainTask && block.mainTask.trim());
+      const hasSubtasks = block.tasks.length > 0;
+      const allSubDone = hasSubtasks ? block.tasks.every(t => t.done) : false;
+
+      if (hasMain && !hasSubtasks) return false;
+      if (!hasMain && hasSubtasks) return allSubDone;
+      if (hasMain && hasSubtasks) return allSubDone;
+      return false;
+    }
+
+    function shouldHideBlock(dateStr, block) {
+      if (!state.autoHideDone) return false;
+      if (isHourPassed(dateStr, block.hour)) return true;
+      if (isBlockCompleted(block)) return true;
+      return false;
+    }
+
+    function renderCategoryChips(block) {
+      return CATEGORY_OPTIONS.map(cat => `
+        <button
+          class="chip ${block.category === cat ? "active" : ""}"
+          data-action="set-category"
+          data-id="${block.id}"
+          data-cat="${escapeAttr(cat)}"
+        >${escapeHtml(cat)}</button>
+      `).join("");
     }
 
     function renderDay() {
@@ -801,12 +857,12 @@
       todayTitle.textContent = capitalize(formatDisplayDate(selectedDate));
       priorityInput.value = day.priority || "";
       autoHideSwitch.classList.toggle("active", !!state.autoHideDone);
-      reminderTimeInput.value = state.reminderTime || "21:00";
-      enableReminderBtn.textContent = state.reminderEnabled ? "Rappel activé" : "Activer";
 
       blocksContainer.innerHTML = "";
 
       day.blocks.forEach((block) => {
+        if (shouldHideBlock(selectedDate, block)) return;
+
         const visibleTasks = state.autoHideDone
           ? block.tasks.filter(t => !t.done && !t.hidden)
           : block.tasks.filter(t => !t.hidden);
@@ -817,20 +873,19 @@
         blockEl.innerHTML = `
           <div class="block-top">
             <div class="hour-badge">${block.hour}</div>
-            <select class="category-select" data-action="edit-category" data-id="${block.id}">
-              ${renderCategoryOptions(block.category)}
-            </select>
-          </div>
-
-          <div class="main-task-wrap">
-            <input
-              class="main-task-input"
-              type="text"
-              value="${escapeAttr(block.mainTask || "")}"
-              placeholder="Tâche principale..."
-              data-action="edit-main-task"
-              data-id="${block.id}"
-            />
+            <div class="main-task-wrap">
+              <div class="category-chips">
+                ${renderCategoryChips(block)}
+              </div>
+              <input
+                class="main-task-input"
+                type="text"
+                value="${escapeAttr(block.mainTask || "")}"
+                placeholder="Écris ta tâche..."
+                data-action="edit-main-task"
+                data-id="${block.id}"
+              />
+            </div>
           </div>
 
           <div class="subtasks">
@@ -848,6 +903,13 @@
             <input class="subtask-input" placeholder="Ajouter une sous-tâche..." data-input-task="${block.id}" />
             <button class="btn" data-action="add-task" data-id="${block.id}">+ sous-tâche</button>
           </div>
+
+          <div class="block-actions">
+            <div class="small">${block.reminderEnabled ? "Rappel actif" : "Pas de rappel"}</div>
+            <button class="btn remind" data-action="toggle-reminder" data-id="${block.id}">
+              ${block.reminderEnabled ? "Rappel ON" : "Me rappeler"}
+            </button>
+          </div>
         `;
 
         blocksContainer.appendChild(blockEl);
@@ -858,9 +920,10 @@
 
     function updateStats() {
       const day = getCurrentDay();
-      const allTasks = day.blocks.flatMap(b => b.tasks.filter(t => !t.hidden));
-      const doneTasks = allTasks.filter(t => t.done);
-      const total = allTasks.length;
+      const visibleBlocks = day.blocks.filter(block => !shouldHideBlock(selectedDate, block));
+      const allTasks = visibleBlocks.flatMap(b => b.tasks.filter(t => !t.hidden));
+      const doneTasks = day.blocks.flatMap(b => b.tasks).filter(t => t.done);
+      const total = day.blocks.flatMap(b => b.tasks).length;
       const done = doneTasks.length;
       const left = Math.max(0, total - done);
       const percent = total === 0 ? 0 : Math.round((done / total) * 100);
@@ -895,7 +958,9 @@
           hour,
           category: row.category || "À faire",
           mainTask: row.mainTask || "",
-          tasks
+          tasks,
+          reminderEnabled: false,
+          remindedAt: ""
         };
       });
 
@@ -949,6 +1014,18 @@
       renderDay();
     }
 
+    function renderTemplateCategoryChips(dayKey, index, currentCat) {
+      return CATEGORY_OPTIONS.map(cat => `
+        <button
+          class="chip ${currentCat === cat ? "active" : ""}"
+          data-template-action="set-category"
+          data-day="${dayKey}"
+          data-index="${index}"
+          data-cat="${escapeAttr(cat)}"
+        >${escapeHtml(cat)}</button>
+      `).join("");
+    }
+
     function renderTemplates() {
       templatesContainer.innerHTML = "";
 
@@ -975,11 +1052,11 @@
           line.className = "template-row";
           line.innerHTML = `
             <div class="template-hour">${row.hour}</div>
-            <select class="category-select template-category" data-day="${key}" data-index="${index}">
-              ${renderCategoryOptions(row.category)}
-            </select>
             <div style="display:grid; gap:8px;">
-              <input class="main-task-input template-main-task" data-day="${key}" data-index="${index}" value="${escapeAttr(row.mainTask || "")}" placeholder="Tâche principale..." />
+              <div class="category-chips">
+                ${renderTemplateCategoryChips(key, index, row.category)}
+              </div>
+              <input class="main-task-input template-main-task" data-day="${key}" data-index="${index}" value="${escapeAttr(row.mainTask || "")}" placeholder="Écris ta tâche..." />
               <input class="subtask-input template-subtask" data-day="${key}" data-index="${index}" value="${escapeAttr(row.subTaskText || "")}" placeholder="Sous-tâches séparées par ;" />
             </div>
           `;
@@ -988,14 +1065,12 @@
       }
     }
 
-    async function enableReminder() {
-      state.reminderTime = reminderTimeInput.value || "21:00";
+    async function toggleReminderForBlock(blockId) {
+      const block = getCurrentDay().blocks.find(b => b.id === blockId);
+      if (!block) return;
 
       if (!("Notification" in window)) {
         alert("Ton navigateur ne gère pas les notifications.");
-        state.reminderEnabled = false;
-        saveState();
-        renderDay();
         return;
       }
 
@@ -1006,36 +1081,40 @@
 
       if (permission !== "granted") {
         alert("Notifications refusées.");
-        state.reminderEnabled = false;
-        saveState();
-        renderDay();
         return;
       }
 
-      state.reminderEnabled = true;
+      block.reminderEnabled = !block.reminderEnabled;
+      if (!block.reminderEnabled) block.remindedAt = "";
       saveState();
       renderDay();
-      alert("Rappel activé.");
     }
 
-    function maybeSendReminder() {
-      if (!state.reminderEnabled) return;
+    function maybeSendBlockReminders() {
       if (!("Notification" in window)) return;
       if (Notification.permission !== "granted") return;
 
-      const now = new Date();
-      const today = getTodayString(now);
-      const current = `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
-      const reminderTime = state.reminderTime || "21:00";
+      const now = getNowInfo();
+      const today = state.days[now.date];
+      if (!today) return;
 
-      if (current >= reminderTime && state.reminderLastSentDate !== today) {
-        const body = "Prépare demain dans MyPlann.";
-        try {
-          new Notification("Planning du Boss Atilla", { body });
-          state.reminderLastSentDate = today;
-          saveState();
-        } catch {}
-      }
+      today.blocks.forEach(block => {
+        if (!block.reminderEnabled) return;
+        if (block.hour === "00:00") return;
+        if (block.remindedAt === now.date) return;
+        if (!block.mainTask.trim() && block.tasks.length === 0) return;
+
+        if (now.time >= block.hour) {
+          const body = block.mainTask?.trim()
+            ? `${block.hour} • ${block.mainTask}`
+            : `${block.hour} • Tu as une tâche à faire`;
+          try {
+            new Notification("Planning du Boss Atilla", { body });
+            block.remindedAt = now.date;
+            saveState();
+          } catch {}
+        }
+      });
     }
 
     function autoLoadTodayIfEmpty() {
@@ -1098,12 +1177,6 @@
     });
 
     document.getElementById("saveTemplatesBtn").addEventListener("click", () => {
-      document.querySelectorAll(".template-category").forEach(select => {
-        const day = select.dataset.day;
-        const index = Number(select.dataset.index);
-        state.templates[day][index].category = select.value;
-      });
-
       document.querySelectorAll(".template-main-task").forEach(input => {
         const day = input.dataset.day;
         const index = Number(input.dataset.index);
@@ -1120,17 +1193,26 @@
       alert("Modèles sauvegardés.");
     });
 
-    enableReminderBtn.addEventListener("click", enableReminder);
-
     templatesContainer.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-day-accordion]");
+      const acc = e.target.closest("[data-day-accordion]");
+      if (acc) {
+        const card = acc.closest(".accordion-card");
+        card.classList.toggle("open");
+        return;
+      }
+
+      const btn = e.target.closest("[data-template-action='set-category']");
       if (!btn) return;
 
-      const card = btn.closest(".accordion-card");
-      card.classList.toggle("open");
+      const day = btn.dataset.day;
+      const index = Number(btn.dataset.index);
+      const cat = btn.dataset.cat;
+      state.templates[day][index].category = cat;
+      saveState();
+      renderTemplates();
     });
 
-    blocksContainer.addEventListener("click", (e) => {
+    blocksContainer.addEventListener("click", async (e) => {
       const btn = e.target.closest("[data-action]");
       if (!btn) return;
 
@@ -1138,6 +1220,16 @@
       const blockId = btn.dataset.id || btn.dataset.blockId;
       const taskId = btn.dataset.taskId;
       const day = getCurrentDay();
+
+      if (action === "set-category") {
+        const block = day.blocks.find(b => b.id === blockId);
+        if (block) {
+          block.category = btn.dataset.cat;
+          saveState();
+          renderDay();
+        }
+        return;
+      }
 
       if (action === "add-task") {
         const input = document.querySelector(`[data-input-task="${blockId}"]`);
@@ -1157,6 +1249,9 @@
             task.hidden = true;
           }
         }
+        saveState();
+        renderDay();
+        return;
       }
 
       if (action === "delete-task") {
@@ -1164,23 +1259,14 @@
         if (block) {
           block.tasks = block.tasks.filter(t => t.id !== taskId);
         }
+        saveState();
+        renderDay();
+        return;
       }
 
-      saveState();
-      renderDay();
-    });
-
-    blocksContainer.addEventListener("change", (e) => {
-      const target = e.target;
-      const day = getCurrentDay();
-
-      if (target.dataset.action === "edit-category") {
-        const block = day.blocks.find(b => b.id === target.dataset.id);
-        if (block) {
-          block.category = target.value;
-          saveState();
-          renderDay();
-        }
+      if (action === "toggle-reminder") {
+        await toggleReminderForBlock(blockId);
+        return;
       }
     });
 
@@ -1215,915 +1301,11 @@
       longTermNotes.value = state.longTermNotes || "";
       renderTemplates();
       renderDay();
-      maybeSendReminder();
-      setInterval(maybeSendReminder, 60000);
+      maybeSendBlockReminders();
+      setInterval(maybeSendBlockReminders, 60000);
     }
 
     init();
   </script>
 </body>
-</html>      justify-content:space-between;
-      gap:12px;
-      margin-bottom:12px;
-    }
-
-    .app-title h1{
-      font-size:1.5rem;
-      font-weight:800;
-      letter-spacing:.2px;
-    }
-
-    .sub{
-      color:var(--muted);
-      font-size:.92rem;
-      margin-top:4px;
-    }
-
-    .tabs{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-
-    .tab{
-      padding:12px 14px;
-      border-radius:14px;
-      background:var(--panel);
-      color:var(--muted);
-      font-weight:700;
-      border:1px solid var(--line);
-      cursor:pointer;
-    }
-
-    .tab.active{
-      background:linear-gradient(180deg,#21304d,#182234);
-      color:#fff;
-      border-color:#365482;
-    }
-
-    .panel{
-      background:rgba(23,26,33,.95);
-      border:1px solid var(--line);
-      box-shadow:var(--shadow);
-      border-radius:var(--radius);
-      padding:14px;
-      margin-bottom:14px;
-    }
-
-    .panel-title{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:12px;
-    }
-
-    .panel-title h2{
-      font-size:1.02rem;
-      font-weight:800;
-    }
-
-    .muted{
-      color:var(--muted);
-      font-size:.9rem;
-    }
-
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .btn{
-      background:var(--panel-2);
-      color:var(--text);
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:12px 14px;
-      font-weight:700;
-      cursor:pointer;
-      transition:.15s transform ease, .15s opacity ease, .15s background ease;
-    }
-
-    .btn:active{transform:scale(.98)}
-    .btn.primary{
-      background:linear-gradient(180deg,#4d8ef0,#3c74c5);
-      border-color:#5b93e8;
-    }
-    .btn.success{
-      background:linear-gradient(180deg,#2c8d63,#226a4b);
-      border-color:#39a674;
-    }
-    .btn.warning{
-      background:linear-gradient(180deg,#8d6a1f,#654d17);
-      border-color:#ad8332;
-    }
-    .btn.danger{
-      background:linear-gradient(180deg,#8b3232,#672626);
-      border-color:#a34d4d;
-    }
-    .btn.full{width:100%}
-
-    .switch-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:12px 0 2px;
-    }
-
-    .switch{
-      position:relative;
-      width:54px;
-      height:32px;
-      background:#2c3444;
-      border-radius:999px;
-      cursor:pointer;
-      border:1px solid #3a4558;
-      transition:.2s;
-      flex-shrink:0;
-    }
-
-    .switch::after{
-      content:"";
-      position:absolute;
-      top:3px;
-      left:3px;
-      width:24px;
-      height:24px;
-      background:#fff;
-      border-radius:50%;
-      transition:.2s;
-    }
-
-    .switch.active{
-      background:#2d7ff0;
-      border-color:#5ea0ff;
-    }
-
-    .switch.active::after{
-      left:25px;
-    }
-
-    .block{
-      border-radius:16px;
-      padding:12px;
-      margin-bottom:12px;
-      border:1px solid #273043;
-      background:#11161f;
-    }
-
-    .cat-default{
-      border-left:6px solid var(--cat-default);
-      background:linear-gradient(90deg, rgba(93,162,255,.14), rgba(17,22,31,1) 30%);
-    }
-    .cat-work{
-      border-left:6px solid var(--cat-work);
-      background:linear-gradient(90deg, rgba(245,158,11,.14), rgba(17,22,31,1) 30%);
-    }
-    .cat-study{
-      border-left:6px solid var(--cat-study);
-      background:linear-gradient(90deg, rgba(34,197,94,.14), rgba(17,22,31,1) 30%);
-    }
-    .cat-client{
-      border-left:6px solid var(--cat-client);
-      background:linear-gradient(90deg, rgba(168,85,247,.14), rgba(17,22,31,1) 30%);
-    }
-    .cat-perso{
-      border-left:6px solid var(--cat-perso);
-      background:linear-gradient(90deg, rgba(239,68,68,.14), rgba(17,22,31,1) 30%);
-    }
-    .cat-course{
-      border-left:6px solid var(--cat-course);
-      background:linear-gradient(90deg, rgba(6,182,212,.14), rgba(17,22,31,1) 30%);
-    }
-
-    .block-head{
-      display:grid;
-      grid-template-columns:88px 1fr;
-      gap:10px;
-      align-items:center;
-      margin-bottom:10px;
-    }
-
-    .hour-label{
-      background:#0c1018;
-      color:#fff;
-      border:1px solid #2c3647;
-      border-radius:12px;
-      padding:12px;
-      text-align:center;
-      font-weight:800;
-    }
-
-    .category-select,.date-input,.textarea,.task-inline-input{
-      width:100%;
-      background:#0c1018;
-      color:var(--text);
-      border:1px solid #2c3647;
-      border-radius:12px;
-      padding:12px;
-    }
-
-    .task-row{
-      display:grid;
-      grid-template-columns:auto 1fr auto;
-      gap:10px;
-      align-items:center;
-      padding:8px 0;
-      border-top:1px solid rgba(255,255,255,.05);
-    }
-
-    .task-row:first-child{
-      border-top:none;
-    }
-
-    .checkbox{
-      width:22px;
-      height:22px;
-      accent-color:#4e90f5;
-      cursor:pointer;
-    }
-
-    .task-text.done{
-      text-decoration:line-through;
-      opacity:.55;
-    }
-
-    .icon-btn{
-      width:38px;
-      height:38px;
-      border-radius:12px;
-      display:grid;
-      place-items:center;
-      background:#1b2230;
-      color:#fff;
-      border:1px solid #32405a;
-      cursor:pointer;
-      flex-shrink:0;
-    }
-
-    .task-add{
-      display:grid;
-      grid-template-columns:1fr auto;
-      gap:10px;
-      margin-top:8px;
-    }
-
-    .section{display:none}
-    .section.active{display:block}
-
-    .stats{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-    }
-
-    .stat{
-      background:#101621;
-      border:1px solid #273043;
-      border-radius:15px;
-      padding:12px;
-      text-align:center;
-    }
-
-    .stat .n{
-      display:block;
-      font-size:1.15rem;
-      font-weight:800;
-      margin-bottom:4px;
-    }
-
-    .divider{
-      height:1px;
-      background:rgba(255,255,255,.07);
-      margin:14px 0;
-    }
-
-    .textarea{
-      min-height:140px;
-      resize:vertical;
-    }
-
-    .template-day-card{
-      background:#11161f;
-      border:1px solid #273043;
-      border-radius:16px;
-      padding:12px;
-      margin-bottom:14px;
-    }
-
-    .template-day-card h3{
-      margin-bottom:10px;
-      font-size:1rem;
-    }
-
-    .template-row{
-      display:grid;
-      grid-template-columns:72px 1fr;
-      gap:8px;
-      align-items:center;
-      margin-bottom:8px;
-    }
-
-    .template-hour{
-      text-align:center;
-      padding:10px 6px;
-      border-radius:10px;
-      background:#0c1018;
-      border:1px solid #2c3647;
-      font-weight:700;
-      font-size:.9rem;
-    }
-
-    .template-controls{
-      display:grid;
-      grid-template-columns:110px 1fr;
-      gap:8px;
-    }
-
-    .small{
-      font-size:.84rem;
-      color:var(--muted);
-    }
-  </style>
-</head>
-<body>
-  <div class="topbar">
-    <div class="app-title">
-      <div>
-        <h1>MyPlann</h1>
-        <p class="sub">Planning téléphone • BTS • travail • clients</p>
-      </div>
-    </div>
-
-    <div class="tabs">
-      <button class="tab active" id="tabToday">Aujourd’hui</button>
-      <button class="tab" id="tabLongTerm">Long terme</button>
-    </div>
-  </div>
-
-  <section id="todaySection" class="section active">
-    <div class="panel">
-      <div class="panel-title">
-        <div>
-          <h2 id="todayTitle">Aujourd’hui</h2>
-          <p class="muted">Toutes tes heures sont déjà affichées</p>
-        </div>
-      </div>
-
-      <div class="row" style="margin-bottom:10px">
-        <input type="date" id="datePicker" class="date-input" />
-      </div>
-
-      <div class="row">
-        <button class="btn primary" id="applyTemplateBtn">Appliquer le modèle du jour</button>
-      </div>
-
-      <div class="switch-row">
-        <div>
-          <strong>Masquer automatiquement les tâches finies</strong>
-          <div class="small">Quand tu coches, elles disparaissent de la vue</div>
-        </div>
-        <div class="switch" id="autoHideSwitch"></div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="stats">
-        <div class="stat">
-          <span class="n" id="statTotal">0</span>
-          <span class="small">Tâches</span>
-        </div>
-        <div class="stat">
-          <span class="n" id="statDone">0</span>
-          <span class="small">Finies</span>
-        </div>
-        <div class="stat">
-          <span class="n" id="statLeft">0</span>
-          <span class="small">Restantes</span>
-        </div>
-      </div>
-    </div>
-
-    <div id="blocksContainer"></div>
-
-    <div class="panel">
-      <div class="row">
-        <button class="btn warning" id="resetDoneBtn">Réafficher les tâches finies</button>
-        <button class="btn danger" id="resetDayBtn">Reset de la journée</button>
-      </div>
-    </div>
-  </section>
-
-  <section id="longTermSection" class="section">
-    <div class="panel">
-      <div class="panel-title">
-        <div>
-          <h2>Données long terme</h2>
-          <p class="muted">Objectifs, rappels, idées, dossiers</p>
-        </div>
-      </div>
-
-      <textarea id="longTermNotes" class="textarea" placeholder="Exemple :
-- Réviser AV tous les mercredis
-- Relancer tel client
-- Priorité BTS : annales + gestion
-- Objectifs du mois"></textarea>
-
-      <div class="row" style="margin-top:10px">
-        <button class="btn success full" id="saveLongTermBtn">Sauvegarder mes données long terme</button>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">
-        <div>
-          <h2>Planning type par jour</h2>
-          <p class="muted">Champs simples, vides par défaut, heure déjà affichée</p>
-        </div>
-      </div>
-
-      <div id="templatesContainer"></div>
-
-      <button class="btn success full" id="saveTemplatesBtn">Sauvegarder les modèles</button>
-    </div>
-  </section>
-
-  <script>
-    const STORAGE_KEY = "myplann-alpha-v2";
-    const WEEK_DAYS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
-    const HOURS = [
-      "08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00",
-      "17:00","18:00","19:00","20:00","21:00","22:00","23:00","00:00"
-    ];
-
-    const CATEGORY_OPTIONS = ["À faire", "Travail", "Révisions", "Client", "Perso", "Cours"];
-
-    const defaultState = {
-      autoHideDone: false,
-      longTermNotes: "",
-      templates: createEmptyTemplates(),
-      days: {}
-    };
-
-    function createEmptyTemplates() {
-      const templates = {};
-      for (let d = 0; d < 7; d++) {
-        templates[String(d)] = HOURS.map(hour => ({
-          hour,
-          category: "À faire",
-          taskText: ""
-        }));
-      }
-      return templates;
-    }
-
-    let state = loadState();
-    let selectedDate = getTodayString();
-
-    const tabToday = document.getElementById("tabToday");
-    const tabLongTerm = document.getElementById("tabLongTerm");
-    const todaySection = document.getElementById("todaySection");
-    const longTermSection = document.getElementById("longTermSection");
-    const blocksContainer = document.getElementById("blocksContainer");
-    const templatesContainer = document.getElementById("templatesContainer");
-    const todayTitle = document.getElementById("todayTitle");
-    const datePicker = document.getElementById("datePicker");
-    const autoHideSwitch = document.getElementById("autoHideSwitch");
-    const longTermNotes = document.getElementById("longTermNotes");
-    const statTotal = document.getElementById("statTotal");
-    const statDone = document.getElementById("statDone");
-    const statLeft = document.getElementById("statLeft");
-
-    function loadState() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        if (!saved) return structuredClone(defaultState);
-
-        const merged = {
-          ...structuredClone(defaultState),
-          ...saved
-        };
-
-        if (!saved.templates || typeof saved.templates !== "object") {
-          merged.templates = createEmptyTemplates();
-        } else {
-          const defaults = createEmptyTemplates();
-          for (let d = 0; d < 7; d++) {
-            const key = String(d);
-            if (!Array.isArray(saved.templates[key])) {
-              defaults[key] = createEmptyTemplates()[key];
-            } else {
-              defaults[key] = HOURS.map((hour, i) => {
-                const row = saved.templates[key][i] || {};
-                return {
-                  hour,
-                  category: row.category || "À faire",
-                  taskText: row.taskText || ""
-                };
-              });
-            }
-          }
-          merged.templates = defaults;
-        }
-
-        merged.days = saved.days || {};
-        return merged;
-      } catch {
-        return structuredClone(defaultState);
-      }
-    }
-
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function getTodayString(date = new Date()) {
-      const y = date.getFullYear();
-      const m = String(date.getMonth() + 1).padStart(2, "0");
-      const d = String(date.getDate()).padStart(2, "0");
-      return `${y}-${m}-${d}`;
-    }
-
-    function formatDisplayDate(dateStr) {
-      const d = new Date(dateStr + "T00:00:00");
-      return d.toLocaleDateString("fr-FR", {
-        weekday: "long",
-        day: "numeric",
-        month: "long"
-      });
-    }
-
-    function capitalize(s) {
-      return s.charAt(0).toUpperCase() + s.slice(1);
-    }
-
-    function uid() {
-      return Math.random().toString(36).slice(2, 10);
-    }
-
-    function createEmptyDayBlocks() {
-      return HOURS.map(hour => ({
-        id: uid(),
-        hour,
-        category: "À faire",
-        tasks: []
-      }));
-    }
-
-    function ensureDay(dateStr) {
-      if (!state.days[dateStr]) {
-        state.days[dateStr] = { blocks: createEmptyDayBlocks() };
-      } else {
-        normalizeDay(dateStr);
-      }
-    }
-
-    function normalizeDay(dateStr) {
-      const day = state.days[dateStr];
-      if (!day.blocks || !Array.isArray(day.blocks)) {
-        day.blocks = createEmptyDayBlocks();
-        return;
-      }
-
-      const byHour = {};
-      day.blocks.forEach(block => {
-        byHour[block.hour] = {
-          id: block.id || uid(),
-          hour: block.hour,
-          category: block.category || "À faire",
-          tasks: Array.isArray(block.tasks) ? block.tasks : []
-        };
-      });
-
-      day.blocks = HOURS.map(hour => {
-        if (byHour[hour]) return byHour[hour];
-        return {
-          id: uid(),
-          hour,
-          category: "À faire",
-          tasks: []
-        };
-      });
-    }
-
-    function getCurrentDay() {
-      ensureDay(selectedDate);
-      return state.days[selectedDate];
-    }
-
-    function switchTab(tab) {
-      const onToday = tab === "today";
-      tabToday.classList.toggle("active", onToday);
-      tabLongTerm.classList.toggle("active", !onToday);
-      todaySection.classList.toggle("active", onToday);
-      longTermSection.classList.toggle("active", !onToday);
-    }
-
-    tabToday.addEventListener("click", () => switchTab("today"));
-    tabLongTerm.addEventListener("click", () => switchTab("longTerm"));
-
-    function getCategoryClass(category) {
-      if (category === "Travail") return "cat-work";
-      if (category === "Révisions") return "cat-study";
-      if (category === "Client") return "cat-client";
-      if (category === "Perso") return "cat-perso";
-      if (category === "Cours") return "cat-course";
-      return "cat-default";
-    }
-
-    function renderCategoryOptions(current) {
-      return CATEGORY_OPTIONS.map(opt =>
-        `<option value="${escapeHtml(opt)}" ${opt === current ? "selected" : ""}>${escapeHtml(opt)}</option>`
-      ).join("");
-    }
-
-    function renderDay() {
-      const day = getCurrentDay();
-      datePicker.value = selectedDate;
-      todayTitle.textContent = capitalize(formatDisplayDate(selectedDate));
-      autoHideSwitch.classList.toggle("active", !!state.autoHideDone);
-
-      blocksContainer.innerHTML = "";
-
-      day.blocks.forEach((block) => {
-        const visibleTasks = state.autoHideDone
-          ? block.tasks.filter(t => !t.done && !t.hidden)
-          : block.tasks.filter(t => !t.hidden);
-
-        const blockEl = document.createElement("div");
-        blockEl.className = `block ${getCategoryClass(block.category)}`;
-
-        blockEl.innerHTML = `
-          <div class="block-head">
-            <div class="hour-label">${block.hour}</div>
-            <select class="category-select" data-action="edit-category" data-id="${block.id}">
-              ${renderCategoryOptions(block.category)}
-            </select>
-          </div>
-
-          <div class="tasks-zone">
-            ${visibleTasks.length === 0 ? `<div class="small" style="padding:4px 0 8px">Aucune tâche pour cette heure</div>` : ""}
-            ${visibleTasks.map(task => `
-              <div class="task-row">
-                <input type="checkbox" class="checkbox" ${task.done ? "checked" : ""} data-action="toggle-task" data-block-id="${block.id}" data-task-id="${task.id}" />
-                <div class="task-text ${task.done ? "done" : ""}">${escapeHtml(task.text)}</div>
-                <button class="icon-btn" data-action="delete-task" data-block-id="${block.id}" data-task-id="${task.id}">✕</button>
-              </div>
-            `).join("")}
-          </div>
-
-          <div class="task-add">
-            <input class="task-inline-input" placeholder="Ajouter une tâche..." data-input-task="${block.id}" />
-            <button class="btn" data-action="add-task" data-id="${block.id}">+ tâche</button>
-          </div>
-        `;
-
-        blocksContainer.appendChild(blockEl);
-      });
-
-      updateStats();
-    }
-
-    function updateStats() {
-      const day = getCurrentDay();
-      const allTasks = day.blocks.flatMap(b => b.tasks.filter(t => !t.hidden));
-      const doneTasks = allTasks.filter(t => t.done);
-      statTotal.textContent = allTasks.length;
-      statDone.textContent = doneTasks.length;
-      statLeft.textContent = Math.max(0, allTasks.length - doneTasks.length);
-    }
-
-    function applyTodayTemplate() {
-      const dayIndex = new Date(selectedDate + "T00:00:00").getDay();
-      const template = state.templates[String(dayIndex)] || [];
-      const day = getCurrentDay();
-
-      day.blocks = HOURS.map((hour, i) => {
-        const row = template[i] || { category: "À faire", taskText: "" };
-        const tasks = (row.taskText || "")
-          .split(";")
-          .map(t => t.trim())
-          .filter(Boolean)
-          .map(text => ({
-            id: uid(),
-            text,
-            done: false,
-            hidden: false
-          }));
-
-        return {
-          id: uid(),
-          hour,
-          category: row.category || "À faire",
-          tasks
-        };
-      });
-
-      saveState();
-      renderDay();
-    }
-
-    function addTask(blockId, text) {
-      if (!text.trim()) return;
-      const block = getCurrentDay().blocks.find(b => b.id === blockId);
-      if (!block) return;
-      block.tasks.push({
-        id: uid(),
-        text: text.trim(),
-        done: false,
-        hidden: false
-      });
-      saveState();
-      renderDay();
-    }
-
-    function resetDay() {
-      if (!confirm("Tu veux vraiment vider toute la journée ?")) return;
-      state.days[selectedDate] = { blocks: createEmptyDayBlocks() };
-      saveState();
-      renderDay();
-    }
-
-    function resetDoneVisibility() {
-      const day = getCurrentDay();
-      day.blocks.forEach(block => {
-        block.tasks.forEach(task => {
-          task.hidden = false;
-        });
-      });
-      saveState();
-      renderDay();
-    }
-
-    function renderTemplates() {
-      templatesContainer.innerHTML = "";
-
-      for (let d = 0; d < 7; d++) {
-        const key = String(d);
-        const dayTemplate = state.templates[key];
-
-        const card = document.createElement("div");
-        card.className = "template-day-card";
-
-        card.innerHTML = `
-          <h3>${WEEK_DAYS[d]}</h3>
-          <div class="small" style="margin-bottom:10px">1 ligne = 1 heure • dans la tâche tu peux écrire plusieurs éléments séparés par ;</div>
-          <div id="template-day-${key}"></div>
-        `;
-
-        templatesContainer.appendChild(card);
-
-        const holder = card.querySelector(`#template-day-${key}`);
-
-        dayTemplate.forEach((row, index) => {
-          const line = document.createElement("div");
-          line.className = "template-row";
-          line.innerHTML = `
-            <div class="template-hour">${row.hour}</div>
-            <div class="template-controls">
-              <select class="category-select template-category" data-day="${key}" data-index="${index}">
-                ${renderCategoryOptions(row.category)}
-              </select>
-              <input class="task-inline-input template-task" data-day="${key}" data-index="${index}" value="${escapeAttr(row.taskText || "")}" placeholder="Ex : AV; OG; appeler client" />
-            </div>
-          `;
-          holder.appendChild(line);
-        });
-      }
-    }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;");
-    }
-
-    function escapeAttr(str) {
-      return escapeHtml(str);
-    }
-
-    document.getElementById("applyTemplateBtn").addEventListener("click", applyTodayTemplate);
-    document.getElementById("resetDayBtn").addEventListener("click", resetDay);
-    document.getElementById("resetDoneBtn").addEventListener("click", resetDoneVisibility);
-
-    autoHideSwitch.addEventListener("click", () => {
-      state.autoHideDone = !state.autoHideDone;
-      saveState();
-      renderDay();
-    });
-
-    datePicker.addEventListener("change", (e) => {
-      selectedDate = e.target.value || getTodayString();
-      ensureDay(selectedDate);
-      renderDay();
-    });
-
-    longTermNotes.addEventListener("input", (e) => {
-      state.longTermNotes = e.target.value;
-      saveState();
-    });
-
-    document.getElementById("saveLongTermBtn").addEventListener("click", () => {
-      state.longTermNotes = longTermNotes.value;
-      saveState();
-      alert("Données long terme sauvegardées.");
-    });
-
-    document.getElementById("saveTemplatesBtn").addEventListener("click", () => {
-      document.querySelectorAll(".template-category").forEach(select => {
-        const day = select.dataset.day;
-        const index = Number(select.dataset.index);
-        state.templates[day][index].category = select.value;
-      });
-
-      document.querySelectorAll(".template-task").forEach(input => {
-        const day = input.dataset.day;
-        const index = Number(input.dataset.index);
-        state.templates[day][index].taskText = input.value;
-      });
-
-      saveState();
-      alert("Planning type sauvegardé.");
-    });
-
-    blocksContainer.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-action]");
-      if (!btn) return;
-
-      const action = btn.dataset.action;
-      const blockId = btn.dataset.id || btn.dataset.blockId;
-      const taskId = btn.dataset.taskId;
-      const day = getCurrentDay();
-
-      if (action === "add-task") {
-        const input = document.querySelector(`[data-input-task="${blockId}"]`);
-        if (input) {
-          addTask(blockId, input.value);
-          input.value = "";
-        }
-        return;
-      }
-
-      if (action === "toggle-task") {
-        const block = day.blocks.find(b => b.id === blockId);
-        const task = block?.tasks.find(t => t.id === taskId);
-        if (task) {
-          task.done = !task.done;
-          if (state.autoHideDone && task.done) {
-            task.hidden = true;
-          }
-        }
-      }
-
-      if (action === "delete-task") {
-        const block = day.blocks.find(b => b.id === blockId);
-        if (block) {
-          block.tasks = block.tasks.filter(t => t.id !== taskId);
-        }
-      }
-
-      saveState();
-      renderDay();
-    });
-
-    blocksContainer.addEventListener("change", (e) => {
-      const target = e.target;
-      const day = getCurrentDay();
-
-      if (target.dataset.action === "edit-category") {
-        const block = day.blocks.find(b => b.id === target.dataset.id);
-        if (block) {
-          block.category = target.value;
-          saveState();
-          renderDay();
-        }
-      }
-    });
-
-    blocksContainer.addEventListener("keydown", (e) => {
-      const input = e.target;
-      if (input.classList.contains("task-inline-input") && e.key === "Enter") {
-        const blockId = input.dataset.inputTask;
-        if (blockId) {
-          addTask(blockId, input.value);
-          input.value = "";
-        }
-      }
-    });
-
-    function init() {
-      selectedDate = getTodayString();
-      ensureDay(selectedDate);
-      longTermNotes.value = state.longTermNotes || "";
-      renderTemplates();
-      renderDay();
-    }
-
-    init();
-  </script>
-</body>
-</html>
+  </html>
