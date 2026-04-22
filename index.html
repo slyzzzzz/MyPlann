@@ -3016,7 +3016,8 @@ async function loadFromCloud() {
         revisionGoals: {
           ...defaultState.settings.revisionGoals,
           ...((cloudData.settings && cloudData.settings.revisionGoals) || {})
-qq      },
+        }
+      },
       presets: {
         ...defaultState.presets,
         ...(cloudData.presets || {})
