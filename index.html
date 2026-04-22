@@ -1038,8 +1038,8 @@
   <div class="footer-space"></div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 
     const STORAGE_KEY = "myplann-main";
     const BACKUP_KEY = "myplann-backup-auto";
@@ -3015,7 +3015,7 @@ async function loadFromCloud() {
         ...(cloudData.settings || {}),
         revisionGoals: {
           ...defaultState.settings.revisionGoals,
-          ...((cloudData.settings && cloudData.settings.revisionGoals) || {})
+         ((cloudData.settings && cloudData.settings.revisionGoals) || {})
         }
       },
       presets: {
@@ -3044,7 +3044,9 @@ async function loadFromCloud() {
   setInterval(maybeSendBlockReminders, 60000);
 }
 
-init();
+init().catch(err => {
+  console.error("Erreur init MyPlann :", err);
+});
   </script>
 </body>
 </html>
