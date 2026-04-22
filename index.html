@@ -1202,7 +1202,6 @@
         cloudStatus.textContent = "Cloud : erreur de sauvegarde";
         throw err;
       }
-    }
 
     async function loadFromCloud() {
       if (!cloudAvailable || !db) return null;
