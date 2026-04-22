@@ -132,8 +132,13 @@
       background: #1e2634;
     }
 
-    .section { display: none; }
-    .section.active { display: block; }
+    .section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}
 
     .panel {
       background: rgba(23,28,38,.96);
@@ -1485,98 +1490,99 @@
     }
 
     function renderDay() {
-      const day = getCurrentDay();
-      document.getElementById("datePicker").value = selectedDate;
-      document.getElementById("todayTitle").textContent = capitalize(formatDisplayDate(selectedDate));
-      document.getElementById("priorityInput").value = day.priority || "";
+  const day = getCurrentDay();
 
-      document.getElementById("toggleAutoTemplate").classList.toggle("active", !!state.settings.autoApplyTemplate);
-      document.getElementById("toggleHidePassed").classList.toggle("active", !!state.settings.hidePassedHours);
-      document.getElementById("toggleHideDone").classList.toggle("active", !!state.settings.hideDoneTasks);
-      document.getElementById("toggleEditCompleted").classList.toggle("active", !!state.settings.editCompletedTasks);
+  document.getElementById("datePicker").value = selectedDate;
+  document.getElementById("todayTitle").textContent = capitalize(formatDisplayDate(selectedDate));
+  document.getElementById("priorityInput").value = day.priority || "";
 
-      document.getElementById("workStart").value = state.presets.work.start;
-      document.getElementById("workEnd").value = state.presets.work.end;
-      document.getElementById("schoolStart").value = state.presets.school.start;
-      document.getElementById("schoolEnd").value = state.presets.school.end;
-      document.getElementById("studyStart").value = state.presets.study.start;
-      document.getElementById("studyEnd").value = state.presets.study.end;
-      document.getElementById("muscuStart").value = state.presets.muscu.start;
-      document.getElementById("muscuEnd").value = state.presets.muscu.end;
+  document.getElementById("toggleAutoTemplate").classList.toggle("active", !!state.settings.autoApplyTemplate);
+  document.getElementById("toggleHidePassed").classList.toggle("active", !!state.settings.hidePassedHours);
+  document.getElementById("toggleHideDone").classList.toggle("active", !!state.settings.hideDoneTasks);
+  document.getElementById("toggleEditCompleted").classList.toggle("active", !!state.settings.editCompletedTasks);
 
-      document.getElementById("revisionExamDateInput").value = state.settings.revisionExamDate;
-      document.getElementById("muscuWeeklyGoalInput").value = state.settings.muscuWeeklyGoal;
-      document.getElementById("goalAV").value = state.settings.revisionGoals.AV;
-      document.getElementById("goalOG").value = state.settings.revisionGoals.OG;
-      document.getElementById("goalETSO").value = state.settings.revisionGoals.ETSO;
-      document.getElementById("goalGestion").value = state.settings.revisionGoals.Gestion;
+  document.getElementById("workStart").value = state.presets.work.start;
+  document.getElementById("workEnd").value = state.presets.work.end;
+  document.getElementById("schoolStart").value = state.presets.school.start;
+  document.getElementById("schoolEnd").value = state.presets.school.end;
+  document.getElementById("studyStart").value = state.presets.study.start;
+  document.getElementById("studyEnd").value = state.presets.study.end;
+  document.getElementById("muscuStart").value = state.presets.muscu.start;
+  document.getElementById("muscuEnd").value = state.presets.muscu.end;
 
-      const blocksContainer = document.getElementById("blocksContainer");
-      blocksContainer.innerHTML = "";
+  const blocksContainer = document.getElementById("blocksContainer");
+  blocksContainer.innerHTML = "";
 
-      day.blocks.forEach((block) => {
-        if (shouldHideBlock(selectedDate, block)) return;
+  const blocksToShow = day.blocks.filter(block => {
+    if (selectedDate !== getTodayString()) return true;
+    if (!state.settings.hidePassedHours) return true;
+    if (block.hour === "00:00") return true;
+    return !isHourPassed(selectedDate, block.hour);
+  });
 
-        const visibleTasks = block.tasks.filter(t => {
-          if (state.settings.editCompletedTasks) return true;
-          if (state.settings.hideDoneTasks && t.done) return false;
-          if (t.hidden) return false;
-          return true;
-        });
+  const finalBlocks = blocksToShow.length > 0 ? blocksToShow : day.blocks;
 
-        const blockEl = document.createElement("div");
-        blockEl.className = `block ${getCategoryClass(block.category)}`;
+  finalBlocks.forEach((block) => {
+    const visibleTasks = block.tasks.filter(t => {
+      if (state.settings.editCompletedTasks) return true;
+      if (state.settings.hideDoneTasks && t.done) return false;
+      if (t.hidden) return false;
+      return true;
+    });
 
-        blockEl.innerHTML = `
-          <div class="block-top">
-            <div class="hour-badge">${block.hour}</div>
-            <div class="main-task-wrap">
-              <div class="category-chips">
-                ${renderCategoryChips(block)}
-              </div>
-              <input
-                class="main-task-input"
-                type="text"
-                value="${escapeAttr(block.mainTask || "")}"
-                placeholder="Écris ta tâche..."
-                data-action="edit-main-task"
-                data-id="${block.id}"
-              />
-            </div>
+    const blockEl = document.createElement("div");
+    blockEl.className = `block ${getCategoryClass(block.category)}`;
+
+    blockEl.innerHTML = `
+      <div class="block-top">
+        <div class="hour-badge">${block.hour}</div>
+        <div class="main-task-wrap">
+          <div class="category-chips">
+            ${renderCategoryChips(block)}
           </div>
+          <input
+            class="main-task-input"
+            type="text"
+            value="${escapeAttr(block.mainTask || "")}"
+            placeholder="Écris ta tâche..."
+            data-action="edit-main-task"
+            data-id="${block.id}"
+          />
+        </div>
+      </div>
 
-          <div>
-            ${visibleTasks.length === 0 ? `<div class="small" style="padding:2px 0 8px">Aucune sous-tâche</div>` : ""}
-            ${visibleTasks.map(task => `
-              <div class="task-row">
-                <input type="checkbox" class="checkbox" ${task.done ? "checked" : ""} data-action="toggle-task" data-block-id="${block.id}" data-task-id="${task.id}" />
-                <div class="task-text ${task.done ? "done" : ""}">${escapeHtml(task.text)}</div>
-                <button class="icon-btn" data-action="move-task" data-block-id="${block.id}" data-task-id="${task.id}">➡️</button>
-                <button class="icon-btn" data-action="delete-task" data-block-id="${block.id}" data-task-id="${task.id}">✕</button>
-              </div>
-            `).join("")}
+      <div>
+        ${visibleTasks.length === 0 ? `<div class="small" style="padding:2px 0 8px">Aucune sous-tâche</div>` : ""}
+        ${visibleTasks.map(task => `
+          <div class="task-row">
+            <input type="checkbox" class="checkbox" ${task.done ? "checked" : ""} data-action="toggle-task" data-block-id="${block.id}" data-task-id="${task.id}" />
+            <div class="task-text ${task.done ? "done" : ""}">${escapeHtml(task.text)}</div>
+            <button class="icon-btn" data-action="move-task" data-block-id="${block.id}" data-task-id="${task.id}">➡️</button>
+            <button class="icon-btn" data-action="delete-task" data-block-id="${block.id}" data-task-id="${task.id}">✕</button>
           </div>
+        `).join("")}
+      </div>
 
-          <div class="task-add">
-            <input class="subtask-input" placeholder="Ajouter une sous-tâche..." data-input-task="${block.id}" />
-            <button class="btn" data-action="add-task" data-id="${block.id}">+ sous-tâche</button>
-          </div>
+      <div class="task-add">
+        <input class="subtask-input" placeholder="Ajouter une sous-tâche..." data-input-task="${block.id}" />
+        <button class="btn" data-action="add-task" data-id="${block.id}">+ sous-tâche</button>
+      </div>
 
-          <div class="block-actions">
-            <div class="small">${block.reminderEnabled ? "Rappel actif" : "Pas de rappel"}</div>
-            <button class="btn remind" data-action="toggle-reminder" data-id="${block.id}">
-              ${block.reminderEnabled ? "Rappel ON" : "Me rappeler"}
-            </button>
-          </div>
-        `;
+      <div class="block-actions">
+        <div class="small">${block.reminderEnabled ? "Rappel actif" : "Pas de rappel"}</div>
+        <button class="btn remind" data-action="toggle-reminder" data-id="${block.id}">
+          ${block.reminderEnabled ? "Rappel ON" : "Me rappeler"}
+        </button>
+      </div>
+    `;
 
-        blocksContainer.appendChild(blockEl);
-      });
+    blocksContainer.appendChild(blockEl);
+  });
 
-      updateStats();
-      renderCompare();
-      renderRevision();
-    }
+  updateStats();
+  renderCompare();
+  renderRevision();
+}
 
     function updateStats() {
       const day = getCurrentDay();
@@ -3023,33 +3029,57 @@
       }
     });
 
-    async function init() {
-      const cloudData = await loadFromCloud();
-      if (cloudData) {
-        state = {
-          ...deepClone(defaultState),
-          ...cloudData,
-          settings: {
-            ...defaultState.settings,
-            ...(cloudData.settings || {}),
-            revisionGoals: {
-              ...defaultState.settings.revisionGoals,
-              ...((cloudData.settings && cloudData.settings.revisionGoals) || {})
-            }
-          },
-          presets: {
-            ...defaultState.presets,
-            ...(cloudData.presets || {})
-          },
-          revisionSheets: {
-            ...defaultState.revisionSheets,
-            ...(cloudData.revisionSheets || {})
-          }
-        };
+   async function init() {
+  const cloudData = await loadFromCloud();
 
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        localStorage.setItem(BACKUP_KEY, JSON.stringify(state));
+  if (cloudData) {
+    state = {
+      ...deepClone(defaultState),
+      ...cloudData,
+      settings: {
+        ...defaultState.settings,
+        ...(cloudData.settings || {}),
+        revisionGoals: {
+          ...defaultState.settings.revisionGoals,
+          ...((cloudData.settings && cloudData.settings.revisionGoals) || {})
+        }
+      },
+      presets: {
+        ...defaultState.presets,
+        ...(cloudData.presets || {})
+      },
+      revisionSheets: {
+        ...defaultState.revisionSheets,
+        ...(cloudData.revisionSheets || {})
       }
+    };
+  }
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  localStorage.setItem(BACKUP_KEY, JSON.stringify(state));
+
+  selectedDate = getTodayString();
+  ensureDay(selectedDate);
+
+  if (!state.days[selectedDate] || !state.days[selectedDate].blocks || state.days[selectedDate].blocks.length === 0) {
+    state.days[selectedDate] = {
+      priority: "",
+      blocks: createEmptyDayBlocks()
+    };
+  }
+
+  document.getElementById("longTermNotes").value = state.longTermNotes || "";
+
+  renderTemplates();
+  renderDay();
+  renderProgress();
+  renderCompletedTasksManager();
+  renderRevision();
+  renderRevisionSheets();
+
+  maybeSendBlockReminders();
+  setInterval(maybeSendBlockReminders, 60000);
+}
 
       selectedDate = getTodayString();
       ensureDay(selectedDate);
