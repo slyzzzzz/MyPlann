@@ -4703,11 +4703,24 @@
       saveState(); renderRevision(); renderProgress();
     });
 
-    document.getElementById("revisionContainer").addEventListener("click", (e) => {
-      const acc = e.target.closest("[data-revision-accordion]");
-      if (!acc) return;
-      acc.closest(".accordion-card").classList.toggle("open");
-    });
+    document.getElementById("revisionContainer").addEventListener("change", (e) => {
+  const input = e.target.closest("[data-revision-subject]");
+  if (!input) return;
+
+  const openCards = [...document.querySelectorAll('#revisionContainer .accordion-card.open')]
+    .map(card => card.querySelector('[data-revision-accordion]')?.dataset.revisionAccordion)
+    .filter(Boolean);
+
+  state.revisionChecklist[input.dataset.revisionSubject][input.dataset.revisionItem] = input.checked;
+  saveState();
+  renderRevision();
+  renderProgress();
+
+  openCards.forEach(subject => {
+    const btn = document.querySelector(`#revisionContainer [data-revision-accordion="${subject}"]`);
+    if (btn) btn.closest(".accordion-card").classList.add("open");
+  });
+});
 
     document.getElementById("revisionSheetsContainer").addEventListener("click", (e) => {
       const toggleBtn = e.target.closest("[data-sheet-toggle]");
