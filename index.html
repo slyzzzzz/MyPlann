@@ -774,6 +774,42 @@
     </div>
 
     <div id="revisionContainer" class="revision-cards"></div>
+      <div class="panel">
+  <div class="panel-title">
+    <div>
+      <h2>Fiches de révision</h2>
+      <p class="muted">Classe tes fiches par matière</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <select id="sheetSubject" class="filter-select">
+      <option value="AV">AV</option>
+      <option value="OG">OG</option>
+      <option value="ETSO">ETSO</option>
+      <option value="Gestion">Gestion</option>
+    </select>
+    <input type="text" id="sheetTitle" class="text-input" placeholder="Titre de la fiche" />
+  </div>
+
+  <textarea id="sheetContent" class="textarea" placeholder="Contenu de la fiche..."></textarea>
+
+  <div class="row" style="margin-top:10px">
+    <button class="btn success" id="saveSheetBtn">Sauvegarder la fiche</button>
+    <button class="btn" id="clearSheetBtn">Vider</button>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-title">
+    <div>
+      <h2>Mes fiches</h2>
+      <p class="muted">Toutes tes fiches par matière</p>
+    </div>
+  </div>
+
+  <div id="revisionSheetsContainer"></div>
+</div>
 
     <div class="panel">
       <div class="panel-title">
@@ -1101,6 +1137,12 @@
       longTermNotes: "",
       templates: createEmptyTemplates(),
       revisionChecklist: createRevisionChecklist(),
+        revisionSheets: {
+  AV: [],
+  OG: [],
+  ETSO: [],
+  Gestion: []
+},
       days: {}
     };
 
@@ -1183,6 +1225,10 @@
           });
         }
         merged.revisionChecklist = freshRevision;
+          merged.revisionSheets = {
+  ...defaultState.revisionSheets,
+  ...(parsed.revisionSheets || {})
+};
         merged.days = parsed.days || {};
 
         return merged;
@@ -2068,6 +2114,137 @@
     }
 
     function renderRevision() {
+        let editingSheetId = null;
+
+function saveRevisionSheet() {
+  const subject = document.getElementById("sheetSubject").value;
+  const title = document.getElementById("sheetTitle").value.trim();
+  const content = document.getElementById("sheetContent").value.trim();
+
+  if (!title || !content) {
+    alert("Remplis le titre et le contenu.");
+    return;
+  }
+
+  if (!state.revisionSheets[subject]) {
+    state.revisionSheets[subject] = [];
+  }
+
+  if (editingSheetId) {
+    let found = false;
+
+    Object.keys(state.revisionSheets).forEach(sub => {
+      state.revisionSheets[sub] = state.revisionSheets[sub].map(sheet => {
+        if (sheet.id === editingSheetId) {
+          found = true;
+          return {
+            ...sheet,
+            title,
+            content,
+            updatedAt: new Date().toISOString()
+          };
+        }
+        return sheet;
+      });
+    });
+
+    if (!found) {
+      state.revisionSheets[subject].push({
+        id: Date.now().toString(),
+        title,
+        content,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    }
+  } else {
+    state.revisionSheets[subject].push({
+      id: Date.now().toString(),
+      title,
+      content,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
+  }
+
+  editingSheetId = null;
+  document.getElementById("sheetTitle").value = "";
+  document.getElementById("sheetContent").value = "";
+
+  saveState();
+  renderRevisionSheets();
+}
+
+function clearRevisionSheetForm() {
+  editingSheetId = null;
+  document.getElementById("sheetTitle").value = "";
+  document.getElementById("sheetContent").value = "";
+}
+
+function editRevisionSheet(subject, sheetId) {
+  const sheet = (state.revisionSheets[subject] || []).find(s => s.id === sheetId);
+  if (!sheet) return;
+
+  editingSheetId = sheet.id;
+  document.getElementById("sheetSubject").value = subject;
+  document.getElementById("sheetTitle").value = sheet.title;
+  document.getElementById("sheetContent").value = sheet.content;
+}
+
+function deleteRevisionSheet(subject, sheetId) {
+  if (!confirm("Supprimer cette fiche ?")) return;
+
+  state.revisionSheets[subject] = (state.revisionSheets[subject] || []).filter(s => s.id !== sheetId);
+  saveState();
+  renderRevisionSheets();
+}
+
+function renderRevisionSheets() {
+  const container = document.getElementById("revisionSheetsContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const subjects = ["AV", "OG", "ETSO", "Gestion"];
+  let hasSheets = false;
+
+  subjects.forEach(subject => {
+    const sheets = state.revisionSheets[subject] || [];
+    if (sheets.length === 0) return;
+
+    hasSheets = true;
+
+    const card = document.createElement("div");
+    card.className = "revision-card";
+
+    const rows = sheets.map(sheet => `
+      <div class="accordion-card">
+        <button class="accordion-head" data-sheet-toggle="${sheet.id}">
+          <span>${escapeHtml(sheet.title)}</span>
+          <span>▾</span>
+        </button>
+        <div class="accordion-content" id="sheet-content-${sheet.id}">
+          <div class="small" style="white-space:pre-wrap; margin-bottom:12px;">${escapeHtml(sheet.content)}</div>
+          <div class="row">
+            <button class="btn" data-sheet-edit="${sheet.id}" data-sheet-subject="${subject}">Modifier</button>
+            <button class="btn danger" data-sheet-delete="${sheet.id}" data-sheet-subject="${subject}">Supprimer</button>
+          </div>
+        </div>
+      </div>
+    `).join("");
+
+    card.innerHTML = `
+      <h3>${subject}</h3>
+      ${rows}
+    `;
+
+    container.appendChild(card);
+  });
+
+  if (!hasSheets) {
+    container.innerHTML = `<div class="small">Aucune fiche enregistrée.</div>`;
+  }
+}
       const examDate = state.settings.revisionExamDate;
       document.getElementById("examDateDisplay").textContent =
         new Date(examDate + "T00:00:00").toLocaleDateString("fr-FR");
@@ -2342,6 +2519,7 @@
       renderProgress();
       renderCompletedTasksManager();
       renderRevision();
+      renderRevisionSheets();
     }
 
     const plusMenu = document.getElementById("plusMenu");
@@ -2472,6 +2650,30 @@
     document.getElementById("statLeftCard").addEventListener("click", () => showTodayTasksDetail("left"));
 
     document.getElementById("revisionContainer").addEventListener("change", (e) => {
+        document.getElementById("saveSheetBtn").addEventListener("click", saveRevisionSheet);
+document.getElementById("clearSheetBtn").addEventListener("click", clearRevisionSheetForm);
+
+document.getElementById("revisionSheetsContainer").addEventListener("click", (e) => {
+  const toggleBtn = e.target.closest("[data-sheet-toggle]");
+  if (toggleBtn) {
+    const id = toggleBtn.dataset.sheetToggle;
+    const content = document.getElementById(`sheet-content-${id}`);
+    const card = toggleBtn.closest(".accordion-card");
+    card.classList.toggle("open");
+    return;
+  }
+
+  const editBtn = e.target.closest("[data-sheet-edit]");
+  if (editBtn) {
+    editRevisionSheet(editBtn.dataset.sheetSubject, editBtn.dataset.sheetEdit);
+    return;
+  }
+
+  const deleteBtn = e.target.closest("[data-sheet-delete]");
+  if (deleteBtn) {
+    deleteRevisionSheet(deleteBtn.dataset.sheetSubject, deleteBtn.dataset.sheetDelete);
+  }
+});
       const input = e.target.closest("[data-revision-subject]");
       if (!input) return;
 
