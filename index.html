@@ -1167,23 +1167,6 @@
   } catch (err) {
     console.error("Cloud save error", err);
   }
-}
-
-  try {
-    const safePayload = JSON.parse(JSON.stringify(payload));
-
-    await setDoc(doc(db, "users", CLOUD_USER_ID), {
-      data: safePayload,
-      updatedAt: new Date().toISOString()
-    });
-
-    console.log("Cloud save OK");
-    cloudStatus.textContent = "Cloud : sauvegardé";
-
-  } catch (err) {
-    console.error("Cloud save error", err);
-    cloudStatus.textContent = "Cloud : erreur de sauvegarde";
-  }
 
   try {
     const safePayload = JSON.parse(JSON.stringify(payload));
