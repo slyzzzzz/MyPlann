@@ -478,7 +478,7 @@
     // ✅ IMPORTS FIREBASE CORRIGES — version 11.7.1 partout
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-storage.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-storage.js";
 
     const STORAGE_KEY = "myplann-main";
     const BACKUP_KEY = "myplann-backup-auto";
@@ -549,7 +549,7 @@
       apiKey: "AIzaSyCJuERKoICwfhEM4D7bSXHN7BYAe5APyZo",
       authDomain: "myplann-1af8e.firebaseapp.com",
       projectId: "myplann-1af8e",
-      storageBucket: "myplann-1af8e.firebasestorage.app",
+      storageBucket: "myplann-1af8e.appspot.com",
       messagingSenderId: "593785848033",
       appId: "1:593785848033:web:5be2508a0b03ba80b937a0"
     };
@@ -1327,67 +1327,73 @@
     }
 
     // ✅ saveRevisionSheet — version unique, propre, avec Firebase Storage
-    async function saveRevisionSheet() {
-      const subject = document.getElementById("sheetSubject").value;
-      const title = document.getElementById("sheetTitle").value.trim();
-      const content = document.getElementById("sheetContent").value.trim();
-      const fileInput = document.getElementById("sheetFile");
-      const file = fileInput.files[0];
+   async function saveRevisionSheet() {
+  const subject = document.getElementById("sheetSubject").value;
+  const title = document.getElementById("sheetTitle").value.trim();
+  const content = document.getElementById("sheetContent").value.trim();
+  const fileInput = document.getElementById("sheetFile");
+  const file = fileInput.files[0];
 
-      if (!title) { alert("Mets un nom au fichier ou à la fiche."); return; }
-      if (file && file.size > 5 * 1024 * 1024) { alert("Fichier trop lourd (max 5MB)."); return; }
+  if (!title) {
+    alert("Mets un nom au fichier ou à la fiche.");
+    return;
+  }
 
-      let fileData = null;
-      let fileName = null;
+  let fileUrl = null;
+  let fileName = null;
 
-      // Upload dans Firebase Storage si fichier sélectionné
-      if (file && storage) {
-        try {
-          const sheetId = editingSheetId || uid();
-          const storageRef = ref(storage, `sheets/${CLOUD_USER_ID}/${sheetId}/${file.name}`);
-          await uploadBytes(storageRef, file);
-          fileData = await getDownloadURL(storageRef);
-          fileName = file.name;
-        } catch (err) {
-          console.error("Upload erreur:", err);
-          alert("Erreur lors de l'upload du fichier.");
-          return;
-        }
-      }
+  try {
+    if (file) {
+      const sheetId = editingSheetId || Date.now().toString();
+      const storageRef = ref(storage, `sheets/${sheetId}/${file.name}`);
 
-      if (!state.revisionSheets[subject]) state.revisionSheets[subject] = [];
-
-      if (editingSheetId) {
-        let found = false;
-        SUBJECTS.forEach(sub => {
-          state.revisionSheets[sub] = state.revisionSheets[sub].map(sheet => {
-            if (sheet.id === editingSheetId) {
-              found = true;
-              return {
-                ...sheet, title, content,
-                fileData: fileData !== null ? fileData : sheet.fileData || null,
-                fileName: fileName !== null ? fileName : sheet.fileName || null,
-                updatedAt: new Date().toISOString()
-              };
-            }
-            return sheet;
-          });
-        });
-        if (!found) {
-          state.revisionSheets[subject].push({ id: uid(), title, content, fileData, fileName, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
-        }
-      } else {
-        state.revisionSheets[subject].push({ id: uid(), title, content, fileData, fileName, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
-      }
-
-      editingSheetId = null;
-      document.getElementById("sheetTitle").value = "";
-      document.getElementById("sheetContent").value = "";
-      document.getElementById("sheetFile").value = "";
-      saveState();
-      renderRevisionSheets();
-      alert("Fiche sauvegardée ✅");
+      await uploadBytes(storageRef, file);
+      fileUrl = await getDownloadURL(storageRef);
+      fileName = file.name;
     }
+
+    if (!state.revisionSheets[subject]) {
+      state.revisionSheets[subject] = [];
+    }
+
+    if (editingSheetId) {
+      SUBJECTS.forEach(sub => {
+        state.revisionSheets[sub] = state.revisionSheets[sub].map(sheet => {
+          if (sheet.id === editingSheetId) {
+            return {
+              ...sheet,
+              title,
+              content,
+              fileData: fileUrl || sheet.fileData,
+              fileName: fileName || sheet.fileName,
+              updatedAt: new Date().toISOString()
+            };
+          }
+          return sheet;
+        });
+      });
+    } else {
+      state.revisionSheets[subject].push({
+        id: Date.now().toString(),
+        title,
+        content,
+        fileData: fileUrl,
+        fileName,
+        createdAt: new Date().toISOString()
+      });
+    }
+
+    clearRevisionSheetForm();
+    saveState();
+    renderRevisionSheets();
+
+    alert("Fiche sauvegardée ✅");
+
+  } catch (err) {
+    console.error(err);
+    alert("Erreur upload : " + err.message);
+  }
+}
 
     function clearRevisionSheetForm() {
       editingSheetId = null;
