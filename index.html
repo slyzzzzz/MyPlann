@@ -15,6 +15,7 @@
       --line:#2a3447;
       --radius:18px;
       --shadow:0 12px 28px rgba(0,0,0,.28);
+
       --cat-default:#5da2ff;
       --cat-work:#f59e0b;
       --cat-study:#22c55e;
@@ -23,41 +24,167 @@
       --cat-course:#06b6d4;
       --cat-muscu:#7c5cff;
     }
+
     * { box-sizing: border-box; }
     html, body {
-      margin: 0; padding: 0;
+      margin: 0;
+      padding: 0;
       background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
       color: var(--text);
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    body { max-width: 720px; margin: 0 auto; min-height: 100vh; padding: 14px 14px 120px; }
+
+    body {
+      max-width: 720px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 14px 14px 120px;
+    }
+
     h1, h2, h3, p { margin: 0; }
-    button, input, textarea, select { font: inherit; border: none; outline: none; }
+    button, input, textarea, select {
+      font: inherit;
+      border: none;
+      outline: none;
+    }
+
     .topbar {
-      position: sticky; top: 0; z-index: 50;
+      position: sticky;
+      top: 0;
+      z-index: 50;
       backdrop-filter: blur(16px);
       background: rgba(15,17,21,.92);
-      padding: 10px 0 12px; margin-bottom: 10px;
+      padding: 10px 0 12px;
+      margin-bottom: 10px;
     }
-    .app-title { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .app-title h1 { font-size: 1.55rem; font-weight: 900; letter-spacing: .2px; }
-    .sub { color: var(--muted); font-size: .93rem; margin-top: 4px; }
-    .tabs { display: grid; grid-template-columns: 1fr auto; gap: 10px; position: relative; }
-    .tab { padding: 12px 10px; border-radius: 14px; background: var(--panel); color: var(--muted); font-weight: 800; border: 1px solid var(--line); cursor: pointer; text-align: center; }
-    .tab.active { background: linear-gradient(180deg,#22314d,#182235); color: #fff; border-color: #385788; }
-    .plus-menu { position: absolute; right: 0; top: 56px; width: 230px; background: #141a24; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 8px; display: none; z-index: 80; }
+
+    .app-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .app-title h1 {
+      font-size: 1.55rem;
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: .93rem;
+      margin-top: 4px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      position: relative;
+    }
+
+    .tab {
+      padding: 12px 10px;
+      border-radius: 14px;
+      background: var(--panel);
+      color: var(--muted);
+      font-weight: 800;
+      border: 1px solid var(--line);
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .tab.active {
+      background: linear-gradient(180deg,#22314d,#182235);
+      color: #fff;
+      border-color: #385788;
+    }
+
+    .plus-menu {
+      position: absolute;
+      right: 0;
+      top: 56px;
+      width: 230px;
+      background: #141a24;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 8px;
+      display: none;
+      z-index: 80;
+    }
+
     .plus-menu.open { display: block; }
-    .plus-item { width: 100%; text-align: left; background: transparent; color: var(--text); padding: 12px; border-radius: 12px; cursor: pointer; }
-    .plus-item:hover { background: #1e2634; }
+
+    .plus-item {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      color: var(--text);
+      padding: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .plus-item:hover {
+      background: #1e2634;
+    }
+
     .section { display: none; }
     .section.active { display: block; }
-    .panel { background: rgba(23,28,38,.96); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; margin-bottom: 14px; }
-    .panel-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-    .panel-title h2 { font-size: 1.04rem; font-weight: 900; }
-    .muted { color: var(--muted); font-size: .9rem; }
-    .small { font-size: .83rem; color: var(--muted); line-height: 1.45; }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn { background: var(--panel2); color: var(--text); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; font-weight: 800; cursor: pointer; transition: .15s transform ease; }
+
+    .panel {
+      background: rgba(23,28,38,.96);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .panel-title h2 {
+      font-size: 1.04rem;
+      font-weight: 900;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .small {
+      font-size: .83rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .15s transform ease;
+    }
+
     .btn:active { transform: scale(.98); }
     .btn.primary { background: linear-gradient(180deg,#4d8ef0,#3d73c2); border-color: #5d96ee; }
     .btn.success { background: linear-gradient(180deg,#2c8d63,#226a4b); border-color: #3faa78; }
@@ -65,25 +192,88 @@
     .btn.danger { background: linear-gradient(180deg,#8b3232,#672626); border-color: #a85050; }
     .btn.remind { background: linear-gradient(180deg,#6b5cff,#4c3ed6); border-color: #8578ff; }
     .btn.full { width: 100%; }
+
     .date-input, .text-input, .textarea, .main-task-input, .subtask-input, .time-input, .filter-select, .number-input, .file-input {
-      width: 100%; background: #0d121b; color: var(--text); border: 1px solid #2b3648; border-radius: 12px; padding: 12px;
+      width: 100%;
+      background: #0d121b;
+      color: var(--text);
+      border: 1px solid #2b3648;
+      border-radius: 12px;
+      padding: 12px;
     }
-    .textarea { min-height: 120px; resize: vertical; }
+
+    .textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
     .divider { height: 1px; background: rgba(255,255,255,.07); margin: 14px 0; }
     .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
     .stat { background: #101722; border: 1px solid #283244; border-radius: 15px; padding: 12px; text-align: center; }
     .stat.clickable { cursor: pointer; }
     .stat .n { display: block; font-size: 1.15rem; font-weight: 900; margin-bottom: 4px; }
+
     .priority-box { background: #1a2332; border: 1px solid #32405a; border-radius: 14px; padding: 14px; margin-bottom: 10px; }
     .priority-label { font-weight: 900; color: #ffcc00; margin-bottom: 8px; }
-    .switch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid rgba(255,255,255,.06); }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
     .switch-row:first-child { border-top: none; padding-top: 0; }
-    .switch { position: relative; width: 54px; height: 32px; background: #2c3444; border-radius: 999px; cursor: pointer; border: 1px solid #3a4558; transition: .2s; flex-shrink: 0; }
-    .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; background: #fff; border-radius: 50%; transition: .2s; }
+
+    .switch {
+      position: relative;
+      width: 54px;
+      height: 32px;
+      background: #2c3444;
+      border-radius: 999px;
+      cursor: pointer;
+      border: 1px solid #3a4558;
+      transition: .2s;
+      flex-shrink: 0;
+    }
+
+    .switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 24px;
+      height: 24px;
+      background: #fff;
+      border-radius: 50%;
+      transition: .2s;
+    }
+
     .switch.active { background: #2d7ff0; border-color: #5ea0ff; }
     .switch.active::after { left: 25px; }
-    .badge { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 34px; padding: 0 10px; border-radius: 999px; background: #202a39; border: 1px solid #33445f; font-weight: 900; }
-    .block { border-radius: 16px; padding: 12px; margin-bottom: 12px; border: 1px solid #273043; background: #11161f; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 34px;
+      height: 34px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: #202a39;
+      border: 1px solid #33445f;
+      font-weight: 900;
+    }
+
+    .block {
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #273043;
+      background: #11161f;
+    }
+
     .cat-default { border-left: 6px solid var(--cat-default); background: linear-gradient(90deg, rgba(93,162,255,.14), rgba(17,22,31,1) 32%); }
     .cat-work { border-left: 6px solid var(--cat-work); background: linear-gradient(90deg, rgba(245,158,11,.14), rgba(17,22,31,1) 32%); }
     .cat-study { border-left: 6px solid var(--cat-study); background: linear-gradient(90deg, rgba(34,197,94,.14), rgba(17,22,31,1) 32%); }
@@ -91,11 +281,22 @@
     .cat-perso { border-left: 6px solid var(--cat-perso); background: linear-gradient(90deg, rgba(239,68,68,.14), rgba(17,22,31,1) 32%); }
     .cat-course { border-left: 6px solid var(--cat-course); background: linear-gradient(90deg, rgba(6,182,212,.14), rgba(17,22,31,1) 32%); }
     .cat-muscu { border-left: 6px solid var(--cat-muscu); background: linear-gradient(90deg, rgba(124,92,255,.14), rgba(17,22,31,1) 32%); }
+
     .block-top { display: grid; grid-template-columns: 74px 1fr; gap: 10px; align-items: start; margin-bottom: 10px; }
     .hour-badge { text-align: center; padding: 12px 8px; border-radius: 12px; background: #0d121b; border: 1px solid #2b3648; font-weight: 900; letter-spacing: .2px; }
     .main-task-wrap { display: grid; gap: 8px; margin-bottom: 10px; }
     .category-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-    .chip { padding: 9px 11px; border-radius: 999px; border: 1px solid #33435d; background: #151d2a; color: #d9e2f3; font-weight: 800; font-size: .84rem; cursor: pointer; }
+
+    .chip {
+      padding: 9px 11px;
+      border-radius: 999px;
+      border: 1px solid #33435d;
+      background: #151d2a;
+      color: #d9e2f3;
+      font-weight: 800;
+      font-size: .84rem;
+      cursor: pointer;
+    }
     .chip.active { background: #2b446d; border-color: #6ca4ff; color: #fff; }
     .chip[data-cat="Travail"].active { background:#6c4708; border-color:#f59e0b; }
     .chip[data-cat="Révisions"].active { background:#12492a; border-color:#22c55e; }
@@ -103,19 +304,36 @@
     .chip[data-cat="Perso"].active { background:#6c1d1d; border-color:#ef4444; }
     .chip[data-cat="Cours"].active { background:#0d4c57; border-color:#06b6d4; }
     .chip[data-cat="Muscu"].active { background:#4a36b8; border-color:#7c5cff; }
+
     .task-row { display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid rgba(255,255,255,.05); }
     .task-row:first-child { border-top: none; }
     .checkbox { width: 22px; height: 22px; accent-color: #4e90f5; cursor: pointer; }
     .task-text.done { text-decoration: line-through; opacity: .55; }
-    .icon-btn { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: #1b2230; color: #fff; border: 1px solid #32405a; cursor: pointer; flex-shrink: 0; }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: #1b2230;
+      color: #fff;
+      border: 1px solid #32405a;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
     .task-add { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 8px; }
     .block-actions { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 10px; align-items: center; }
+
     .accordion-card { background: #11161f; border: 1px solid #273043; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
     .accordion-head { width: 100%; text-align: left; padding: 14px; background: #141a24; color: #fff; border: none; font-weight: 900; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
     .accordion-content { display: none; padding: 12px; border-top: 1px solid #273043; }
     .accordion-card.open .accordion-content { display: block; }
+
     .template-row { display: grid; grid-template-columns: 70px 1fr; gap: 8px; align-items: start; margin-bottom: 12px; }
     .template-hour { text-align: center; padding: 10px 6px; border-radius: 10px; background: #0d121b; border: 1px solid #2b3648; font-weight: 800; font-size: .9rem; }
+
     .preset-setting, .goal-card { border: 1px solid #2b3648; border-radius: 14px; padding: 12px; margin-top: 10px; background: #121823; }
     .preset-setting h3, .goal-card h3 { font-size: 1rem; margin-bottom: 10px; }
     .preset-grid, .goal-grid, .file-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -130,8 +348,11 @@
     .sheet-file-link:hover { text-decoration: underline; }
     .revision-summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
     .footer-space { height: 20px; }
+
     @media (max-width: 640px) {
-      .stats, .revision-summary, .goal-grid, .preset-grid, .file-grid, .progress-filter { grid-template-columns: 1fr; }
+      .stats, .revision-summary, .goal-grid, .preset-grid, .file-grid, .progress-filter {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -144,9 +365,11 @@
       </div>
       <div class="badge" id="disciplineBadge">0%</div>
     </div>
+
     <div class="tabs">
-      <button class="tab active" id="tabToday">Aujourd'hui</button>
+      <button class="tab active" id="tabToday">Aujourd’hui</button>
       <button class="tab" id="tabPlus">+</button>
+
       <div class="plus-menu" id="plusMenu">
         <button class="plus-item" data-open-section="progress">📊 Progression</button>
         <button class="plus-item" data-open-section="revision">📚 Révision</button>
@@ -160,13 +383,15 @@
     <div class="panel">
       <div class="panel-title">
         <div>
-          <h2 id="todayTitle">Aujourd'hui</h2>
+          <h2 id="todayTitle">Aujourd’hui</h2>
           <p class="muted">Simple, rapide, propre</p>
         </div>
       </div>
+
       <div class="row" style="margin-bottom:10px">
         <input type="date" id="datePicker" class="date-input" />
       </div>
+
       <div class="priority-box">
         <div class="priority-label">🔥 PRIORITÉ DU JOUR</div>
         <div class="row">
@@ -174,15 +399,19 @@
           <button class="btn primary" id="savePriorityBtn">Sauver</button>
         </div>
       </div>
+
       <div class="row" style="margin-bottom:8px">
         <button class="btn primary full" id="applyTemplateBtn">Appliquer le modèle</button>
       </div>
+
       <div class="row">
         <button class="btn success" id="prepareTomorrowBtn">Préparer demain</button>
         <button class="btn" id="copyYesterdayBtn">Copier hier</button>
-        <button class="btn primary" id="goTodayBtn">Revenir à aujourd'hui</button>
+        <button class="btn primary" id="goTodayBtn">Revenir à aujourd’hui</button>
       </div>
+
       <div class="divider"></div>
+
       <div class="stats">
         <div class="stat clickable" id="statTotalCard">
           <span class="n" id="statTotal">0</span>
@@ -212,7 +441,7 @@
     <div class="panel">
       <div class="panel-title">
         <div>
-          <h2>Aujourd'hui vs Hier</h2>
+          <h2>Aujourd’hui vs Hier</h2>
           <p class="muted">Petit boost de motivation</p>
         </div>
       </div>
@@ -240,12 +469,14 @@
           <p class="muted">Suivi global</p>
         </div>
       </div>
+
       <div class="progress-filter">
         <select id="progressRange" class="filter-select">
           <option value="week">Semaine</option>
           <option value="month">Mois</option>
           <option value="total">Total</option>
         </select>
+
         <select id="progressMode" class="filter-select">
           <option value="categories">Par catégorie</option>
           <option value="tasks">Par tâches</option>
@@ -253,13 +484,24 @@
         </select>
       </div>
     </div>
+
     <div class="panel">
       <div class="stats">
-        <div class="stat"><span class="n" id="progressCompleted">0</span><span class="small">Terminées</span></div>
-        <div class="stat"><span class="n" id="progressDays">0</span><span class="small">Jours actifs</span></div>
-        <div class="stat"><span class="n" id="progressTop">-</span><span class="small">Top catégorie</span></div>
+        <div class="stat">
+          <span class="n" id="progressCompleted">0</span>
+          <span class="small">Terminées</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="progressDays">0</span>
+          <span class="small">Jours actifs</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="progressTop">-</span>
+          <span class="small">Top catégorie</span>
+        </div>
       </div>
     </div>
+
     <div id="progressContainer" class="progress-cards"></div>
   </section>
 
@@ -281,6 +523,7 @@
           <p class="muted">Choisir la matière, renommer le document, valider</p>
         </div>
       </div>
+
       <div class="file-grid">
         <select id="sheetSubject" class="filter-select">
           <option value="AV">AV</option>
@@ -290,10 +533,13 @@
         </select>
         <input type="text" id="sheetTitle" class="text-input" placeholder="Nom du fichier / fiche" />
       </div>
+
       <textarea id="sheetContent" class="textarea" placeholder="Notes ou résumé optionnel..."></textarea>
+
       <div class="row" style="margin-top:10px">
         <input type="file" id="sheetFile" class="file-input" />
       </div>
+
       <div class="row" style="margin-top:10px">
         <button class="btn success" id="saveSheetBtn">Valider</button>
         <button class="btn" id="clearSheetBtn">Vider</button>
@@ -307,10 +553,20 @@
           <p class="muted">2016 à 2025, en liste déroulante par matière</p>
         </div>
       </div>
+
       <div class="revision-summary">
-        <div class="stat"><span class="n" id="examDateDisplay">15/05/2026</span><span class="small">Date épreuve</span></div>
-        <div class="stat"><span class="n" id="daysLeftDisplay">0</span><span class="small">Jours restants</span></div>
-        <div class="stat"><span class="n" id="revisionGlobalPercent">0%</span><span class="small">Progression globale</span></div>
+        <div class="stat">
+          <span class="n" id="examDateDisplay">15/05/2026</span>
+          <span class="small">Date épreuve</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="daysLeftDisplay">0</span>
+          <span class="small">Jours restants</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="revisionGlobalPercent">0%</span>
+          <span class="small">Progression globale</span>
+        </div>
       </div>
     </div>
 
@@ -324,9 +580,18 @@
         </div>
       </div>
       <div class="stats">
-        <div class="stat"><span class="n" id="muscuDoneWeek">0</span><span class="small">Séances faites</span></div>
-        <div class="stat"><span class="n" id="muscuGoalWeek">0</span><span class="small">Objectif semaine</span></div>
-        <div class="stat"><span class="n" id="muscuPercentWeek">0%</span><span class="small">Progression</span></div>
+        <div class="stat">
+          <span class="n" id="muscuDoneWeek">0</span>
+          <span class="small">Séances faites</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="muscuGoalWeek">0</span>
+          <span class="small">Objectif semaine</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="muscuPercentWeek">0%</span>
+          <span class="small">Progression</span>
+        </div>
       </div>
     </div>
   </section>
@@ -339,15 +604,14 @@
           <p class="muted">Objectifs, idées, rappels, dossiers</p>
         </div>
       </div>
-      <textarea id="longTermNotes" class="textarea" placeholder="Exemple :
-- Objectif BTS
-- Dossiers clients
-- Habitudes importantes
-- Objectifs du mois"></textarea>
+
+      <textarea id="longTermNotes" class="textarea" placeholder="Exemple :&#10;- Objectif BTS&#10;- Dossiers clients&#10;- Habitudes importantes&#10;- Objectifs du mois"></textarea>
+
       <div class="row" style="margin-top:10px">
         <button class="btn success full" id="saveLongTermBtn">Sauvegarder</button>
       </div>
     </div>
+
     <div class="panel">
       <div class="panel-title">
         <div>
@@ -355,7 +619,9 @@
           <p class="muted">Un jour à la fois</p>
         </div>
       </div>
+
       <div id="templatesContainer"></div>
+
       <button class="btn success full" id="saveTemplatesBtn">Sauvegarder les modèles</button>
     </div>
   </section>
@@ -368,20 +634,36 @@
           <p class="muted">Automatismes</p>
         </div>
       </div>
+
       <div class="switch-row">
-        <div><strong>Appliquer le modèle automatiquement</strong><div class="small">Si le jour est vide, ton modèle se charge tout seul</div></div>
+        <div>
+          <strong>Appliquer le modèle automatiquement</strong>
+          <div class="small">Si le jour est vide, ton modèle se charge tout seul</div>
+        </div>
         <div class="switch" id="toggleAutoTemplate"></div>
       </div>
+
       <div class="switch-row">
-        <div><strong>Les heures passées disparaissent</strong><div class="small">Le menu reste plus court</div></div>
+        <div>
+          <strong>Les heures passées disparaissent</strong>
+          <div class="small">Le menu reste plus court</div>
+        </div>
         <div class="switch" id="toggleHidePassed"></div>
       </div>
+
       <div class="switch-row">
-        <div><strong>Masquer automatiquement les tâches finies</strong><div class="small">Une tâche cochée disparaît</div></div>
+        <div>
+          <strong>Masquer automatiquement les tâches finies</strong>
+          <div class="small">Une tâche cochée disparaît</div>
+        </div>
         <div class="switch" id="toggleHideDone"></div>
       </div>
+
       <div class="switch-row">
-        <div><strong>Modifier les tâches terminées</strong><div class="small">Affiche les tâches faites pour les corriger ou supprimer</div></div>
+        <div>
+          <strong>Modifier les tâches terminées</strong>
+          <div class="small">Affiche les tâches faites pour les corriger ou supprimer</div>
+        </div>
         <div class="switch" id="toggleEditCompleted"></div>
       </div>
     </div>
@@ -389,10 +671,11 @@
     <div class="panel">
       <div class="panel-title">
         <div>
-          <h2>Aujourd'hui</h2>
+          <h2>Aujourd’hui</h2>
           <p class="muted">Personnalisation</p>
         </div>
       </div>
+
       <div class="preset-setting">
         <h3>Presets rapides</h3>
         <div class="preset-grid">
@@ -400,21 +683,25 @@
           <input type="time" id="workEnd" class="time-input" />
         </div>
         <div class="small" style="margin-top:8px;">Travail</div>
+
         <div class="preset-grid" style="margin-top:10px;">
           <input type="time" id="schoolStart" class="time-input" />
           <input type="time" id="schoolEnd" class="time-input" />
         </div>
         <div class="small" style="margin-top:8px;">École</div>
+
         <div class="preset-grid" style="margin-top:10px;">
           <input type="time" id="studyStart" class="time-input" />
           <input type="time" id="studyEnd" class="time-input" />
         </div>
         <div class="small" style="margin-top:8px;">Révisions</div>
+
         <div class="preset-grid" style="margin-top:10px;">
           <input type="time" id="muscuStart" class="time-input" />
           <input type="time" id="muscuEnd" class="time-input" />
         </div>
         <div class="small" style="margin-top:8px;">Muscu</div>
+
         <div class="row" style="margin-top:12px">
           <button class="btn success full" id="savePresetSettingsBtn">Sauvegarder les presets</button>
         </div>
@@ -428,6 +715,7 @@
           <p class="muted">Objectifs personnalisables</p>
         </div>
       </div>
+
       <div class="goal-card">
         <h3>Révision</h3>
         <div class="goal-grid">
@@ -435,12 +723,14 @@
           <input type="number" id="muscuWeeklyGoalInput" class="number-input" min="0" />
         </div>
         <div class="small" style="margin-top:8px;">Date examen / Objectif muscu semaine</div>
+
         <div class="goal-grid" style="margin-top:12px;">
           <input type="number" id="goalAV" class="number-input" min="0" placeholder="Objectif AV" />
           <input type="number" id="goalOG" class="number-input" min="0" placeholder="Objectif OG" />
           <input type="number" id="goalETSO" class="number-input" min="0" placeholder="Objectif ETSO" />
           <input type="number" id="goalGestion" class="number-input" min="0" placeholder="Objectif Gestion" />
         </div>
+
         <div class="row" style="margin-top:12px">
           <button class="btn success full" id="saveGoalsBtn">Sauvegarder les objectifs</button>
         </div>
@@ -475,17 +765,22 @@
   <div class="footer-space"></div>
 
   <script type="module">
-    // ✅ IMPORTS FIREBASE CORRIGES — version 11.7.1 partout
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-storage.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-storage.js";
 
     const STORAGE_KEY = "myplann-main";
     const BACKUP_KEY = "myplann-backup-auto";
     const LEGACY_KEYS = [
-      "myplann","myplann-boss-final-v3","myplann-boss-final-v4","myplann-boss-final-v5",
-      "myplann-boss-complete-v1","myplann-boss-complete-v2","myplann-boss-complete-v3",
-      "myplann-boss-complete-v4","myplann-boss-complete-v5"
+      "myplann",
+      "myplann-boss-final-v3",
+      "myplann-boss-final-v4",
+      "myplann-boss-final-v5",
+      "myplann-boss-complete-v1",
+      "myplann-boss-complete-v2",
+      "myplann-boss-complete-v3",
+      "myplann-boss-complete-v4",
+      "myplann-boss-complete-v5"
     ];
 
     const WEEK_DAYS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
@@ -493,12 +788,9 @@
       "08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00",
       "17:00","18:00","19:00","20:00","21:00","22:00","23:00","00:00"
     ];
-    const CATEGORY_OPTIONS = ["À faire","Travail","Révisions","Client","Perso","Cours","Muscu"];
+    const CATEGORY_OPTIONS = ["À faire", "Travail", "Révisions", "Client", "Perso", "Cours", "Muscu"];
     const YEARS = Array.from({length: 10}, (_, i) => 2016 + i);
-    const SUBJECTS = ["AV","OG","ETSO","Gestion"];
-
-    // ✅ CLOUD_USER_ID déclaré ici
-    const CLOUD_USER_ID = "atilla-main";
+    const SUBJECTS = ["AV", "OG", "ETSO", "Gestion"];
 
     function createAnnaleName(subject, year) {
       if (subject === "AV") return `ANAV ${year}`;
@@ -511,7 +803,9 @@
       const checklist = {};
       SUBJECTS.forEach(subject => {
         checklist[subject] = {};
-        YEARS.forEach(year => { checklist[subject][createAnnaleName(subject, year)] = false; });
+        YEARS.forEach(year => {
+          checklist[subject][createAnnaleName(subject, year)] = false;
+        });
       });
       return checklist;
     }
@@ -519,29 +813,50 @@
     function createEmptyTemplates() {
       const templates = {};
       for (let d = 0; d < 7; d++) {
-        templates[String(d)] = HOURS.map(hour => ({ hour, categories: ["À faire"], mainTask: "", subTaskText: "" }));
+        templates[String(d)] = HOURS.map(hour => ({
+          hour,
+          categories: ["À faire"],
+          mainTask: "",
+          subTaskText: ""
+        }));
       }
       return templates;
     }
 
-    function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
+    function deepClone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
 
     const defaultState = {
       settings: {
-        autoApplyTemplate: true, hidePassedHours: true, hideDoneTasks: true,
-        editCompletedTasks: false, revisionExamDate: "2026-05-15", muscuWeeklyGoal: 3,
-        revisionGoals: { AV: 10, OG: 10, ETSO: 10, Gestion: 10 }
+        autoApplyTemplate: true,
+        hidePassedHours: true,
+        hideDoneTasks: true,
+        editCompletedTasks: false,
+        revisionExamDate: "2026-05-15",
+        muscuWeeklyGoal: 3,
+        revisionGoals: {
+          AV: 10,
+          OG: 10,
+          ETSO: 10,
+          Gestion: 10
+        }
       },
       presets: {
-        work:   { start: "10:00", end: "19:00", category: "Travail",   label: "Travail" },
-        school: { start: "08:00", end: "18:00", category: "Cours",     label: "École" },
-        study:  { start: "19:00", end: "22:00", category: "Révisions", label: "Révisions" },
-        muscu:  { start: "20:00", end: "21:00", category: "Muscu",     label: "Muscu" }
+        work: { start: "10:00", end: "19:00", category: "Travail", label: "Travail" },
+        school: { start: "08:00", end: "18:00", category: "Cours", label: "École" },
+        study: { start: "19:00", end: "22:00", category: "Révisions", label: "Révisions" },
+        muscu: { start: "20:00", end: "21:00", category: "Muscu", label: "Muscu" }
       },
       longTermNotes: "",
       templates: createEmptyTemplates(),
       revisionChecklist: createRevisionChecklist(),
-      revisionSheets: { AV: [], OG: [], ETSO: [], Gestion: [] },
+      revisionSheets: {
+        AV: [],
+        OG: [],
+        ETSO: [],
+        Gestion: []
+      },
       days: {}
     };
 
@@ -554,10 +869,10 @@
       appId: "1:593785848033:web:5be2508a0b03ba80b937a0"
     };
 
-    // ✅ Variables globales Firebase
     let db = null;
     let storage = null;
     let cloudAvailable = false;
+    const CLOUD_USER_ID = "atilla-main";
     const cloudStatus = document.getElementById("cloudStatus");
 
     try {
@@ -565,9 +880,9 @@
       db = getFirestore(app);
       storage = getStorage(app);
       cloudAvailable = true;
-      cloudStatus.textContent = "Cloud : Firebase prêt";
+      if (cloudStatus) cloudStatus.textContent = "Cloud : Firebase prêt";
     } catch (err) {
-      cloudStatus.textContent = "Cloud : erreur d'initialisation";
+      if (cloudStatus) cloudStatus.textContent = "Cloud : erreur d'initialisation";
       console.error("Firebase init error", err);
     }
 
@@ -579,10 +894,10 @@
           data: safePayload,
           updatedAt: new Date().toISOString()
         });
-        cloudStatus.textContent = "Cloud : sauvegardé";
+        if (cloudStatus) cloudStatus.textContent = "Cloud : sauvegardé";
       } catch (err) {
         console.error("Cloud save error", err);
-        cloudStatus.textContent = "Cloud : erreur de sauvegarde";
+        if (cloudStatus) cloudStatus.textContent = "Cloud : erreur de sauvegarde";
       }
     }
 
@@ -591,11 +906,11 @@
       try {
         const snap = await getDoc(doc(db, "users", CLOUD_USER_ID));
         if (!snap.exists()) return null;
-        cloudStatus.textContent = "Cloud : données chargées";
+        if (cloudStatus) cloudStatus.textContent = "Cloud : données chargées";
         return snap.data()?.data || null;
       } catch (err) {
         console.error("Cloud load error", err);
-        cloudStatus.textContent = "Cloud : erreur de chargement";
+        if (cloudStatus) cloudStatus.textContent = "Cloud : erreur de chargement";
         return null;
       }
     }
@@ -603,26 +918,48 @@
     function loadStateLocal() {
       try {
         let saved = localStorage.getItem(STORAGE_KEY);
+
         if (!saved) {
           for (const key of LEGACY_KEYS) {
             const legacy = localStorage.getItem(key);
-            if (legacy) { localStorage.setItem(STORAGE_KEY, legacy); saved = legacy; break; }
+            if (legacy) {
+              localStorage.setItem(STORAGE_KEY, legacy);
+              saved = legacy;
+              break;
+            }
           }
         }
+
         if (!saved) {
           const backup = localStorage.getItem(BACKUP_KEY);
-          if (backup) { localStorage.setItem(STORAGE_KEY, backup); saved = backup; }
+          if (backup) {
+            localStorage.setItem(STORAGE_KEY, backup);
+            saved = backup;
+          }
         }
+
         if (!saved) return deepClone(defaultState);
 
         const parsed = JSON.parse(saved);
         const merged = {
-          ...deepClone(defaultState), ...parsed,
+          ...deepClone(defaultState),
+          ...parsed,
           settings: {
-            ...defaultState.settings, ...(parsed.settings || {}),
-            revisionGoals: { ...defaultState.settings.revisionGoals, ...((parsed.settings && parsed.settings.revisionGoals) || {}) }
+            ...defaultState.settings,
+            ...(parsed.settings || {}),
+            revisionGoals: {
+              ...defaultState.settings.revisionGoals,
+              ...((parsed.settings && parsed.settings.revisionGoals) || {})
+            }
           },
-          presets: { ...defaultState.presets, ...(parsed.presets || {}) }
+          presets: {
+            ...defaultState.presets,
+            ...(parsed.presets || {})
+          },
+          revisionSheets: {
+            ...defaultState.revisionSheets,
+            ...(parsed.revisionSheets || {})
+          }
         };
 
         const freshTemplates = createEmptyTemplates();
@@ -654,10 +991,12 @@
           });
         }
         merged.revisionChecklist = freshRevision;
-        merged.revisionSheets = { ...defaultState.revisionSheets, ...(parsed.revisionSheets || {}) };
         merged.days = parsed.days || {};
+
         return merged;
-      } catch { return deepClone(defaultState); }
+      } catch {
+        return deepClone(defaultState);
+      }
     }
 
     let state = loadStateLocal();
@@ -671,8 +1010,13 @@
       saveToCloud(safeState);
     }
 
-    setInterval(() => { try { localStorage.setItem(BACKUP_KEY, JSON.stringify(state)); } catch {} }, 10000);
-    window.addEventListener("beforeunload", () => { try { localStorage.setItem(BACKUP_KEY, JSON.stringify(state)); } catch {} });
+    setInterval(() => {
+      try { localStorage.setItem(BACKUP_KEY, JSON.stringify(state)); } catch {}
+    }, 10000);
+
+    window.addEventListener("beforeunload", () => {
+      try { localStorage.setItem(BACKUP_KEY, JSON.stringify(state)); } catch {}
+    });
 
     function getTodayString(date = new Date()) {
       const y = date.getFullYear();
@@ -689,46 +1033,86 @@
 
     function formatDisplayDate(dateStr) {
       const d = new Date(dateStr + "T00:00:00");
-      return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+      return d.toLocaleDateString("fr-FR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+      });
     }
 
-    function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-    function uid() { return Math.random().toString(36).slice(2, 10); }
+    function capitalize(s) {
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    function uid() {
+      return Math.random().toString(36).slice(2, 10);
+    }
 
     function createEmptyDayBlocks() {
-      return HOURS.map(hour => ({ id: uid(), hour, category: "À faire", mainTask: "", tasks: [], reminderEnabled: false, remindedAt: "" }));
+      return HOURS.map(hour => ({
+        id: uid(),
+        hour,
+        category: "À faire",
+        mainTask: "",
+        tasks: [],
+        reminderEnabled: false,
+        remindedAt: ""
+      }));
     }
 
     function normalizeTask(task) {
-      return { id: task.id || uid(), text: task.text || "", done: !!task.done, hidden: !!task.hidden };
+      return {
+        id: task.id || uid(),
+        text: task.text || "",
+        done: !!task.done,
+        hidden: !!task.hidden
+      };
     }
 
     function ensureDay(dateStr) {
       if (!state.days[dateStr]) {
         state.days[dateStr] = { priority: "", blocks: createEmptyDayBlocks() };
-      } else { normalizeDay(dateStr); }
+      } else {
+        normalizeDay(dateStr);
+      }
     }
 
     function normalizeDay(dateStr) {
       const day = state.days[dateStr];
-      if (!day.blocks || !Array.isArray(day.blocks)) { day.blocks = createEmptyDayBlocks(); }
+      if (!day.blocks || !Array.isArray(day.blocks)) {
+        day.blocks = createEmptyDayBlocks();
+      }
+
       const existingByHour = {};
       day.blocks.forEach(block => {
         existingByHour[block.hour] = {
-          id: block.id || uid(), hour: block.hour, category: block.category || "À faire",
+          id: block.id || uid(),
+          hour: block.hour,
+          category: block.category || "À faire",
           mainTask: block.mainTask || "",
           tasks: Array.isArray(block.tasks) ? block.tasks.map(normalizeTask) : [],
-          reminderEnabled: !!block.reminderEnabled, remindedAt: block.remindedAt || ""
+          reminderEnabled: !!block.reminderEnabled,
+          remindedAt: block.remindedAt || ""
         };
       });
-      day.blocks = HOURS.map(hour => {
-        if (existingByHour[hour]) return existingByHour[hour];
-        return { id: uid(), hour, category: "À faire", mainTask: "", tasks: [], reminderEnabled: false, remindedAt: "" };
+
+      day.blocks = HOURS.map(hour => existingByHour[hour] || {
+        id: uid(),
+        hour,
+        category: "À faire",
+        mainTask: "",
+        tasks: [],
+        reminderEnabled: false,
+        remindedAt: ""
       });
+
       if (typeof day.priority !== "string") day.priority = "";
     }
 
-    function getCurrentDay() { ensureDay(selectedDate); return state.days[selectedDate]; }
+    function getCurrentDay() {
+      ensureDay(selectedDate);
+      return state.days[selectedDate];
+    }
 
     function dayHasMeaningfulData(dateStr) {
       ensureDay(dateStr);
@@ -752,7 +1136,9 @@
 
     function getNowInfo() {
       const now = new Date();
-      return { date: getTodayString(now), time: `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}` };
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      return { date: getTodayString(now), time: `${hh}:${mm}` };
     }
 
     function isHourPassed(dateStr, hourStr) {
@@ -764,26 +1150,28 @@
     }
 
     function isBlockCompleted(block) {
-      return block.tasks.length > 0 && block.tasks.every(t => t.done);
+      const hasTasks = block.tasks.length > 0;
+      return hasTasks && block.tasks.every(t => t.done);
     }
 
     function renderCategoryChips(block) {
       return CATEGORY_OPTIONS.map(cat => `
-        <button class="chip ${block.category === cat ? "active" : ""}"
-          data-action="set-category" data-id="${block.id}" data-cat="${escapeAttr(cat)}"
-        >${escapeHtml(cat)}</button>
+        <button class="chip ${block.category === cat ? "active" : ""}" data-action="set-category" data-id="${block.id}" data-cat="${escapeAttr(cat)}">${escapeHtml(cat)}</button>
       `).join("");
     }
 
     function renderDay() {
       const day = getCurrentDay();
+
       document.getElementById("datePicker").value = selectedDate;
       document.getElementById("todayTitle").textContent = capitalize(formatDisplayDate(selectedDate));
       document.getElementById("priorityInput").value = day.priority || "";
+
       document.getElementById("toggleAutoTemplate").classList.toggle("active", !!state.settings.autoApplyTemplate);
       document.getElementById("toggleHidePassed").classList.toggle("active", !!state.settings.hidePassedHours);
       document.getElementById("toggleHideDone").classList.toggle("active", !!state.settings.hideDoneTasks);
       document.getElementById("toggleEditCompleted").classList.toggle("active", !!state.settings.editCompletedTasks);
+
       document.getElementById("workStart").value = state.presets.work.start;
       document.getElementById("workEnd").value = state.presets.work.end;
       document.getElementById("schoolStart").value = state.presets.school.start;
@@ -815,31 +1203,35 @@
 
         const blockEl = document.createElement("div");
         blockEl.className = `block ${getCategoryClass(block.category)}`;
+
         blockEl.innerHTML = `
           <div class="block-top">
             <div class="hour-badge">${block.hour}</div>
             <div class="main-task-wrap">
-              <div class="category-chips">${renderCategoryChips(block)}</div>
-              <input class="main-task-input" type="text" value="${escapeAttr(block.mainTask || "")}"
-                placeholder="Écris ta tâche..." data-action="edit-main-task" data-id="${block.id}" />
+              <div class="category-chips">
+                ${renderCategoryChips(block)}
+              </div>
+              <input class="main-task-input" type="text" value="${escapeAttr(block.mainTask || "")}" placeholder="Écris ta tâche..." data-action="edit-main-task" data-id="${block.id}" />
             </div>
           </div>
+
           <div>
             ${visibleTasks.length === 0 ? `<div class="small" style="padding:2px 0 8px">Aucune sous-tâche</div>` : ""}
             ${visibleTasks.map(task => `
               <div class="task-row">
-                <input type="checkbox" class="checkbox" ${task.done ? "checked" : ""}
-                  data-action="toggle-task" data-block-id="${block.id}" data-task-id="${task.id}" />
+                <input type="checkbox" class="checkbox" ${task.done ? "checked" : ""} data-action="toggle-task" data-block-id="${block.id}" data-task-id="${task.id}" />
                 <div class="task-text ${task.done ? "done" : ""}">${escapeHtml(task.text)}</div>
                 <button class="icon-btn" data-action="move-task" data-block-id="${block.id}" data-task-id="${task.id}">➡️</button>
                 <button class="icon-btn" data-action="delete-task" data-block-id="${block.id}" data-task-id="${task.id}">✕</button>
               </div>
             `).join("")}
           </div>
+
           <div class="task-add">
             <input class="subtask-input" placeholder="Ajouter une sous-tâche..." data-input-task="${block.id}" />
             <button class="btn" data-action="add-task" data-id="${block.id}">+ sous-tâche</button>
           </div>
+
           <div class="block-actions">
             <div class="small">${block.reminderEnabled ? "Rappel actif" : "Pas de rappel"}</div>
             <button class="btn remind" data-action="toggle-reminder" data-id="${block.id}">
@@ -847,6 +1239,7 @@
             </button>
           </div>
         `;
+
         blocksContainer.appendChild(blockEl);
       });
 
@@ -862,6 +1255,7 @@
       const done = allTasks.filter(t => t.done).length;
       const left = Math.max(0, total - done);
       const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
       document.getElementById("statTotal").textContent = total;
       document.getElementById("statDone").textContent = done;
       document.getElementById("statLeft").textContent = left;
@@ -886,29 +1280,49 @@
       const panel = document.getElementById("todayTasksDetailPanel");
       const title = document.getElementById("todayTasksDetailTitle");
       const content = document.getElementById("todayTasksDetailContent");
+
       let label = "Tâches";
       if (type === "done") label = "Tâches finies";
       if (type === "left") label = "Tâches restantes";
-      title.textContent = label;
+
       const tasks = getStatTasks(type);
-      if (tasks.length === 0) { content.innerHTML = `<div class="small">Aucune tâche.</div>`; panel.style.display = "block"; return; }
+      title.textContent = label;
+
+      if (tasks.length === 0) {
+        content.innerHTML = `<div class="small">Aucune tâche.</div>`;
+        panel.style.display = "block";
+        return;
+      }
+
       content.innerHTML = tasks.map(task => `
         <div class="progress-line">
-          <div><strong>${escapeHtml(task.text)}</strong><br><span class="small">${escapeHtml(task.hour)} • ${escapeHtml(task.category)}</span></div>
+          <div>
+            <strong>${escapeHtml(task.text)}</strong><br>
+            <span class="small">${escapeHtml(task.hour)} • ${escapeHtml(task.category)}</span>
+          </div>
           <div class="small">${task.done ? "✅" : "⏳"}</div>
         </div>
       `).join("");
+
       panel.style.display = "block";
     }
 
     function renderCompare() {
       const today = getCurrentDay();
       const todayDone = today.blocks.filter(b => b.category !== "Perso").flatMap(b => b.tasks).filter(t => t.done).length;
+
       const yesterdayKey = addDays(selectedDate, -1);
       ensureDay(yesterdayKey);
-      const yesterdayDone = state.days[yesterdayKey].blocks.filter(b => b.category !== "Perso").flatMap(b => b.tasks).filter(t => t.done).length;
-      document.getElementById("compareNumbers").innerHTML = `Aujourd'hui : <strong>${todayDone}</strong> tâches finies • Hier : <strong>${yesterdayDone}</strong>`;
-      let msg = todayDone > yesterdayDone ? "Tu es incroyablement incroyable boss 😎" : todayDone === yesterdayDone ? "Solide. Même niveau qu'hier 👀" : "Peux mieux faire 🙄";
+      const yesterday = state.days[yesterdayKey];
+      const yesterdayDone = yesterday.blocks.filter(b => b.category !== "Perso").flatMap(b => b.tasks).filter(t => t.done).length;
+
+      document.getElementById("compareNumbers").innerHTML = `Aujourd’hui : <strong>${todayDone}</strong> tâches finies • Hier : <strong>${yesterdayDone}</strong>`;
+
+      let msg = "";
+      if (todayDone > yesterdayDone) msg = "Tu es incroyablement incroyable boss 😎";
+      else if (todayDone === yesterdayDone) msg = "Solide. Même niveau qu’hier 👀";
+      else msg = "Peux mieux faire 🙄";
+
       document.getElementById("compareMessage").textContent = msg;
     }
 
@@ -917,33 +1331,58 @@
       const dayIndex = new Date(dateStr + "T00:00:00").getDay();
       const template = state.templates[String(dayIndex)] || [];
       const day = state.days[dateStr];
+
       day.blocks = HOURS.map((hour, i) => {
-        const row = template[i] || { categories: ["À faire"], mainTask: "", subTaskText: "" };
+        const row = template[i] || { categories:["À faire"], mainTask:"", subTaskText:"" };
         const categories = Array.isArray(row.categories) && row.categories.length ? row.categories : ["À faire"];
         const primaryCategory = categories.find(c => c !== "À faire") || categories[0] || "À faire";
-        const tasks = (row.subTaskText || "").split(";").map(t => t.trim()).filter(Boolean)
-          .map(text => ({ id: uid(), text, done: false, hidden: false }));
-        return { id: uid(), hour, category: primaryCategory, mainTask: row.mainTask || "", tasks, reminderEnabled: false, remindedAt: "" };
+
+        const tasks = (row.subTaskText || "").split(";").map(t => t.trim()).filter(Boolean).map(text => ({
+          id: uid(), text, done: false, hidden: false
+        }));
+
+        return {
+          id: uid(),
+          hour,
+          category: primaryCategory,
+          mainTask: row.mainTask || "",
+          tasks,
+          reminderEnabled: false,
+          remindedAt: ""
+        };
       });
+
       if (!day.priority) day.priority = "";
       saveState();
     }
 
     function copyYesterday() {
       const yesterday = addDays(selectedDate, -1);
-      if (!state.days[yesterday]) { alert("Aucune donnée hier."); return; }
+      if (!state.days[yesterday]) {
+        alert("Aucune donnée hier.");
+        return;
+      }
+
       ensureDay(selectedDate);
       const sourceDay = state.days[yesterday];
+
       state.days[selectedDate] = {
         priority: sourceDay.priority || "",
         blocks: sourceDay.blocks.map(block => ({
-          id: uid(), hour: block.hour, category: block.category || "À faire",
-          mainTask: block.mainTask || "", reminderEnabled: false, remindedAt: "",
-          tasks: (block.tasks || []).filter(task => !task.done)
-            .map(task => ({ id: uid(), text: task.text, done: false, hidden: false }))
+          id: uid(),
+          hour: block.hour,
+          category: block.category || "À faire",
+          mainTask: block.mainTask || "",
+          reminderEnabled: false,
+          remindedAt: "",
+          tasks: (block.tasks || []).filter(task => !task.done).map(task => ({
+            id: uid(), text: task.text, done: false, hidden: false
+          }))
         }))
       };
-      saveState(); refreshAll();
+
+      saveState();
+      refreshAll();
     }
 
     function prepareTomorrow() {
@@ -967,7 +1406,8 @@
       const block = getCurrentDay().blocks.find(b => b.id === blockId);
       if (!block) return;
       block.tasks.push({ id: uid(), text: text.trim(), done: false, hidden: false });
-      saveState(); refreshAll();
+      saveState();
+      refreshAll();
     }
 
     function moveTaskToTomorrow(blockId, taskId) {
@@ -975,59 +1415,78 @@
       const block = day.blocks.find(b => b.id === blockId);
       const task = block?.tasks.find(t => t.id === taskId);
       if (!task) return;
+
       const tomorrow = addDays(selectedDate, 1);
       ensureDay(tomorrow);
       const tomorrowBlock = state.days[tomorrow].blocks.find(b => b.hour === block.hour);
       tomorrowBlock.tasks.push({ id: uid(), text: task.text, done: false, hidden: false });
       block.tasks = block.tasks.filter(t => t.id !== taskId);
-      saveState(); refreshAll();
+      saveState();
+      refreshAll();
     }
 
     function resetDay() {
       if (!confirm("Tu veux vraiment vider toute la journée ?")) return;
       state.days[selectedDate] = { priority: "", blocks: createEmptyDayBlocks() };
-      saveState(); refreshAll();
+      saveState();
+      refreshAll();
     }
 
     function resetDoneVisibility() {
       const day = getCurrentDay();
-      day.blocks.forEach(block => { block.tasks.forEach(task => { task.hidden = false; }); });
-      saveState(); refreshAll();
+      day.blocks.forEach(block => block.tasks.forEach(task => { task.hidden = false; }));
+      saveState();
+      refreshAll();
     }
 
     function renderTemplateCategoryChips(dayKey, index, currentCats) {
       return CATEGORY_OPTIONS.map(cat => `
-        <button class="chip ${(currentCats || []).includes(cat) ? "active" : ""}"
-          data-template-action="toggle-category" data-day="${dayKey}" data-index="${index}" data-cat="${escapeAttr(cat)}"
-        >${escapeHtml(cat)}</button>
+        <button class="chip ${(currentCats || []).includes(cat) ? "active" : ""}" data-template-action="toggle-category" data-day="${dayKey}" data-index="${index}" data-cat="${escapeAttr(cat)}">${escapeHtml(cat)}</button>
       `).join("");
     }
 
     function fillTemplateWithPreset(dayKey, presetKey) {
       if (presetKey === "rest") {
-        state.templates[dayKey].forEach(row => { row.categories = ["À faire"]; row.mainTask = ""; row.subTaskText = ""; });
-        saveState(); renderTemplates(); return;
+        state.templates[dayKey].forEach(row => {
+          row.categories = ["À faire"];
+          row.mainTask = "";
+          row.subTaskText = "";
+        });
+        saveState();
+        renderTemplates();
+        return;
       }
+
       const preset = state.presets[presetKey];
       state.templates[dayKey].forEach(row => {
         if (row.hour >= preset.start && row.hour <= preset.end) {
-          row.categories = [preset.category]; row.mainTask = preset.label;
-        } else { row.categories = ["À faire"]; row.mainTask = ""; row.subTaskText = ""; }
+          row.categories = [preset.category];
+          row.mainTask = preset.label;
+        } else {
+          row.categories = ["À faire"];
+          row.mainTask = "";
+          row.subTaskText = "";
+        }
       });
-      saveState(); renderTemplates();
+
+      saveState();
+      renderTemplates();
     }
 
     function renderTemplates() {
       const templatesContainer = document.getElementById("templatesContainer");
       templatesContainer.innerHTML = "";
+
       for (let d = 0; d < 7; d++) {
         const key = String(d);
         const rows = state.templates[key];
+
         const card = document.createElement("div");
         card.className = "accordion-card";
         card.innerHTML = `
           <button class="accordion-head" data-day-accordion="${key}">
-            <span>${WEEK_DAYS[d]}</span><span>▾</span>
+            <span>${WEEK_DAYS[d]}</span>
+            <span>▾</span>
           </button>
           <div class="accordion-content" id="accordion-content-${key}">
             <div class="row" style="margin-bottom:12px">
@@ -1039,15 +1498,19 @@
             </div>
           </div>
         `;
+
         templatesContainer.appendChild(card);
         const content = card.querySelector(`#accordion-content-${key}`);
+
         rows.forEach((row, index) => {
           const line = document.createElement("div");
           line.className = "template-row";
           line.innerHTML = `
             <div class="template-hour">${row.hour}</div>
             <div style="display:grid; gap:8px;">
-              <div class="category-chips">${renderTemplateCategoryChips(key, index, row.categories || ["À faire"])}</div>
+              <div class="category-chips">
+                ${renderTemplateCategoryChips(key, index, row.categories || ["À faire"])}
+              </div>
               <input class="main-task-input template-main-task" data-day="${key}" data-index="${index}" value="${escapeAttr(row.mainTask || "")}" placeholder="Écris ta tâche..." />
               <input class="subtask-input template-subtask" data-day="${key}" data-index="${index}" value="${escapeAttr(row.subTaskText || "")}" placeholder="Sous-tâches séparées par ;" />
             </div>
@@ -1057,24 +1520,40 @@
       }
     }
 
-    function normalizeLabel(str) { return String(str || "").trim().toLowerCase().replace(/\s+/g, " "); }
-    function displayLabel(str) { const s = String(str || "").trim(); return s ? s : "Sans nom"; }
+    function normalizeLabel(str) {
+      return String(str || "").trim().toLowerCase().replace(/\s+/g, " ");
+    }
+
+    function displayLabel(str) {
+      const s = String(str || "").trim();
+      return s ? s : "Sans nom";
+    }
 
     function getRangeDates(range) {
       const today = new Date();
       const end = getTodayString(today);
       if (range === "total") return { start: null, end };
-      if (range === "week") { const s = new Date(); s.setDate(today.getDate() - 6); return { start: getTodayString(s), end }; }
-      if (range === "month") { const s = new Date(); s.setDate(today.getDate() - 29); return { start: getTodayString(s), end }; }
+      if (range === "week") {
+        const startDate = new Date();
+        startDate.setDate(today.getDate() - 6);
+        return { start: getTodayString(startDate), end };
+      }
+      if (range === "month") {
+        const startDate = new Date();
+        startDate.setDate(today.getDate() - 29);
+        return { start: getTodayString(startDate), end };
+      }
       return { start: null, end };
     }
 
     function collectCompletedEntries(range) {
       const { start, end } = getRangeDates(range);
       const entries = [];
+
       Object.entries(state.days).forEach(([dateKey, day]) => {
         if (start && dateKey < start) return;
         if (dateKey > end) return;
+
         day.blocks.forEach(block => {
           block.tasks.forEach(task => {
             if (!task.done) return;
@@ -1085,12 +1564,22 @@
           });
         });
       });
+
       return entries;
     }
 
-    function countCheckedRevision(subject) { return Object.values(state.revisionChecklist[subject] || {}).filter(Boolean).length; }
-    function countGlobalRevisionDone() { return SUBJECTS.reduce((acc, s) => acc + countCheckedRevision(s), 0); }
-    function countGlobalRevisionGoal() { return SUBJECTS.reduce((acc, s) => acc + Number(state.settings.revisionGoals[s] || 0), 0); }
+    function countCheckedRevision(subject) {
+      const items = state.revisionChecklist[subject] || {};
+      return Object.values(items).filter(Boolean).length;
+    }
+
+    function countGlobalRevisionDone() {
+      return SUBJECTS.reduce((acc, subject) => acc + countCheckedRevision(subject), 0);
+    }
+
+    function countGlobalRevisionGoal() {
+      return SUBJECTS.reduce((acc, subject) => acc + Number(state.settings.revisionGoals[subject] || 0), 0);
+    }
 
     function getExamProgressPercent(doneCount, goalCount, examDateStr) {
       const startDate = new Date("2026-04-22T00:00:00");
@@ -1098,7 +1587,8 @@
       const today = new Date();
       const totalDuration = examDate - startDate;
       const elapsedDuration = Math.max(0, today - startDate);
-      if (goalCount <= 0 || totalDuration <= 0) return 0;
+      if (goalCount <= 0) return 0;
+      if (totalDuration <= 0) return 0;
       const realProgress = doneCount / goalCount;
       const idealProgress = elapsedDuration / totalDuration;
       if (idealProgress <= 0) return Math.round(realProgress * 100);
@@ -1133,7 +1623,8 @@
         if (date < monday || date > sunday) return;
         day.blocks.forEach(block => {
           if (block.category !== "Muscu") return;
-          if ((block.tasks || []).some(t => t.done)) count += 1;
+          const hasDone = (block.tasks || []).some(t => t.done);
+          if (hasDone) count += 1;
         });
       });
       return count;
@@ -1152,9 +1643,11 @@
         const globalRemaining = Math.max(0, globalGoal - globalDone);
         const globalPercentToFinish = globalGoal > 0 ? Math.round((globalDone / globalGoal) * 100) : 0;
         const globalTimePercent = getExamProgressPercent(globalDone, globalGoal, examDate);
+
         document.getElementById("progressCompleted").textContent = globalDone;
         document.getElementById("progressDays").textContent = getDaysLeft(examDate);
         document.getElementById("progressTop").textContent = "Révision";
+
         const globalCard = document.createElement("div");
         globalCard.className = "progress-card";
         globalCard.innerHTML = `
@@ -1165,12 +1658,14 @@
           <div class="progress-line"><span>Progression selon la date</span><strong>${globalTimePercent}%</strong></div>
         `;
         progressContainer.appendChild(globalCard);
+
         SUBJECTS.forEach(subject => {
           const goal = Number(state.settings.revisionGoals[subject] || 0);
           const done = countCheckedRevision(subject);
           const remaining = Math.max(0, goal - done);
           const percentToFinish = goal > 0 ? Math.round((done / goal) * 100) : 0;
           const timePercent = getExamProgressPercent(done, goal, examDate);
+
           const card = document.createElement("div");
           card.className = "progress-card";
           card.innerHTML = `
@@ -1182,6 +1677,7 @@
           `;
           progressContainer.appendChild(card);
         });
+
         return;
       }
 
@@ -1189,52 +1685,73 @@
       const activeDaysSet = new Set(entries.map(e => e.date));
       document.getElementById("progressCompleted").textContent = entries.length;
       document.getElementById("progressDays").textContent = activeDaysSet.size;
+
       const categoryCount = {};
       entries.forEach(e => { categoryCount[e.category] = (categoryCount[e.category] || 0) + 1; });
-      let topCategory = "-", topValue = 0;
-      Object.entries(categoryCount).forEach(([cat, count]) => { if (count > topValue) { topValue = count; topCategory = cat; } });
+
+      let topCategory = "-";
+      let topValue = 0;
+      Object.entries(categoryCount).forEach(([cat, count]) => {
+        if (count > topValue) {
+          topValue = count;
+          topCategory = cat;
+        }
+      });
       document.getElementById("progressTop").textContent = topCategory;
 
       if (mode === "categories") {
         if (Object.keys(categoryCount).length === 0) {
-          progressContainer.innerHTML = `<div class="progress-card"><div class="small">Aucune tâche terminée sur cette période.</div></div>`; return;
+          progressContainer.innerHTML = `<div class="progress-card"><div class="small">Aucune tâche terminée sur cette période.</div></div>`;
+          return;
         }
+
         Object.entries(categoryCount).sort((a,b) => b[1] - a[1]).forEach(([cat, count]) => {
           const card = document.createElement("div");
           card.className = "progress-card";
           const catKey = normalizeLabel(cat);
           const taskMap = {};
+
           entries.filter(e => e.category === cat).forEach(e => {
             const key = normalizeLabel(e.task);
             if (!taskMap[key]) taskMap[key] = { label: displayLabel(e.task), count: 0 };
             taskMap[key].count += 1;
           });
-          const detailsHtml = Object.values(taskMap).sort((a,b) => b.count - a.count)
-            .map(item => `<div class="progress-line"><span>${escapeHtml(item.label)}</span><strong>${item.count}</strong></div>`).join("");
+
+          const detailsHtml = Object.values(taskMap).sort((a,b) => b.count - a.count).map(item => `
+            <div class="progress-line"><span>${escapeHtml(item.label)}</span><strong>${item.count}</strong></div>
+          `).join("");
+
           card.innerHTML = `
             <h3>${escapeHtml(cat)}</h3>
             <div class="progress-line"><span>Séances validées</span><strong>${count}</strong></div>
             <button class="btn full" data-progress-toggle="${catKey}">Voir plus</button>
-            <div id="progress-details-${catKey}" style="display:none; margin-top:10px;">${detailsHtml || `<div class="small">Aucun détail.</div>`}</div>
+            <div id="progress-details-${catKey}" style="display:none; margin-top:10px;">
+              ${detailsHtml || `<div class="small">Aucun détail.</div>`}
+            </div>
           `;
           progressContainer.appendChild(card);
         });
       } else {
         const grouped = {};
         entries.forEach(e => {
-          if (!grouped[e.category]) grouped[e.category] = {};
+          const cat = e.category;
+          if (!grouped[cat]) grouped[cat] = {};
           const key = normalizeLabel(e.task);
-          if (!grouped[e.category][key]) grouped[e.category][key] = { label: displayLabel(e.task), count: 0 };
-          grouped[e.category][key].count += 1;
+          if (!grouped[cat][key]) grouped[cat][key] = { label: displayLabel(e.task), count: 0 };
+          grouped[cat][key].count += 1;
         });
+
         if (Object.keys(grouped).length === 0) {
-          progressContainer.innerHTML = `<div class="progress-card"><div class="small">Aucune tâche terminée sur cette période.</div></div>`; return;
+          progressContainer.innerHTML = `<div class="progress-card"><div class="small">Aucune tâche terminée sur cette période.</div></div>`;
+          return;
         }
+
         Object.entries(grouped).forEach(([cat, tasks]) => {
           const card = document.createElement("div");
           card.className = "progress-card";
-          const lines = Object.values(tasks).sort((a,b) => b.count - a.count)
-            .map(item => `<div class="progress-line"><span>${escapeHtml(item.label)}</span><strong>${item.count}</strong></div>`).join("");
+          const lines = Object.values(tasks).sort((a,b) => b.count - a.count).map(item => `
+            <div class="progress-line"><span>${escapeHtml(item.label)}</span><strong>${item.count}</strong></div>
+          `).join("");
           card.innerHTML = `<h3>${escapeHtml(cat)}</h3>${lines}`;
           progressContainer.appendChild(card);
         });
@@ -1245,6 +1762,7 @@
       const examDate = state.settings.revisionExamDate;
       document.getElementById("examDateDisplay").textContent = new Date(examDate + "T00:00:00").toLocaleDateString("fr-FR");
       document.getElementById("daysLeftDisplay").textContent = getDaysLeft(examDate);
+
       const globalDone = countGlobalRevisionDone();
       const globalGoal = countGlobalRevisionGoal();
       const globalPercentToFinish = globalGoal > 0 ? Math.round((globalDone / globalGoal) * 100) : 0;
@@ -1252,24 +1770,30 @@
 
       const revisionContainer = document.getElementById("revisionContainer");
       revisionContainer.innerHTML = "";
+
       SUBJECTS.forEach(subject => {
         const goal = Number(state.settings.revisionGoals[subject] || 0);
         const done = countCheckedRevision(subject);
         const remaining = Math.max(0, goal - done);
         const percentToFinish = goal > 0 ? Math.round((done / goal) * 100) : 0;
         const timePercent = getExamProgressPercent(done, goal, examDate);
+
         const annales = YEARS.map(year => {
           const name = createAnnaleName(subject, year);
-          return `<div class="revision-line">
-            <span>${escapeHtml(name)}</span>
-            <input type="checkbox" class="checkbox" data-revision-subject="${subject}" data-revision-item="${escapeAttr(name)}" ${state.revisionChecklist[subject][name] ? "checked" : ""}>
-          </div>`;
+          return `
+            <div class="revision-line">
+              <span>${escapeHtml(name)}</span>
+              <input type="checkbox" class="checkbox" data-revision-subject="${subject}" data-revision-item="${escapeAttr(name)}" ${state.revisionChecklist[subject][name] ? "checked" : ""}>
+            </div>
+          `;
         }).join("");
+
         const card = document.createElement("div");
         card.className = "accordion-card";
         card.innerHTML = `
           <button class="accordion-head" data-revision-accordion="${subject}">
-            <span>${subject}</span><span>${done}/${goal} • ${percentToFinish}%</span>
+            <span>${subject}</span>
+            <span>${done}/${goal} • ${percentToFinish}%</span>
           </button>
           <div class="accordion-content">
             <div class="progress-line"><span>Faites</span><strong>${done}</strong></div>
@@ -1295,24 +1819,24 @@
       if (!container) return;
       container.innerHTML = "";
       let hasSheets = false;
+
       SUBJECTS.forEach(subject => {
         const sheets = state.revisionSheets[subject] || [];
         if (sheets.length === 0) return;
         hasSheets = true;
+
         const card = document.createElement("div");
         card.className = "revision-card";
+
         const rows = sheets.map(sheet => `
           <div class="accordion-card">
             <button class="accordion-head" data-sheet-toggle="${sheet.id}">
-              <span>${escapeHtml(sheet.title)}</span><span>▾</span>
+              <span>${escapeHtml(sheet.title)}</span>
+              <span>▾</span>
             </button>
             <div class="accordion-content" id="sheet-content-${sheet.id}">
               ${sheet.content ? `<div class="small" style="white-space:pre-wrap; margin-bottom:12px;">${escapeHtml(sheet.content)}</div>` : ""}
-              ${sheet.fileName && sheet.fileData ? `
-                <a class="sheet-file-link" href="${sheet.fileData}" target="_blank">
-                  📎 Télécharger ${escapeHtml(sheet.fileName)}
-                </a>
-              ` : ""}
+              ${sheet.fileName && sheet.fileData ? `<a class="sheet-file-link" href="${sheet.fileData}" target="_blank">📎 Voir ${escapeHtml(sheet.fileName)}</a>` : ""}
               <div class="row" style="margin-top:12px;">
                 <button class="btn" data-sheet-edit="${sheet.id}" data-sheet-subject="${subject}">Modifier</button>
                 <button class="btn danger" data-sheet-delete="${sheet.id}" data-sheet-subject="${subject}">Supprimer</button>
@@ -1320,13 +1844,14 @@
             </div>
           </div>
         `).join("");
+
         card.innerHTML = `<h3>${subject}</h3>${rows}`;
         container.appendChild(card);
       });
+
       if (!hasSheets) container.innerHTML = `<div class="small">Aucune fiche enregistrée.</div>`;
     }
 
-    // ✅ saveRevisionSheet — version unique, propre, avec Firebase Storage
     async function saveRevisionSheet() {
       const subject = document.getElementById("sheetSubject").value;
       const title = document.getElementById("sheetTitle").value.trim();
@@ -1334,23 +1859,29 @@
       const fileInput = document.getElementById("sheetFile");
       const file = fileInput.files[0];
 
-      if (!title) { alert("Mets un nom au fichier ou à la fiche."); return; }
-      if (file && file.size > 5 * 1024 * 1024) { alert("Fichier trop lourd (max 5MB)."); return; }
+      if (!title) {
+        alert("Mets un nom au fichier ou à la fiche.");
+        return;
+      }
+
+      if (file && file.size > 5 * 1024 * 1024) {
+        alert("Fichier trop lourd (max 5MB).");
+        return;
+      }
 
       let fileData = null;
       let fileName = null;
+      const sheetId = editingSheetId || uid();
 
-      // Upload dans Firebase Storage si fichier sélectionné
-      if (file && storage) {
+      if (file) {
         try {
-          const sheetId = editingSheetId || uid();
           const storageRef = ref(storage, `sheets/${CLOUD_USER_ID}/${sheetId}/${file.name}`);
           await uploadBytes(storageRef, file);
           fileData = await getDownloadURL(storageRef);
           fileName = file.name;
         } catch (err) {
           console.error("Upload erreur:", err);
-          alert("Erreur lors de l'upload du fichier.");
+          alert("Erreur upload fichier");
           return;
         }
       }
@@ -1364,7 +1895,9 @@
             if (sheet.id === editingSheetId) {
               found = true;
               return {
-                ...sheet, title, content,
+                ...sheet,
+                title,
+                content,
                 fileData: fileData !== null ? fileData : sheet.fileData || null,
                 fileName: fileName !== null ? fileName : sheet.fileName || null,
                 updatedAt: new Date().toISOString()
@@ -1373,17 +1906,35 @@
             return sheet;
           });
         });
+
         if (!found) {
-          state.revisionSheets[subject].push({ id: uid(), title, content, fileData, fileName, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+          state.revisionSheets[subject].push({
+            id: sheetId,
+            title,
+            content,
+            fileData,
+            fileName,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          });
         }
       } else {
-        state.revisionSheets[subject].push({ id: uid(), title, content, fileData, fileName, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+        state.revisionSheets[subject].push({
+          id: sheetId,
+          title,
+          content,
+          fileData,
+          fileName,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
       }
 
       editingSheetId = null;
       document.getElementById("sheetTitle").value = "";
       document.getElementById("sheetContent").value = "";
       document.getElementById("sheetFile").value = "";
+
       saveState();
       renderRevisionSheets();
       alert("Fiche sauvegardée ✅");
@@ -1409,36 +1960,55 @@
     function deleteRevisionSheet(subject, sheetId) {
       if (!confirm("Supprimer cette fiche ?")) return;
       state.revisionSheets[subject] = (state.revisionSheets[subject] || []).filter(s => s.id !== sheetId);
-      saveState(); renderRevisionSheets();
+      saveState();
+      renderRevisionSheets();
     }
 
     function renderCompletedTasksManager() {
       const completedTasksManager = document.getElementById("completedTasksManager");
       completedTasksManager.innerHTML = "";
+
       const completedByDate = {};
       Object.entries(state.days).forEach(([dateKey, day]) => {
         const completed = [];
         day.blocks.forEach(block => {
           block.tasks.forEach(task => {
-            if (task.done) completed.push({ date: dateKey, hour: block.hour, category: block.category, mainTask: block.mainTask || "", text: task.text, taskId: task.id, blockId: block.id });
+            if (task.done) {
+              completed.push({
+                date: dateKey,
+                hour: block.hour,
+                category: block.category,
+                mainTask: block.mainTask || "",
+                text: task.text,
+                taskId: task.id,
+                blockId: block.id
+              });
+            }
           });
         });
         if (completed.length > 0) completedByDate[dateKey] = completed;
       });
+
       const dates = Object.keys(completedByDate).sort().reverse();
-      if (dates.length === 0) { completedTasksManager.innerHTML = `<div class="small">Aucune tâche terminée.</div>`; return; }
+      if (dates.length === 0) {
+        completedTasksManager.innerHTML = `<div class="small">Aucune tâche terminée.</div>`;
+        return;
+      }
+
       dates.forEach(dateKey => {
         const tasks = completedByDate[dateKey];
         const card = document.createElement("div");
         card.className = "accordion-card";
         card.innerHTML = `
           <button class="accordion-head" data-completed-date="${dateKey}">
-            <span>${dateKey} : ${tasks.length} tâche(s) faite(s)</span><span>▾</span>
+            <span>${dateKey} : ${tasks.length} tâche(s) faite(s)</span>
+            <span>▾</span>
           </button>
           <div class="accordion-content" id="completed-content-${dateKey}"></div>
         `;
         completedTasksManager.appendChild(card);
         const holder = card.querySelector(`#completed-content-${dateKey}`);
+
         tasks.forEach(item => {
           const row = document.createElement("div");
           row.className = "progress-line";
@@ -1460,13 +2030,20 @@
     async function toggleReminderForBlock(blockId) {
       const block = getCurrentDay().blocks.find(b => b.id === blockId);
       if (!block) return;
-      if (!("Notification" in window)) { alert("Ton navigateur ne gère pas les notifications."); return; }
+      if (!("Notification" in window)) {
+        alert("Ton navigateur ne gère pas les notifications.");
+        return;
+      }
       let permission = Notification.permission;
       if (permission === "default") permission = await Notification.requestPermission();
-      if (permission !== "granted") { alert("Notifications refusées."); return; }
+      if (permission !== "granted") {
+        alert("Notifications refusées.");
+        return;
+      }
       block.reminderEnabled = !block.reminderEnabled;
       if (!block.reminderEnabled) block.remindedAt = "";
-      saveState(); renderDay();
+      saveState();
+      renderDay();
     }
 
     function maybeSendBlockReminders() {
@@ -1475,19 +2052,29 @@
       const now = getNowInfo();
       const today = state.days[now.date];
       if (!today) return;
+
       today.blocks.forEach(block => {
-        if (!block.reminderEnabled || block.hour === "00:00" || block.remindedAt === now.date) return;
+        if (!block.reminderEnabled) return;
+        if (block.hour === "00:00") return;
+        if (block.remindedAt === now.date) return;
         if (!block.mainTask.trim() && block.tasks.length === 0) return;
+
         if (now.time >= block.hour) {
           const body = block.mainTask?.trim() ? `${block.hour} • ${block.mainTask}` : `${block.hour} • Tu as une tâche à faire`;
-          try { new Notification("Planning du Boss Atilla", { body }); block.remindedAt = now.date; saveState(); } catch {}
+          try {
+            new Notification("Planning du Boss Atilla", { body });
+            block.remindedAt = now.date;
+            saveState();
+          } catch {}
         }
       });
     }
 
     function autoLoadTodayIfEmpty() {
       ensureDay(selectedDate);
-      if (state.settings.autoApplyTemplate && !dayHasMeaningfulData(selectedDate)) applyTemplateToDate(selectedDate);
+      if (state.settings.autoApplyTemplate && !dayHasMeaningfulData(selectedDate)) {
+        applyTemplateToDate(selectedDate);
+      }
     }
 
     function savePresetSettings() {
@@ -1499,7 +2086,8 @@
       state.presets.study.end = document.getElementById("studyEnd").value || "22:00";
       state.presets.muscu.start = document.getElementById("muscuStart").value || "20:00";
       state.presets.muscu.end = document.getElementById("muscuEnd").value || "21:00";
-      saveState(); alert("Presets sauvegardés.");
+      saveState();
+      alert("Presets sauvegardés.");
     }
 
     function saveGoals() {
@@ -1509,14 +2097,19 @@
       state.settings.revisionGoals.OG = Number(document.getElementById("goalOG").value || 0);
       state.settings.revisionGoals.ETSO = Number(document.getElementById("goalETSO").value || 0);
       state.settings.revisionGoals.Gestion = Number(document.getElementById("goalGestion").value || 0);
-      saveState(); renderRevision(); renderProgress(); alert("Objectifs sauvegardés.");
+      saveState();
+      renderRevision();
+      renderProgress();
+      alert("Objectifs sauvegardés.");
     }
 
     function exportData() {
       const blob = new Blob([JSON.stringify(state)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url; a.download = "myplann-backup.json"; a.click();
+      a.href = url;
+      a.download = "myplann-backup.json";
+      a.click();
       URL.revokeObjectURL(url);
     }
 
@@ -1528,29 +2121,54 @@
         try {
           const parsed = JSON.parse(e.target.result);
           state = {
-            ...deepClone(defaultState), ...parsed,
-            settings: { ...defaultState.settings, ...(parsed.settings || {}), revisionGoals: { ...defaultState.settings.revisionGoals, ...((parsed.settings && parsed.settings.revisionGoals) || {}) } },
-            presets: { ...defaultState.presets, ...(parsed.presets || {}) },
-            revisionSheets: { ...defaultState.revisionSheets, ...(parsed.revisionSheets || {}) }
+            ...deepClone(defaultState),
+            ...parsed,
+            settings: {
+              ...defaultState.settings,
+              ...(parsed.settings || {}),
+              revisionGoals: {
+                ...defaultState.settings.revisionGoals,
+                ...((parsed.settings && parsed.settings.revisionGoals) || {})
+              }
+            },
+            presets: {
+              ...defaultState.presets,
+              ...(parsed.presets || {})
+            },
+            revisionSheets: {
+              ...defaultState.revisionSheets,
+              ...(parsed.revisionSheets || {})
+            }
           };
+
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
           localStorage.setItem(BACKUP_KEY, JSON.stringify(state));
-          saveToCloud(state); refreshAll(); alert("Import réussi.");
-        } catch { alert("Fichier invalide"); }
+          saveToCloud(state);
+          refreshAll();
+          alert("Import réussi.");
+        } catch {
+          alert("Fichier invalide");
+        }
       };
       reader.readAsText(file);
     }
 
     function escapeHtml(str) {
-      return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+      return String(str).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
     }
-    function escapeAttr(str) { return escapeHtml(str); }
+
+    function escapeAttr(str) {
+      return escapeHtml(str);
+    }
 
     function refreshAll() {
-      renderDay(); renderProgress(); renderCompletedTasksManager(); renderRevision(); renderRevisionSheets();
+      renderDay();
+      renderProgress();
+      renderCompletedTasksManager();
+      renderRevision();
+      renderRevisionSheets();
     }
 
-    // ── Event listeners ──
     const plusMenu = document.getElementById("plusMenu");
     const tabPlus = document.getElementById("tabPlus");
 
@@ -1561,18 +2179,24 @@
       plusMenu.classList.remove("open");
     });
 
-    tabPlus.addEventListener("click", (e) => { e.stopPropagation(); plusMenu.classList.toggle("open"); });
+    tabPlus.addEventListener("click", (e) => {
+      e.stopPropagation();
+      plusMenu.classList.toggle("open");
+    });
 
     plusMenu.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-open-section]");
       if (!btn) return;
+
       document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
       document.getElementById("tabToday").classList.remove("active");
+
       const section = btn.dataset.openSection;
       if (section === "progress") document.getElementById("progressSection").classList.add("active");
       if (section === "revision") document.getElementById("revisionSection").classList.add("active");
       if (section === "longterm") document.getElementById("longTermSection").classList.add("active");
       if (section === "settings") document.getElementById("settingsSection").classList.add("active");
+
       plusMenu.classList.remove("open");
       refreshAll();
     });
@@ -1581,7 +2205,12 @@
       if (!plusMenu.contains(e.target) && e.target !== tabPlus) plusMenu.classList.remove("open");
     });
 
-    document.getElementById("applyTemplateBtn").addEventListener("click", () => { applyTemplateToDate(selectedDate); saveState(); refreshAll(); });
+    document.getElementById("applyTemplateBtn").addEventListener("click", () => {
+      applyTemplateToDate(selectedDate);
+      saveState();
+      refreshAll();
+    });
+
     document.getElementById("prepareTomorrowBtn").addEventListener("click", prepareTomorrow);
     document.getElementById("copyYesterdayBtn").addEventListener("click", copyYesterday);
     document.getElementById("goTodayBtn").addEventListener("click", goToday);
@@ -1595,38 +2224,71 @@
     document.getElementById("savePriorityBtn").addEventListener("click", () => {
       const day = getCurrentDay();
       day.priority = document.getElementById("priorityInput").value.trim();
-      saveState(); refreshAll();
+      saveState();
+      refreshAll();
     });
 
     document.getElementById("datePicker").addEventListener("change", (e) => {
       selectedDate = e.target.value || getTodayString();
-      ensureDay(selectedDate); autoLoadTodayIfEmpty(); refreshAll();
+      ensureDay(selectedDate);
+      autoLoadTodayIfEmpty();
+      refreshAll();
     });
 
     document.getElementById("progressRange").addEventListener("change", renderProgress);
     document.getElementById("progressMode").addEventListener("change", renderProgress);
 
-    document.getElementById("longTermNotes").addEventListener("input", (e) => { state.longTermNotes = e.target.value; saveState(); });
+    document.getElementById("longTermNotes").addEventListener("input", (e) => {
+      state.longTermNotes = e.target.value;
+      saveState();
+    });
 
     document.getElementById("saveLongTermBtn").addEventListener("click", () => {
       state.longTermNotes = document.getElementById("longTermNotes").value;
-      saveState(); alert("Données long-terme sauvegardées.");
+      saveState();
+      alert("Données long-terme sauvegardées.");
     });
 
     document.getElementById("saveTemplatesBtn").addEventListener("click", () => {
       document.querySelectorAll(".template-main-task").forEach(input => {
-        state.templates[input.dataset.day][Number(input.dataset.index)].mainTask = input.value;
+        const day = input.dataset.day;
+        const index = Number(input.dataset.index);
+        state.templates[day][index].mainTask = input.value;
       });
+
       document.querySelectorAll(".template-subtask").forEach(input => {
-        state.templates[input.dataset.day][Number(input.dataset.index)].subTaskText = input.value;
+        const day = input.dataset.day;
+        const index = Number(input.dataset.index);
+        state.templates[day][index].subTaskText = input.value;
       });
-      saveState(); alert("Modèles sauvegardés.");
+
+      saveState();
+      alert("Modèles sauvegardés.");
     });
 
-    document.getElementById("toggleAutoTemplate").addEventListener("click", () => { state.settings.autoApplyTemplate = !state.settings.autoApplyTemplate; saveState(); renderDay(); });
-    document.getElementById("toggleHidePassed").addEventListener("click", () => { state.settings.hidePassedHours = !state.settings.hidePassedHours; saveState(); renderDay(); });
-    document.getElementById("toggleHideDone").addEventListener("click", () => { state.settings.hideDoneTasks = !state.settings.hideDoneTasks; saveState(); renderDay(); });
-    document.getElementById("toggleEditCompleted").addEventListener("click", () => { state.settings.editCompletedTasks = !state.settings.editCompletedTasks; saveState(); renderDay(); });
+    document.getElementById("toggleAutoTemplate").addEventListener("click", () => {
+      state.settings.autoApplyTemplate = !state.settings.autoApplyTemplate;
+      saveState();
+      renderDay();
+    });
+
+    document.getElementById("toggleHidePassed").addEventListener("click", () => {
+      state.settings.hidePassedHours = !state.settings.hidePassedHours;
+      saveState();
+      renderDay();
+    });
+
+    document.getElementById("toggleHideDone").addEventListener("click", () => {
+      state.settings.hideDoneTasks = !state.settings.hideDoneTasks;
+      saveState();
+      renderDay();
+    });
+
+    document.getElementById("toggleEditCompleted").addEventListener("click", () => {
+      state.settings.editCompletedTasks = !state.settings.editCompletedTasks;
+      saveState();
+      renderDay();
+    });
 
     document.getElementById("statTotalCard").addEventListener("click", () => showTodayTasksDetail("total"));
     document.getElementById("statDoneCard").addEventListener("click", () => showTodayTasksDetail("done"));
@@ -1638,41 +2300,71 @@
     document.getElementById("revisionContainer").addEventListener("change", (e) => {
       const input = e.target.closest("[data-revision-subject]");
       if (!input) return;
-      state.revisionChecklist[input.dataset.revisionSubject][input.dataset.revisionItem] = input.checked;
-      saveState(); renderRevision(); renderProgress();
+      const subject = input.dataset.revisionSubject;
+      const item = input.dataset.revisionItem;
+      state.revisionChecklist[subject][item] = input.checked;
+      saveState();
+      renderRevision();
+      renderProgress();
     });
 
     document.getElementById("revisionContainer").addEventListener("click", (e) => {
       const acc = e.target.closest("[data-revision-accordion]");
       if (!acc) return;
-      acc.closest(".accordion-card").classList.toggle("open");
+      const card = acc.closest(".accordion-card");
+      card.classList.toggle("open");
     });
 
     document.getElementById("revisionSheetsContainer").addEventListener("click", (e) => {
       const toggleBtn = e.target.closest("[data-sheet-toggle]");
-      if (toggleBtn) { toggleBtn.closest(".accordion-card").classList.toggle("open"); return; }
+      if (toggleBtn) {
+        const card = toggleBtn.closest(".accordion-card");
+        card.classList.toggle("open");
+        return;
+      }
+
       const editBtn = e.target.closest("[data-sheet-edit]");
-      if (editBtn) { editRevisionSheet(editBtn.dataset.sheetSubject, editBtn.dataset.sheetEdit); return; }
+      if (editBtn) {
+        editRevisionSheet(editBtn.dataset.sheetSubject, editBtn.dataset.sheetEdit);
+        return;
+      }
+
       const deleteBtn = e.target.closest("[data-sheet-delete]");
       if (deleteBtn) deleteRevisionSheet(deleteBtn.dataset.sheetSubject, deleteBtn.dataset.sheetDelete);
     });
 
     document.getElementById("templatesContainer").addEventListener("click", (e) => {
       const acc = e.target.closest("[data-day-accordion]");
-      if (acc) { acc.closest(".accordion-card").classList.toggle("open"); return; }
+      if (acc) {
+        const card = acc.closest(".accordion-card");
+        card.classList.toggle("open");
+        return;
+      }
+
       const presetBtn = e.target.closest("[data-template-preset]");
-      if (presetBtn) { fillTemplateWithPreset(presetBtn.dataset.templatePreset, presetBtn.dataset.preset); return; }
+      if (presetBtn) {
+        fillTemplateWithPreset(presetBtn.dataset.templatePreset, presetBtn.dataset.preset);
+        return;
+      }
+
       const btn = e.target.closest("[data-template-action='toggle-category']");
       if (!btn) return;
+
       const day = btn.dataset.day;
       const index = Number(btn.dataset.index);
       const cat = btn.dataset.cat;
+
       if (!Array.isArray(state.templates[day][index].categories)) state.templates[day][index].categories = [];
+
       if (state.templates[day][index].categories.includes(cat)) {
         state.templates[day][index].categories = state.templates[day][index].categories.filter(c => c !== cat);
-      } else { state.templates[day][index].categories.push(cat); }
+      } else {
+        state.templates[day][index].categories.push(cat);
+      }
+
       if (state.templates[day][index].categories.length === 0) state.templates[day][index].categories = ["À faire"];
-      saveState(); renderTemplates();
+      saveState();
+      renderTemplates();
     });
 
     document.getElementById("progressContainer").addEventListener("click", (e) => {
@@ -1688,18 +2380,34 @@
 
     document.getElementById("completedTasksManager").addEventListener("click", (e) => {
       const acc = e.target.closest("[data-completed-date]");
-      if (acc) { acc.closest(".accordion-card").classList.toggle("open"); return; }
+      if (acc) {
+        const card = acc.closest(".accordion-card");
+        card.classList.toggle("open");
+        return;
+      }
+
       const btn = e.target.closest("[data-completed-action]");
       if (!btn) return;
-      const day = state.days[btn.dataset.date];
+      const action = btn.dataset.completedAction;
+      const date = btn.dataset.date;
+      const blockId = btn.dataset.block;
+      const taskId = btn.dataset.task;
+      const day = state.days[date];
       if (!day) return;
-      const block = day.blocks.find(b => b.id === btn.dataset.block);
+      const block = day.blocks.find(b => b.id === blockId);
       if (!block) return;
-      const task = block.tasks.find(t => t.id === btn.dataset.task);
+      const task = block.tasks.find(t => t.id === taskId);
       if (!task) return;
-      if (btn.dataset.completedAction === "restore") { task.done = false; task.hidden = false; }
-      if (btn.dataset.completedAction === "delete") { block.tasks = block.tasks.filter(t => t.id !== btn.dataset.task); }
-      saveState(); refreshAll();
+
+      if (action === "restore") {
+        task.done = false;
+        task.hidden = false;
+      }
+      if (action === "delete") {
+        block.tasks = block.tasks.filter(t => t.id !== taskId);
+      }
+      saveState();
+      refreshAll();
     });
 
     document.getElementById("blocksContainer").addEventListener("click", async (e) => {
@@ -1712,34 +2420,64 @@
 
       if (action === "set-category") {
         const block = day.blocks.find(b => b.id === blockId);
-        if (block) { block.category = btn.dataset.cat; saveState(); refreshAll(); }
+        if (block) {
+          block.category = btn.dataset.cat;
+          saveState();
+          refreshAll();
+        }
         return;
       }
+
       if (action === "add-task") {
         const input = document.querySelector(`[data-input-task="${blockId}"]`);
-        if (input) { addTask(blockId, input.value); input.value = ""; }
+        if (input) {
+          addTask(blockId, input.value);
+          input.value = "";
+        }
         return;
       }
+
       if (action === "toggle-task") {
         const block = day.blocks.find(b => b.id === blockId);
         const task = block?.tasks.find(t => t.id === taskId);
-        if (task) { task.done = !task.done; if (state.settings.hideDoneTasks && task.done) task.hidden = true; }
-        saveState(); refreshAll(); return;
+        if (task) {
+          task.done = !task.done;
+          if (state.settings.hideDoneTasks && task.done) task.hidden = true;
+        }
+        saveState();
+        refreshAll();
+        return;
       }
+
       if (action === "delete-task") {
         const block = day.blocks.find(b => b.id === blockId);
         if (block) block.tasks = block.tasks.filter(t => t.id !== taskId);
-        saveState(); refreshAll(); return;
+        saveState();
+        refreshAll();
+        return;
       }
-      if (action === "move-task") { moveTaskToTomorrow(blockId, taskId); return; }
-      if (action === "toggle-reminder") { await toggleReminderForBlock(blockId); return; }
+
+      if (action === "move-task") {
+        moveTaskToTomorrow(blockId, taskId);
+        return;
+      }
+
+      if (action === "toggle-reminder") {
+        await toggleReminderForBlock(blockId);
+      }
     });
 
     document.getElementById("blocksContainer").addEventListener("input", (e) => {
       const target = e.target;
+      const day = getCurrentDay();
       if (target.dataset.action === "edit-main-task") {
-        const block = getCurrentDay().blocks.find(b => b.id === target.dataset.id);
-        if (block) { block.mainTask = target.value; saveState(); renderProgress(); renderCompletedTasksManager(); }
+        const block = day.blocks.find(b => b.id === target.dataset.id);
+        if (block) {
+          block.mainTask = target.value;
+          saveState();
+          renderProgress();
+          renderCompletedTasksManager();
+        }
       }
     });
 
@@ -1747,14 +2485,15 @@
       const input = e.target;
       if (input.classList.contains("subtask-input") && e.key === "Enter") {
         const blockId = input.dataset.inputTask;
-        if (blockId) { addTask(blockId, input.value); input.value = ""; }
+        if (blockId) {
+          addTask(blockId, input.value);
+          input.value = "";
+        }
       }
     });
 
-    // ✅ init() — propre et sans erreurs
     async function init() {
       const cloudData = await loadFromCloud();
-
       if (cloudData) {
         state = {
           ...deepClone(defaultState),
@@ -1784,14 +2523,7 @@
       selectedDate = getTodayString();
       ensureDay(selectedDate);
       autoLoadTodayIfEmpty();
-
       document.getElementById("longTermNotes").value = state.longTermNotes || "";
-      document.getElementById("revisionExamDateInput").value = state.settings.revisionExamDate || "2026-05-15";
-      document.getElementById("muscuWeeklyGoalInput").value = state.settings.muscuWeeklyGoal || 3;
-      document.getElementById("goalAV").value = state.settings.revisionGoals.AV || 10;
-      document.getElementById("goalOG").value = state.settings.revisionGoals.OG || 10;
-      document.getElementById("goalETSO").value = state.settings.revisionGoals.ETSO || 10;
-      document.getElementById("goalGestion").value = state.settings.revisionGoals.Gestion || 10;
 
       renderTemplates();
       refreshAll();
@@ -1799,7 +2531,7 @@
       setInterval(maybeSendBlockReminders, 60000);
     }
 
-    init().catch(err => { console.error("Erreur init MyPlann :", err); });
+    init();
   </script>
 </body>
 </html>
