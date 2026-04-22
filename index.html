@@ -8,7 +8,7 @@
     :root{
       --bg:#0f1115;
       --bg2:#121722;
-      --panel:#171c26;F
+      --panel:#171c26;
       --panel2:#1d2431;
       --text:#f5f7fb;
       --muted:#9aa7bd;
@@ -1156,22 +1156,8 @@
       console.error("Firebase init error", err);
     }
 
- async function saveToCloud(payload) {
+async function saveToCloud(payload) {
   if (!cloudAvailable || !db) return;
-
-  try {
-    const safePayload = JSON.parse(JSON.stringify(payload));
-
-    await setDoc(doc(db, "users", CLOUD_USER_ID), {
-      data: safePayload,
-      updatedAt: new Date().toISOString()
-    });
-
-    console.log("Cloud save OK");
-
-  } catch (err) {
-    console.error("Cloud save error", err);
-  }
 
   try {
     const safePayload = JSON.parse(JSON.stringify(payload));
@@ -1186,36 +1172,24 @@
   } catch (err) {
     console.error("Cloud save error", err);
     cloudStatus.textContent = "Cloud : erreur de sauvegarde";
-    throw err;
   }
+}
 
-      try {
-        await setDoc(doc(db, "users", CLOUD_USER_ID), {
-          data: payload,
-          updatedAt: new Date().toISOString()
-        });
-        console.log("Cloud save OK");
-        cloudStatus.textContent = "Cloud : sauvegardé";
-      } catch (err) {
-        console.error("Cloud save error", err);
-        cloudStatus.textContent = "Cloud : erreur de sauvegarde";
-        throw err;
-      }
+async function loadFromCloud() {
+  if (!cloudAvailable || !db) return null;
 
-    async function loadFromCloud() {
-      if (!cloudAvailable || !db) return null;
-      try {
-        const snap = await getDoc(doc(db, "users", CLOUD_USER_ID));
-        if (!snap.exists()) return null;
-        cloudStatus.textContent = "Cloud : données chargées";
-        return snap.data()?.data || null;
-      } catch (err) {
-        console.error("Cloud load error", err);
-        cloudStatus.textContent = "Cloud : erreur de chargement";
-        return null;
-      }
-    }
+  try {
+    const snap = await getDoc(doc(db, "users", CLOUD_USER_ID));
+    if (!snap.exists()) return null;
 
+    cloudStatus.textContent = "Cloud : données chargées";
+    return snap.data()?.data || null;
+  } catch (err) {
+    console.error("Cloud load error", err);
+    cloudStatus.textContent = "Cloud : erreur de chargement";
+    return null;
+  }
+}
     function loadStateLocal() {
       try {
         let saved = localStorage.getItem(STORAGE_KEY);
@@ -3042,8 +3016,7 @@
         revisionGoals: {
           ...defaultState.settings.revisionGoals,
           ...((cloudData.settings && cloudData.settings.revisionGoals) || {})
-        }
-      },
+qq      },
       presets: {
         ...defaultState.presets,
         ...(cloudData.presets || {})
@@ -3060,39 +3033,17 @@
 
   selectedDate = getTodayString();
   ensureDay(selectedDate);
-
-  if (!state.days[selectedDate] || !state.days[selectedDate].blocks || state.days[selectedDate].blocks.length === 0) {
-    state.days[selectedDate] = {
-      priority: "",
-      blocks: createEmptyDayBlocks()
-    };
-  }
+  autoLoadTodayIfEmpty();
 
   document.getElementById("longTermNotes").value = state.longTermNotes || "";
 
   renderTemplates();
-  renderDay();
-  renderProgress();
-  renderCompletedTasksManager();
-  renderRevision();
-  renderRevisionSheets();
-
+  refreshAll();
   maybeSendBlockReminders();
   setInterval(maybeSendBlockReminders, 60000);
 }
 
-      selectedDate = getTodayString();
-      ensureDay(selectedDate);
-      autoLoadTodayIfEmpty();
-      document.getElementById("longTermNotes").value = state.longTermNotes || "";
-      renderTemplates();
-      refreshAll();
-      maybeSendBlockReminders();
-      setInterval(maybeSendBlockReminders, 60000);
-    }
-
-    init();
-   }
+init();
   </script>
 </body>
 </html>
