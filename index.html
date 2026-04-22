@@ -3808,14 +3808,21 @@
       return { date: getTodayString(now), time: `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}` };
     }
 
-    function isHourPassed(dateStr, hourStr) {
-      const now = getNowInfo();
-      if (dateStr < now.date) return true;
-      if (dateStr > now.date) return false;
-      if (hourStr === "00:00") return false;
-      return hourStr < now.time;
-    }
+   function isHourPassed(dateStr, hourStr) {
+  const now = getNowInfo();
 
+  if (dateStr < now.date) return true;
+  if (dateStr > now.date) return false;
+  if (hourStr === "00:00") return false;
+
+  // 🔥 On ajoute +1h pour attendre la FIN de l’heure
+  const [h, m] = hourStr.split(":").map(Number);
+  const blockEnd = new Date();
+  blockEnd.setHours(h + 1, 0, 0, 0);
+
+  const nowDate = new Date();
+
+  return nowDate >= blockEnd;
     function isBlockCompleted(block) {
       return block.tasks.length > 0 && block.tasks.every(t => t.done);
     }
