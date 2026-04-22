@@ -1189,7 +1189,6 @@
     cloudStatus.textContent = "Cloud : erreur de sauvegarde";
     throw err;
   }
-      }
 
       try {
         await setDoc(doc(db, "users", CLOUD_USER_ID), {
