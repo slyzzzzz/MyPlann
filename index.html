@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -35,7 +35,7 @@
     }
 
     body {
-      max-width: 640px;
+      max-width: 720px;
       margin: 0 auto;
       min-height: 100vh;
       padding: 14px 14px 120px;
@@ -106,7 +106,7 @@
       position: absolute;
       right: 0;
       top: 56px;
-      width: 220px;
+      width: 230px;
       background: #141a24;
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -214,7 +214,7 @@
 
     .btn.full { width: 100%; }
 
-    .date-input, .text-input, .textarea, .main-task-input, .subtask-input, .time-input, .filter-select, .number-input {
+    .date-input, .text-input, .textarea, .main-task-input, .subtask-input, .time-input, .filter-select, .number-input, .file-input {
       width: 100%;
       background: #0d121b;
       color: var(--text);
@@ -248,9 +248,7 @@
       text-align: center;
     }
 
-    .stat.clickable {
-      cursor: pointer;
-    }
+    .stat.clickable { cursor: pointer; }
 
     .stat .n {
       display: block;
@@ -544,13 +542,13 @@
       margin-bottom: 10px;
     }
 
-    .preset-grid, .goal-grid {
+    .preset-grid, .goal-grid, .file-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
 
-    .progress-cards, .revision-cards {
+    .progress-cards, .revision-cards, .sheet-groups {
       display: grid;
       gap: 12px;
     }
@@ -595,13 +593,31 @@
       margin-bottom: 12px;
     }
 
+    .sheet-file-link {
+      display: inline-block;
+      margin-top: 8px;
+      color: #8fb7ff;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .sheet-file-link:hover {
+      text-decoration: underline;
+    }
+
     .revision-summary {
       display: grid;
-      grid-template-columns: repeat(2,1fr);
+      grid-template-columns: repeat(3,1fr);
       gap: 10px;
     }
 
     .footer-space { height: 20px; }
+
+    @media (max-width: 640px) {
+      .stats, .revision-summary, .goal-grid, .preset-grid, .file-grid, .progress-filter {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -714,7 +730,7 @@
       <div class="panel-title">
         <div>
           <h2>Progression</h2>
-          <p class="muted">Suivi de ta progression</p>
+          <p class="muted">Suivi global</p>
         </div>
       </div>
 
@@ -728,6 +744,7 @@
         <select id="progressMode" class="filter-select">
           <option value="categories">Par catégorie</option>
           <option value="tasks">Par tâches</option>
+          <option value="revision">Révision</option>
         </select>
       </div>
     </div>
@@ -756,8 +773,48 @@
     <div class="panel">
       <div class="panel-title">
         <div>
-          <h2>Révision</h2>
-          <p class="muted">Annales, objectifs, pourcentage</p>
+          <h2>Mes fiches</h2>
+          <p class="muted">Classées par matière</p>
+        </div>
+      </div>
+      <div id="revisionSheetsContainer" class="sheet-groups"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Joindre un fichier</h2>
+          <p class="muted">Choisir la matière, renommer le document, valider</p>
+        </div>
+      </div>
+
+      <div class="file-grid">
+        <select id="sheetSubject" class="filter-select">
+          <option value="AV">AV</option>
+          <option value="OG">OG</option>
+          <option value="ETSO">ETSO</option>
+          <option value="Gestion">Gestion</option>
+        </select>
+        <input type="text" id="sheetTitle" class="text-input" placeholder="Nom du fichier / fiche" />
+      </div>
+
+      <textarea id="sheetContent" class="textarea" placeholder="Notes ou résumé optionnel..."></textarea>
+
+      <div class="row" style="margin-top:10px">
+        <input type="file" id="sheetFile" class="file-input" />
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <button class="btn success" id="saveSheetBtn">Valider</button>
+        <button class="btn" id="clearSheetBtn">Vider</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Annales</h2>
+          <p class="muted">2016 à 2025, en liste déroulante par matière</p>
         </div>
       </div>
 
@@ -770,46 +827,14 @@
           <span class="n" id="daysLeftDisplay">0</span>
           <span class="small">Jours restants</span>
         </div>
+        <div class="stat">
+          <span class="n" id="revisionGlobalPercent">0%</span>
+          <span class="small">Progression globale</span>
+        </div>
       </div>
     </div>
 
     <div id="revisionContainer" class="revision-cards"></div>
-      <div class="panel">
-  <div class="panel-title">
-    <div>
-      <h2>Fiches de révision</h2>
-      <p class="muted">Classe tes fiches par matière</p>
-    </div>
-  </div>
-
-  <div class="row">
-    <select id="sheetSubject" class="filter-select">
-      <option value="AV">AV</option>
-      <option value="OG">OG</option>
-      <option value="ETSO">ETSO</option>
-      <option value="Gestion">Gestion</option>
-    </select>
-    <input type="text" id="sheetTitle" class="text-input" placeholder="Titre de la fiche" />
-  </div>
-
-  <textarea id="sheetContent" class="textarea" placeholder="Contenu de la fiche..."></textarea>
-
-  <div class="row" style="margin-top:10px">
-    <button class="btn success" id="saveSheetBtn">Sauvegarder la fiche</button>
-    <button class="btn" id="clearSheetBtn">Vider</button>
-  </div>
-</div>
-
-<div class="panel">
-  <div class="panel-title">
-    <div>
-      <h2>Mes fiches</h2>
-      <p class="muted">Toutes tes fiches par matière</p>
-    </div>
-  </div>
-
-  <div id="revisionSheetsContainer"></div>
-</div>
 
     <div class="panel">
       <div class="panel-title">
@@ -968,10 +993,10 @@
         <div class="small" style="margin-top:8px;">Date examen / Objectif muscu semaine</div>
 
         <div class="goal-grid" style="margin-top:12px;">
-          <input type="number" id="goalAV" class="number-input" min="0" placeholder="AV" />
-          <input type="number" id="goalOG" class="number-input" min="0" placeholder="OG" />
-          <input type="number" id="goalETSO" class="number-input" min="0" placeholder="ETSO" />
-          <input type="number" id="goalGestion" class="number-input" min="0" placeholder="Gestion" />
+          <input type="number" id="goalAV" class="number-input" min="0" placeholder="Objectif AV" />
+          <input type="number" id="goalOG" class="number-input" min="0" placeholder="Objectif OG" />
+          <input type="number" id="goalETSO" class="number-input" min="0" placeholder="Objectif ETSO" />
+          <input type="number" id="goalGestion" class="number-input" min="0" placeholder="Objectif Gestion" />
         </div>
 
         <div class="row" style="margin-top:12px">
@@ -1031,12 +1056,75 @@
       "17:00","18:00","19:00","20:00","21:00","22:00","23:00","00:00"
     ];
     const CATEGORY_OPTIONS = ["À faire", "Travail", "Révisions", "Client", "Perso", "Cours", "Muscu"];
+    const YEARS = Array.from({length: 10}, (_, i) => 2016 + i);
+    const SUBJECTS = ["AV", "OG", "ETSO", "Gestion"];
 
-    const REVISION_SUBJECTS = {
-      AV: ["ANAV 2017", "ANAV 2018", "ANAV 2019", "ANAV 2022", "ANAV 2024"],
-      OG: ["OG 2017", "OG 2018", "OG 2019", "OG 2022", "OG 2024"],
-      ETSO: ["ETSO 2017", "ETSO 2018", "ETSO 2019", "ETSO 2022", "ETSO 2024"],
-      Gestion: ["Gestion 2017", "Gestion 2018", "Gestion 2019", "Gestion 2022", "Gestion 2024"]
+    function createAnnaleName(subject, year) {
+      if (subject === "AV") return `ANAV ${year}`;
+      if (subject === "OG") return `OG ${year}`;
+      if (subject === "ETSO") return `ETSO ${year}`;
+      return `Gestion ${year}`;
+    }
+
+    function createRevisionChecklist() {
+      const checklist = {};
+      SUBJECTS.forEach(subject => {
+        checklist[subject] = {};
+        YEARS.forEach(year => {
+          checklist[subject][createAnnaleName(subject, year)] = false;
+        });
+      });
+      return checklist;
+    }
+
+    function createEmptyTemplates() {
+      const templates = {};
+      for (let d = 0; d < 7; d++) {
+        templates[String(d)] = HOURS.map(hour => ({
+          hour,
+          categories: ["À faire"],
+          mainTask: "",
+          subTaskText: ""
+        }));
+      }
+      return templates;
+    }
+
+    function deepClone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    const defaultState = {
+      settings: {
+        autoApplyTemplate: true,
+        hidePassedHours: true,
+        hideDoneTasks: true,
+        editCompletedTasks: false,
+        revisionExamDate: "2026-05-15",
+        muscuWeeklyGoal: 3,
+        revisionGoals: {
+          AV: 10,
+          OG: 10,
+          ETSO: 10,
+          Gestion: 10
+        }
+      },
+      presets: {
+        work: { start: "10:00", end: "19:00", category: "Travail", label: "Travail" },
+        school: { start: "08:00", end: "18:00", category: "Cours", label: "École" },
+        study: { start: "19:00", end: "22:00", category: "Révisions", label: "Révisions" },
+        muscu: { start: "20:00", end: "21:00", category: "Muscu", label: "Muscu" }
+      },
+      longTermNotes: "",
+      templates: createEmptyTemplates(),
+      revisionChecklist: createRevisionChecklist(),
+      revisionSheets: {
+        AV: [],
+        OG: [],
+        ETSO: [],
+        Gestion: []
+      },
+      days: {}
     };
 
     const firebaseConfig = {
@@ -1064,16 +1152,22 @@
     }
 
     async function saveToCloud(payload) {
-      if (!cloudAvailable || !db) return;
+      if (!cloudAvailable || !db) {
+        console.log("Cloud OFF");
+        return;
+      }
+
       try {
         await setDoc(doc(db, "users", CLOUD_USER_ID), {
           data: payload,
           updatedAt: new Date().toISOString()
         });
+        console.log("Cloud save OK");
         cloudStatus.textContent = "Cloud : sauvegardé";
       } catch (err) {
-        cloudStatus.textContent = "Cloud : erreur de sauvegarde";
         console.error("Cloud save error", err);
+        cloudStatus.textContent = "Cloud : erreur de sauvegarde";
+        throw err;
       }
     }
 
@@ -1085,69 +1179,10 @@
         cloudStatus.textContent = "Cloud : données chargées";
         return snap.data()?.data || null;
       } catch (err) {
-        cloudStatus.textContent = "Cloud : erreur de chargement";
         console.error("Cloud load error", err);
+        cloudStatus.textContent = "Cloud : erreur de chargement";
         return null;
       }
-    }
-
-    function createEmptyTemplates() {
-      const templates = {};
-      for (let d = 0; d < 7; d++) {
-        templates[String(d)] = HOURS.map(hour => ({
-          hour,
-          categories: ["À faire"],
-          mainTask: "",
-          subTaskText: ""
-        }));
-      }
-      return templates;
-    }
-
-    function createRevisionChecklist() {
-      const checklist = {};
-      Object.entries(REVISION_SUBJECTS).forEach(([subject, items]) => {
-        checklist[subject] = {};
-        items.forEach(item => checklist[subject][item] = false);
-      });
-      return checklist;
-    }
-
-    const defaultState = {
-      settings: {
-        autoApplyTemplate: true,
-        hidePassedHours: true,
-        hideDoneTasks: true,
-        editCompletedTasks: false,
-        revisionExamDate: "2026-05-15",
-        muscuWeeklyGoal: 3,
-        revisionGoals: {
-          AV: 10,
-          OG: 8,
-          ETSO: 6,
-          Gestion: 5
-        }
-      },
-      presets: {
-        work: { start: "10:00", end: "19:00", category: "Travail", label: "Travail" },
-        school: { start: "08:00", end: "18:00", category: "Cours", label: "École" },
-        study: { start: "19:00", end: "22:00", category: "Révisions", label: "Révisions" },
-        muscu: { start: "20:00", end: "21:00", category: "Muscu", label: "Muscu" }
-      },
-      longTermNotes: "",
-      templates: createEmptyTemplates(),
-      revisionChecklist: createRevisionChecklist(),
-        revisionSheets: {
-  AV: [],
-  OG: [],
-  ETSO: [],
-  Gestion: []
-},
-      days: {}
-    };
-
-    function deepClone(obj) {
-      return JSON.parse(JSON.stringify(obj));
     }
 
     function loadStateLocal() {
@@ -1225,12 +1260,13 @@
           });
         }
         merged.revisionChecklist = freshRevision;
-          merged.revisionSheets = {
-  ...defaultState.revisionSheets,
-  ...(parsed.revisionSheets || {})
-};
-        merged.days = parsed.days || {};
 
+        merged.revisionSheets = {
+          ...defaultState.revisionSheets,
+          ...(parsed.revisionSheets || {})
+        };
+
+        merged.days = parsed.days || {};
         return merged;
       } catch {
         return deepClone(defaultState);
@@ -1239,16 +1275,12 @@
 
     let state = loadStateLocal();
     let selectedDate = getTodayString();
-    let cloudSaveTimer = null;
+    let editingSheetId = null;
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       localStorage.setItem(BACKUP_KEY, JSON.stringify(state));
-
-      clearTimeout(cloudSaveTimer);
-      cloudSaveTimer = setTimeout(() => {
-        saveToCloud(state);
-      }, 700);
+      saveToCloud(state);
     }
 
     setInterval(() => {
@@ -1926,11 +1958,136 @@
       return entries;
     }
 
+    function countCheckedRevision(subject) {
+      const items = state.revisionChecklist[subject] || {};
+      return Object.values(items).filter(Boolean).length;
+    }
+
+    function countRemainingRevision(subject, goal) {
+      return Math.max(0, goal - countCheckedRevision(subject));
+    }
+
+    function countGlobalRevisionDone() {
+      return SUBJECTS.reduce((acc, subject) => acc + countCheckedRevision(subject), 0);
+    }
+
+    function countGlobalRevisionGoal() {
+      return SUBJECTS.reduce((acc, subject) => acc + Number(state.settings.revisionGoals[subject] || 0), 0);
+    }
+
+    function getExamProgressPercent(doneCount, goalCount, examDateStr) {
+      const startDate = new Date("2026-04-22T00:00:00");
+      const examDate = new Date(examDateStr + "T00:00:00");
+      const today = new Date();
+
+      const totalDuration = examDate - startDate;
+      const elapsedDuration = Math.max(0, today - startDate);
+
+      if (goalCount <= 0) return 0;
+      if (totalDuration <= 0) return 0;
+
+      const realProgress = doneCount / goalCount;
+      const idealProgress = elapsedDuration / totalDuration;
+
+      if (idealProgress <= 0) {
+        return Math.round(realProgress * 100);
+      }
+
+      return Math.round((realProgress / idealProgress) * 100);
+    }
+
+    function getDaysLeft(examDateStr) {
+      const today = new Date();
+      const examDate = new Date(examDateStr + "T00:00:00");
+      const ms = examDate - new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      return Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
+    }
+
+    function getWeekRange() {
+      const now = new Date();
+      const day = now.getDay();
+      const diffToMonday = day === 0 ? -6 : 1 - day;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() + diffToMonday);
+      monday.setHours(0,0,0,0);
+
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      sunday.setHours(23,59,59,999);
+
+      return { monday, sunday };
+    }
+
+    function countMuscuSessionsThisWeek() {
+      const { monday, sunday } = getWeekRange();
+      let count = 0;
+
+      Object.entries(state.days).forEach(([dateKey, day]) => {
+        const date = new Date(dateKey + "T00:00:00");
+        if (date < monday || date > sunday) return;
+
+        day.blocks.forEach(block => {
+          if (block.category !== "Muscu") return;
+          const hasDone = (block.tasks || []).some(t => t.done);
+          if (hasDone) count += 1;
+        });
+      });
+
+      return count;
+    }
+
     function renderProgress() {
       const range = document.getElementById("progressRange").value;
       const mode = document.getElementById("progressMode").value;
-      const entries = collectCompletedEntries(range);
+      const progressContainer = document.getElementById("progressContainer");
+      progressContainer.innerHTML = "";
 
+      if (mode === "revision") {
+        const examDate = state.settings.revisionExamDate;
+        const globalDone = countGlobalRevisionDone();
+        const globalGoal = countGlobalRevisionGoal();
+        const globalRemaining = Math.max(0, globalGoal - globalDone);
+        const globalPercentToFinish = globalGoal > 0 ? Math.round((globalDone / globalGoal) * 100) : 0;
+        const globalTimePercent = getExamProgressPercent(globalDone, globalGoal, examDate);
+
+        document.getElementById("progressCompleted").textContent = globalDone;
+        document.getElementById("progressDays").textContent = getDaysLeft(examDate);
+        document.getElementById("progressTop").textContent = "Révision";
+
+        const globalCard = document.createElement("div");
+        globalCard.className = "progress-card";
+        globalCard.innerHTML = `
+          <h3>Révision globale</h3>
+          <div class="progress-line"><span>Annales faites</span><strong>${globalDone}</strong></div>
+          <div class="progress-line"><span>Annales restantes</span><strong>${globalRemaining}</strong></div>
+          <div class="progress-line"><span>Progression pour terminer</span><strong>${globalPercentToFinish}%</strong></div>
+          <div class="progress-line"><span>Progression selon la date</span><strong>${globalTimePercent}%</strong></div>
+        `;
+        progressContainer.appendChild(globalCard);
+
+        SUBJECTS.forEach(subject => {
+          const goal = Number(state.settings.revisionGoals[subject] || 0);
+          const done = countCheckedRevision(subject);
+          const remaining = Math.max(0, goal - done);
+          const percentToFinish = goal > 0 ? Math.round((done / goal) * 100) : 0;
+          const timePercent = getExamProgressPercent(done, goal, examDate);
+
+          const card = document.createElement("div");
+          card.className = "progress-card";
+          card.innerHTML = `
+            <h3>${subject}</h3>
+            <div class="progress-line"><span>Faites</span><strong>${done}</strong></div>
+            <div class="progress-line"><span>Restantes</span><strong>${remaining}</strong></div>
+            <div class="progress-line"><span>Progression pour terminer</span><strong>${percentToFinish}%</strong></div>
+            <div class="progress-line"><span>Progression selon la date</span><strong>${timePercent}%</strong></div>
+          `;
+          progressContainer.appendChild(card);
+        });
+
+        return;
+      }
+
+      const entries = collectCompletedEntries(range);
       const activeDaysSet = new Set(entries.map(e => e.date));
       document.getElementById("progressCompleted").textContent = entries.length;
       document.getElementById("progressDays").textContent = activeDaysSet.size;
@@ -1949,9 +2106,6 @@
         }
       });
       document.getElementById("progressTop").textContent = topCategory;
-
-      const progressContainer = document.getElementById("progressContainer");
-      progressContainer.innerHTML = "";
 
       if (mode === "categories") {
         if (Object.keys(categoryCount).length === 0) {
@@ -2049,240 +2203,54 @@
       }
     }
 
-    function getExamProgressPercent(doneCount, goalCount, examDateStr) {
-      const startDate = new Date("2026-04-22T00:00:00");
-      const examDate = new Date(examDateStr + "T00:00:00");
-      const now = new Date();
-
-      const totalDuration = examDate - startDate;
-      const elapsedDuration = Math.max(0, now - startDate);
-
-      if (goalCount <= 0) return 0;
-      if (totalDuration <= 0) return 0;
-
-      const realProgress = doneCount / goalCount;
-      const idealProgress = elapsedDuration / totalDuration;
-
-      if (idealProgress <= 0) return Math.round(realProgress * 100);
-
-      return Math.round((realProgress / idealProgress) * 100);
-    }
-
-    function getDaysLeft(examDateStr) {
-      const today = new Date();
-      const examDate = new Date(examDateStr + "T00:00:00");
-      const ms = examDate - new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      return Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
-    }
-
-    function countCheckedRevision(subject) {
-      const items = state.revisionChecklist[subject] || {};
-      return Object.values(items).filter(Boolean).length;
-    }
-
-    function getWeekRange() {
-      const now = new Date();
-      const day = now.getDay();
-      const diffToMonday = day === 0 ? -6 : 1 - day;
-      const monday = new Date(now);
-      monday.setDate(now.getDate() + diffToMonday);
-      monday.setHours(0,0,0,0);
-
-      const sunday = new Date(monday);
-      sunday.setDate(monday.getDate() + 6);
-      sunday.setHours(23,59,59,999);
-
-      return { monday, sunday };
-    }
-
-    function countMuscuSessionsThisWeek() {
-      const { monday, sunday } = getWeekRange();
-      let count = 0;
-
-      Object.entries(state.days).forEach(([dateKey, day]) => {
-        const date = new Date(dateKey + "T00:00:00");
-        if (date < monday || date > sunday) return;
-
-        day.blocks.forEach(block => {
-          if (block.category !== "Muscu") return;
-          const hasDone = (block.tasks || []).some(t => t.done);
-          if (hasDone) count += 1;
-        });
-      });
-
-      return count;
-    }
-
     function renderRevision() {
-        let editingSheetId = null;
-
-function saveRevisionSheet() {
-  const subject = document.getElementById("sheetSubject").value;
-  const title = document.getElementById("sheetTitle").value.trim();
-  const content = document.getElementById("sheetContent").value.trim();
-
-  if (!title || !content) {
-    alert("Remplis le titre et le contenu.");
-    return;
-  }
-
-  if (!state.revisionSheets[subject]) {
-    state.revisionSheets[subject] = [];
-  }
-
-  if (editingSheetId) {
-    let found = false;
-
-    Object.keys(state.revisionSheets).forEach(sub => {
-      state.revisionSheets[sub] = state.revisionSheets[sub].map(sheet => {
-        if (sheet.id === editingSheetId) {
-          found = true;
-          return {
-            ...sheet,
-            title,
-            content,
-            updatedAt: new Date().toISOString()
-          };
-        }
-        return sheet;
-      });
-    });
-
-    if (!found) {
-      state.revisionSheets[subject].push({
-        id: Date.now().toString(),
-        title,
-        content,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      });
-    }
-  } else {
-    state.revisionSheets[subject].push({
-      id: Date.now().toString(),
-      title,
-      content,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    });
-  }
-
-  editingSheetId = null;
-  document.getElementById("sheetTitle").value = "";
-  document.getElementById("sheetContent").value = "";
-
-  saveState();
-  renderRevisionSheets();
-}
-
-function clearRevisionSheetForm() {
-  editingSheetId = null;
-  document.getElementById("sheetTitle").value = "";
-  document.getElementById("sheetContent").value = "";
-}
-
-function editRevisionSheet(subject, sheetId) {
-  const sheet = (state.revisionSheets[subject] || []).find(s => s.id === sheetId);
-  if (!sheet) return;
-
-  editingSheetId = sheet.id;
-  document.getElementById("sheetSubject").value = subject;
-  document.getElementById("sheetTitle").value = sheet.title;
-  document.getElementById("sheetContent").value = sheet.content;
-}
-
-function deleteRevisionSheet(subject, sheetId) {
-  if (!confirm("Supprimer cette fiche ?")) return;
-
-  state.revisionSheets[subject] = (state.revisionSheets[subject] || []).filter(s => s.id !== sheetId);
-  saveState();
-  renderRevisionSheets();
-}
-
-function renderRevisionSheets() {
-  const container = document.getElementById("revisionSheetsContainer");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  const subjects = ["AV", "OG", "ETSO", "Gestion"];
-  let hasSheets = false;
-
-  subjects.forEach(subject => {
-    const sheets = state.revisionSheets[subject] || [];
-    if (sheets.length === 0) return;
-
-    hasSheets = true;
-
-    const card = document.createElement("div");
-    card.className = "revision-card";
-
-    const rows = sheets.map(sheet => `
-      <div class="accordion-card">
-        <button class="accordion-head" data-sheet-toggle="${sheet.id}">
-          <span>${escapeHtml(sheet.title)}</span>
-          <span>▾</span>
-        </button>
-        <div class="accordion-content" id="sheet-content-${sheet.id}">
-          <div class="small" style="white-space:pre-wrap; margin-bottom:12px;">${escapeHtml(sheet.content)}</div>
-          <div class="row">
-            <button class="btn" data-sheet-edit="${sheet.id}" data-sheet-subject="${subject}">Modifier</button>
-            <button class="btn danger" data-sheet-delete="${sheet.id}" data-sheet-subject="${subject}">Supprimer</button>
-          </div>
-        </div>
-      </div>
-    `).join("");
-
-    card.innerHTML = `
-      <h3>${subject}</h3>
-      ${rows}
-    `;
-
-    container.appendChild(card);
-  });
-
-  if (!hasSheets) {
-    container.innerHTML = `<div class="small">Aucune fiche enregistrée.</div>`;
-  }
-}
       const examDate = state.settings.revisionExamDate;
       document.getElementById("examDateDisplay").textContent =
         new Date(examDate + "T00:00:00").toLocaleDateString("fr-FR");
       document.getElementById("daysLeftDisplay").textContent = getDaysLeft(examDate);
 
+      const globalDone = countGlobalRevisionDone();
+      const globalGoal = countGlobalRevisionGoal();
+      const globalPercentToFinish = globalGoal > 0 ? Math.round((globalDone / globalGoal) * 100) : 0;
+      document.getElementById("revisionGlobalPercent").textContent = `${globalPercentToFinish}%`;
+
       const revisionContainer = document.getElementById("revisionContainer");
       revisionContainer.innerHTML = "";
 
-      Object.keys(REVISION_SUBJECTS).forEach(subject => {
-        const goal = state.settings.revisionGoals[subject] || 0;
+      SUBJECTS.forEach(subject => {
+        const goal = Number(state.settings.revisionGoals[subject] || 0);
         const done = countCheckedRevision(subject);
-        const percent = getExamProgressPercent(done, goal, examDate);
+        const remaining = Math.max(0, goal - done);
+        const percentToFinish = goal > 0 ? Math.round((done / goal) * 100) : 0;
+        const timePercent = getExamProgressPercent(done, goal, examDate);
+
+        const annales = YEARS.map(year => {
+          const name = createAnnaleName(subject, year);
+          return `
+            <div class="revision-line">
+              <span>${escapeHtml(name)}</span>
+              <input type="checkbox" class="checkbox" data-revision-subject="${subject}" data-revision-item="${escapeAttr(name)}" ${state.revisionChecklist[subject][name] ? "checked" : ""}>
+            </div>
+          `;
+        }).join("");
 
         const card = document.createElement("div");
-        card.className = "revision-card";
-
-        const lines = REVISION_SUBJECTS[subject].map(item => `
-          <div class="revision-line">
-            <span>${escapeHtml(item)}</span>
-            <input type="checkbox" class="checkbox" data-revision-subject="${subject}" data-revision-item="${escapeAttr(item)}" ${state.revisionChecklist[subject][item] ? "checked" : ""}>
-          </div>
-        `).join("");
-
+        card.className = "accordion-card";
         card.innerHTML = `
-          <h3>${escapeHtml(subject)}</h3>
-          <div class="progress-line">
-            <span>Annales faites</span>
-            <strong>${done} / ${goal}</strong>
-          </div>
-          <div class="progress-line">
-            <span>Progression</span>
-            <strong>${percent}%</strong>
-          </div>
-          <div style="margin-top:10px;">
-            ${lines}
+          <button class="accordion-head" data-revision-accordion="${subject}">
+            <span>${subject}</span>
+            <span>${done}/${goal} • ${percentToFinish}%</span>
+          </button>
+          <div class="accordion-content">
+            <div class="progress-line"><span>Faites</span><strong>${done}</strong></div>
+            <div class="progress-line"><span>Restantes</span><strong>${remaining}</strong></div>
+            <div class="progress-line"><span>Progression pour terminer</span><strong>${percentToFinish}%</strong></div>
+            <div class="progress-line"><span>Progression selon la date</span><strong>${timePercent}%</strong></div>
+            <div style="margin-top:10px;">
+              ${annales}
+            </div>
           </div>
         `;
-
         revisionContainer.appendChild(card);
       });
 
@@ -2293,6 +2261,158 @@ function renderRevisionSheets() {
       document.getElementById("muscuDoneWeek").textContent = muscuDone;
       document.getElementById("muscuGoalWeek").textContent = muscuGoal;
       document.getElementById("muscuPercentWeek").textContent = `${muscuPercent}%`;
+    }
+
+    function renderRevisionSheets() {
+      const container = document.getElementById("revisionSheetsContainer");
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      let hasSheets = false;
+
+      SUBJECTS.forEach(subject => {
+        const sheets = state.revisionSheets[subject] || [];
+        if (sheets.length === 0) return;
+
+        hasSheets = true;
+
+        const card = document.createElement("div");
+        card.className = "revision-card";
+
+        const rows = sheets.map(sheet => `
+          <div class="accordion-card">
+            <button class="accordion-head" data-sheet-toggle="${sheet.id}">
+              <span>${escapeHtml(sheet.title)}</span>
+              <span>▾</span>
+            </button>
+            <div class="accordion-content" id="sheet-content-${sheet.id}">
+              ${sheet.content ? `<div class="small" style="white-space:pre-wrap; margin-bottom:12px;">${escapeHtml(sheet.content)}</div>` : ""}
+              ${sheet.fileName && sheet.fileData ? `
+                <a class="sheet-file-link" href="${sheet.fileData}" download="${escapeAttr(sheet.fileName)}">
+                  📎 Télécharger ${escapeHtml(sheet.fileName)}
+                </a>
+              ` : ""}
+              <div class="row" style="margin-top:12px;">
+                <button class="btn" data-sheet-edit="${sheet.id}" data-sheet-subject="${subject}">Modifier</button>
+                <button class="btn danger" data-sheet-delete="${sheet.id}" data-sheet-subject="${subject}">Supprimer</button>
+              </div>
+            </div>
+          </div>
+        `).join("");
+
+        card.innerHTML = `
+          <h3>${subject}</h3>
+          ${rows}
+        `;
+
+        container.appendChild(card);
+      });
+
+      if (!hasSheets) {
+        container.innerHTML = `<div class="small">Aucune fiche enregistrée.</div>`;
+      }
+    }
+
+    function saveRevisionSheet() {
+      const subject = document.getElementById("sheetSubject").value;
+      const title = document.getElementById("sheetTitle").value.trim();
+      const content = document.getElementById("sheetContent").value.trim();
+      const fileInput = document.getElementById("sheetFile");
+      const file = fileInput.files[0];
+
+      if (!title) {
+        alert("Mets un nom au fichier ou à la fiche.");
+        return;
+      }
+
+      const finishSave = (fileData = null, fileName = null) => {
+        if (!state.revisionSheets[subject]) {
+          state.revisionSheets[subject] = [];
+        }
+
+        if (editingSheetId) {
+          let found = false;
+          SUBJECTS.forEach(sub => {
+            state.revisionSheets[sub] = state.revisionSheets[sub].map(sheet => {
+              if (sheet.id === editingSheetId) {
+                found = true;
+                return {
+                  ...sheet,
+                  title,
+                  content,
+                  fileData: fileData !== null ? fileData : sheet.fileData || null,
+                  fileName: fileName !== null ? fileName : sheet.fileName || null,
+                  updatedAt: new Date().toISOString()
+                };
+              }
+              return sheet;
+            });
+          });
+
+          if (!found) {
+            state.revisionSheets[subject].push({
+              id: uid(),
+              title,
+              content,
+              fileData,
+              fileName,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            });
+          }
+        } else {
+          state.revisionSheets[subject].push({
+            id: uid(),
+            title,
+            content,
+            fileData,
+            fileName,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          });
+        }
+
+        editingSheetId = null;
+        clearRevisionSheetForm();
+        saveState();
+        renderRevisionSheets();
+      };
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          finishSave(e.target.result, file.name);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        finishSave();
+      }
+    }
+
+    function clearRevisionSheetForm() {
+      editingSheetId = null;
+      document.getElementById("sheetTitle").value = "";
+      document.getElementById("sheetContent").value = "";
+      document.getElementById("sheetFile").value = "";
+    }
+
+    function editRevisionSheet(subject, sheetId) {
+      const sheet = (state.revisionSheets[subject] || []).find(s => s.id === sheetId);
+      if (!sheet) return;
+
+      editingSheetId = sheet.id;
+      document.getElementById("sheetSubject").value = subject;
+      document.getElementById("sheetTitle").value = sheet.title;
+      document.getElementById("sheetContent").value = sheet.content || "";
+      document.getElementById("revisionSection").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function deleteRevisionSheet(subject, sheetId) {
+      if (!confirm("Supprimer cette fiche ?")) return;
+      state.revisionSheets[subject] = (state.revisionSheets[subject] || []).filter(s => s.id !== sheetId);
+      saveState();
+      renderRevisionSheets();
     }
 
     function renderCompletedTasksManager() {
@@ -2452,6 +2572,7 @@ function renderRevisionSheets() {
 
       saveState();
       renderRevision();
+      renderProgress();
       alert("Objectifs sauvegardés.");
     }
 
@@ -2487,6 +2608,10 @@ function renderRevisionSheets() {
             presets: {
               ...defaultState.presets,
               ...(parsed.presets || {})
+            },
+            revisionSheets: {
+              ...defaultState.revisionSheets,
+              ...(parsed.revisionSheets || {})
             }
           };
 
@@ -2649,31 +2774,10 @@ function renderRevisionSheets() {
     document.getElementById("statDoneCard").addEventListener("click", () => showTodayTasksDetail("done"));
     document.getElementById("statLeftCard").addEventListener("click", () => showTodayTasksDetail("left"));
 
+    document.getElementById("saveSheetBtn").addEventListener("click", saveRevisionSheet);
+    document.getElementById("clearSheetBtn").addEventListener("click", clearRevisionSheetForm);
+
     document.getElementById("revisionContainer").addEventListener("change", (e) => {
-        document.getElementById("saveSheetBtn").addEventListener("click", saveRevisionSheet);
-document.getElementById("clearSheetBtn").addEventListener("click", clearRevisionSheetForm);
-
-document.getElementById("revisionSheetsContainer").addEventListener("click", (e) => {
-  const toggleBtn = e.target.closest("[data-sheet-toggle]");
-  if (toggleBtn) {
-    const id = toggleBtn.dataset.sheetToggle;
-    const content = document.getElementById(`sheet-content-${id}`);
-    const card = toggleBtn.closest(".accordion-card");
-    card.classList.toggle("open");
-    return;
-  }
-
-  const editBtn = e.target.closest("[data-sheet-edit]");
-  if (editBtn) {
-    editRevisionSheet(editBtn.dataset.sheetSubject, editBtn.dataset.sheetEdit);
-    return;
-  }
-
-  const deleteBtn = e.target.closest("[data-sheet-delete]");
-  if (deleteBtn) {
-    deleteRevisionSheet(deleteBtn.dataset.sheetSubject, deleteBtn.dataset.sheetDelete);
-  }
-});
       const input = e.target.closest("[data-revision-subject]");
       if (!input) return;
 
@@ -2682,6 +2786,34 @@ document.getElementById("revisionSheetsContainer").addEventListener("click", (e)
       state.revisionChecklist[subject][item] = input.checked;
       saveState();
       renderRevision();
+      renderProgress();
+    });
+
+    document.getElementById("revisionContainer").addEventListener("click", (e) => {
+      const acc = e.target.closest("[data-revision-accordion]");
+      if (!acc) return;
+      const card = acc.closest(".accordion-card");
+      card.classList.toggle("open");
+    });
+
+    document.getElementById("revisionSheetsContainer").addEventListener("click", (e) => {
+      const toggleBtn = e.target.closest("[data-sheet-toggle]");
+      if (toggleBtn) {
+        const card = toggleBtn.closest(".accordion-card");
+        card.classList.toggle("open");
+        return;
+      }
+
+      const editBtn = e.target.closest("[data-sheet-edit]");
+      if (editBtn) {
+        editRevisionSheet(editBtn.dataset.sheetSubject, editBtn.dataset.sheetEdit);
+        return;
+      }
+
+      const deleteBtn = e.target.closest("[data-sheet-delete]");
+      if (deleteBtn) {
+        deleteRevisionSheet(deleteBtn.dataset.sheetSubject, deleteBtn.dataset.sheetDelete);
+      }
     });
 
     document.getElementById("templatesContainer").addEventListener("click", (e) => {
@@ -2881,6 +3013,10 @@ document.getElementById("revisionSheetsContainer").addEventListener("click", (e)
           presets: {
             ...defaultState.presets,
             ...(cloudData.presets || {})
+          },
+          revisionSheets: {
+            ...defaultState.revisionSheets,
+            ...(cloudData.revisionSheets || {})
           }
         };
 
