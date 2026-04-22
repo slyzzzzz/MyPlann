@@ -4153,7 +4153,9 @@
     function countGlobalRevisionDone() { return SUBJECTS.reduce((acc, s) => acc + countCheckedRevision(s), 0); }
     function countGlobalRevisionGoal() { return SUBJECTS.reduce((acc, s) => acc + Number(state.settings.revisionGoals[s] || 0), 0); }
 
-   function getExamProgressPercent(doneCount, goalCount, examDateStr) {
+ function getExamProgressPercent(doneCount, goalCount, examDateStr) {
+  console.log("NEW getExamProgressPercent used");
+
   const startDate = new Date("2026-04-22T00:00:00");
   const examDate = new Date(examDateStr + "T00:00:00");
   const today = new Date();
@@ -4167,14 +4169,11 @@
   const realProgress = doneCount / goalCount;
   const idealProgress = elapsedDuration / totalDuration;
 
-  if (idealProgress <= 0) {
-    return Math.min(100, Math.round(realProgress * 100));
-  }
+  if (idealProgress <= 0) return Math.min(100, Math.round(realProgress * 100));
 
   const progressVsDate = (realProgress / idealProgress) * 100;
   return Math.min(100, Math.round(progressVsDate));
 }
-
     function getDaysLeft(examDateStr) {
       const today = new Date();
       const examDate = new Date(examDateStr + "T00:00:00");
