@@ -2266,6 +2266,54 @@
     }
 
     init();
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCJuERKoICwfhEM4D7bSXHN7BYAe5APyZo",
+  authDomain: "myplann-1af8e.firebaseapp.com",
+  projectId: "myplann-1af8e",
+  storageBucket: "myplann-1af8e.firebasestorage.app",
+  messagingSenderId: "593785848033",
+  appId: "1:593785848033:web:5be2508a0b03ba80b937a0"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const CLOUD_USER_ID = "atilla-main";
+
+async function saveToCloud(data) {
+  await setDoc(doc(db, "users", CLOUD_USER_ID), {
+    data,
+    updatedAt: new Date().toISOString()
+  });
+}
+
+async function loadFromCloud() {
+  const snap = await getDoc(doc(db, "users", CLOUD_USER_ID));
+  if (!snap.exists()) return null;
+  return snap.data().data;
+}
+
+window.firebaseCloud = { saveToCloud, loadFromCloud };
+    async function init() {
+  // 1. Charger depuis Firebase
+  if (window.firebaseCloud) {
+    const cloud = await window.firebaseCloud.loadFromCloud();
+
+    if (cloud) {
+      state = cloud;
+      localStorage.setItem("myplann-main", JSON.stringify(state));
+    }
+  }
+
+  // 2. Afficher ton app
+  renderDay();
+  updateStats();
+}
+</script>
   </script>
 </body>
 </html>
