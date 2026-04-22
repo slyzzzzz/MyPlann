@@ -8,7 +8,7 @@
     :root{
       --bg:#0f1115;
       --bg2:#121722;
-      --panel:#171c26;
+      --panel:#171c26;F
       --panel2:#1d2431;
       --text:#f5f7fb;
       --muted:#9aa7bd;
@@ -1152,9 +1152,26 @@
     }
 
     async function saveToCloud(payload) {
-      if (!cloudAvailable || !db) {
-        console.log("Cloud OFF");
-        return;
+  if (!cloudAvailable || !db) {
+    console.log("Cloud OFF");
+    return;
+  }
+
+  try {
+    const safePayload = JSON.parse(JSON.stringify(payload));
+
+    await setDoc(doc(db, "users", CLOUD_USER_ID), {
+      data: safePayload,
+      updatedAt: new Date().toISOString()
+    });
+
+    console.log("Cloud save OK");
+    cloudStatus.textContent = "Cloud : sauvegardé";
+  } catch (err) {
+    console.error("Cloud save error", err);
+    cloudStatus.textContent = "Cloud : erreur de sauvegarde";
+    throw err;
+  }
       }
 
       try {
@@ -1278,10 +1295,11 @@
     let editingSheetId = null;
 
     function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      localStorage.setItem(BACKUP_KEY, JSON.stringify(state));
-      saveToCloud(state);
-    }
+  const safeState = JSON.parse(JSON.stringify(state));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(safeState));
+  localStorage.setItem(BACKUP_KEY, JSON.stringify(safeState));
+  saveToCloud(safeState);
+}
 
     setInterval(() => {
       try {
