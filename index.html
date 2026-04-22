@@ -4329,7 +4329,7 @@
         const card = document.createElement("div");
         card.className = "accordion-card";
         card.innerHTML = `
-          <button class="accordion-head" data-revision-accordion="${subject}">
+        <button type="button" class="accordion-head" data-revision-accordion="${subject}">
             <span>${subject}</span><span>${done}/${goal} • ${percentToFinish}%</span>
           </button>
           <div class="accordion-content">
@@ -4696,32 +4696,14 @@
     document.getElementById("saveSheetBtn").addEventListener("click", saveRevisionSheet);
     document.getElementById("clearSheetBtn").addEventListener("click", clearRevisionSheetForm);
 
-    document.getElementById("revisionContainer").addEventListener("change", (e) => {
-      const input = e.target.closest("[data-revision-subject]");
-      if (!input) return;
-      state.revisionChecklist[input.dataset.revisionSubject][input.dataset.revisionItem] = input.checked;
-      saveState(); renderRevision(); renderProgress();
-    });
-
-    document.getElementById("revisionContainer").addEventListener("change", (e) => {
+   document.getElementById("revisionContainer").addEventListener("change", (e) => {
   const input = e.target.closest("[data-revision-subject]");
   if (!input) return;
 
-  const openCards = [...document.querySelectorAll('#revisionContainer .accordion-card.open')]
-    .map(card => card.querySelector('[data-revision-accordion]')?.dataset.revisionAccordion)
-    .filter(Boolean);
-
   state.revisionChecklist[input.dataset.revisionSubject][input.dataset.revisionItem] = input.checked;
   saveState();
-  renderRevision();
   renderProgress();
-
-  openCards.forEach(subject => {
-    const btn = document.querySelector(`#revisionContainer [data-revision-accordion="${subject}"]`);
-    if (btn) btn.closest(".accordion-card").classList.add("open");
-  });
 });
-
     document.getElementById("revisionSheetsContainer").addEventListener("click", (e) => {
       const toggleBtn = e.target.closest("[data-sheet-toggle]");
       if (toggleBtn) { toggleBtn.closest(".accordion-card").classList.toggle("open"); return; }
