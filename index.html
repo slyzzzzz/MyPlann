@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -26,7 +26,6 @@
     }
 
     * { box-sizing: border-box; }
-
     html, body {
       margin: 0;
       padding: 0;
@@ -36,14 +35,13 @@
     }
 
     body {
-      max-width: 620px;
+      max-width: 640px;
       margin: 0 auto;
       min-height: 100vh;
       padding: 14px 14px 120px;
     }
 
     h1, h2, h3, p { margin: 0; }
-
     button, input, textarea, select {
       font: inherit;
       border: none;
@@ -82,8 +80,9 @@
 
     .tabs {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr auto;
       gap: 10px;
+      position: relative;
     }
 
     .tab {
@@ -101,6 +100,36 @@
       background: linear-gradient(180deg,#22314d,#182235);
       color: #fff;
       border-color: #385788;
+    }
+
+    .plus-menu {
+      position: absolute;
+      right: 0;
+      top: 56px;
+      width: 220px;
+      background: #141a24;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 8px;
+      display: none;
+      z-index: 80;
+    }
+
+    .plus-menu.open { display: block; }
+
+    .plus-item {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      color: var(--text);
+      padding: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .plus-item:hover {
+      background: #1e2634;
     }
 
     .section { display: none; }
@@ -185,7 +214,7 @@
 
     .btn.full { width: 100%; }
 
-    .date-input, .text-input, .textarea, .main-task-input, .subtask-input, .time-input, .filter-select {
+    .date-input, .text-input, .textarea, .main-task-input, .subtask-input, .time-input, .filter-select, .number-input {
       width: 100%;
       background: #0d121b;
       color: var(--text);
@@ -217,6 +246,10 @@
       border-radius: 15px;
       padding: 12px;
       text-align: center;
+    }
+
+    .stat.clickable {
+      cursor: pointer;
     }
 
     .stat .n {
@@ -406,9 +439,7 @@
       border-top: 1px solid rgba(255,255,255,.05);
     }
 
-    .task-row:first-child {
-      border-top: none;
-    }
+    .task-row:first-child { border-top: none; }
 
     .checkbox {
       width: 22px;
@@ -500,7 +531,7 @@
       font-size: .9rem;
     }
 
-    .preset-setting {
+    .preset-setting, .goal-card {
       border: 1px solid #2b3648;
       border-radius: 14px;
       padding: 12px;
@@ -508,43 +539,44 @@
       background: #121823;
     }
 
-    .preset-setting h3 {
+    .preset-setting h3, .goal-card h3 {
       font-size: 1rem;
       margin-bottom: 10px;
     }
 
-    .preset-grid {
+    .preset-grid, .goal-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
 
-    .progress-cards {
+    .progress-cards, .revision-cards {
       display: grid;
       gap: 12px;
     }
 
-    .progress-card {
+    .progress-card, .revision-card {
       background: #11161f;
       border: 1px solid #273043;
       border-radius: 16px;
       padding: 12px;
     }
 
-    .progress-card h3 {
+    .progress-card h3, .revision-card h3 {
       margin-bottom: 8px;
       font-size: 1rem;
     }
 
-    .progress-line {
+    .progress-line, .revision-line {
       display: flex;
       justify-content: space-between;
       gap: 12px;
       padding: 8px 0;
       border-top: 1px solid rgba(255,255,255,.05);
+      align-items: center;
     }
 
-    .progress-line:first-child {
+    .progress-line:first-child, .revision-line:first-child {
       border-top: none;
       padding-top: 0;
     }
@@ -563,6 +595,12 @@
       margin-bottom: 12px;
     }
 
+    .revision-summary {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 10px;
+    }
+
     .footer-space { height: 20px; }
   </style>
 </head>
@@ -578,9 +616,14 @@
 
     <div class="tabs">
       <button class="tab active" id="tabToday">Aujourd’hui</button>
-      <button class="tab" id="tabProgress">Progression</button>
-      <button class="tab" id="tabLongTerm">Long-terme</button>
-      <button class="tab" id="tabSettings">⚙️</button>
+      <button class="tab" id="tabPlus">+</button>
+
+      <div class="plus-menu" id="plusMenu">
+        <button class="plus-item" data-open-section="progress">📊 Progression</button>
+        <button class="plus-item" data-open-section="revision">📚 Révision</button>
+        <button class="plus-item" data-open-section="longterm">🧠 Long-terme</button>
+        <button class="plus-item" data-open-section="settings">⚙️ Réglages</button>
+      </div>
     </div>
   </div>
 
@@ -618,19 +661,29 @@
       <div class="divider"></div>
 
       <div class="stats">
-        <div class="stat">
+        <div class="stat clickable" id="statTotalCard">
           <span class="n" id="statTotal">0</span>
           <span class="small">Tâches</span>
         </div>
-        <div class="stat">
+        <div class="stat clickable" id="statDoneCard">
           <span class="n" id="statDone">0</span>
           <span class="small">Finies</span>
         </div>
-        <div class="stat">
+        <div class="stat clickable" id="statLeftCard">
           <span class="n" id="statLeft">0</span>
           <span class="small">Restantes</span>
         </div>
       </div>
+    </div>
+
+    <div class="panel" id="todayTasksDetailPanel" style="display:none;">
+      <div class="panel-title">
+        <div>
+          <h2 id="todayTasksDetailTitle">Détail des tâches</h2>
+          <p class="muted">Liste des tâches du jour</p>
+        </div>
+      </div>
+      <div id="todayTasksDetailContent"></div>
     </div>
 
     <div class="panel">
@@ -699,6 +752,53 @@
     <div id="progressContainer" class="progress-cards"></div>
   </section>
 
+  <section id="revisionSection" class="section">
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Révision</h2>
+          <p class="muted">Annales, objectifs, pourcentage</p>
+        </div>
+      </div>
+
+      <div class="revision-summary">
+        <div class="stat">
+          <span class="n" id="examDateDisplay">15/05/2026</span>
+          <span class="small">Date épreuve</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="daysLeftDisplay">0</span>
+          <span class="small">Jours restants</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="revisionContainer" class="revision-cards"></div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Muscu</h2>
+          <p class="muted">Suivi hebdomadaire</p>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <span class="n" id="muscuDoneWeek">0</span>
+          <span class="small">Séances faites</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="muscuGoalWeek">0</span>
+          <span class="small">Objectif semaine</span>
+        </div>
+        <div class="stat">
+          <span class="n" id="muscuPercentWeek">0%</span>
+          <span class="small">Progression</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="longTermSection" class="section">
     <div class="panel">
       <div class="panel-title">
@@ -737,8 +837,8 @@
     <div class="panel">
       <div class="panel-title">
         <div>
-          <h2>Réglages</h2>
-          <p class="muted">Personnalise ton fonctionnement</p>
+          <h2>Généraux</h2>
+          <p class="muted">Automatismes</p>
         </div>
       </div>
 
@@ -778,45 +878,69 @@
     <div class="panel">
       <div class="panel-title">
         <div>
-          <h2>Presets rapides</h2>
-          <p class="muted">Définis les heures une fois pour toutes</p>
+          <h2>Aujourd’hui</h2>
+          <p class="muted">Personnalisation</p>
         </div>
       </div>
 
       <div class="preset-setting">
-        <h3>Travail</h3>
+        <h3>Presets rapides</h3>
         <div class="preset-grid">
           <input type="time" id="workStart" class="time-input" />
           <input type="time" id="workEnd" class="time-input" />
         </div>
-      </div>
+        <div class="small" style="margin-top:8px;">Travail</div>
 
-      <div class="preset-setting">
-        <h3>École</h3>
-        <div class="preset-grid">
+        <div class="preset-grid" style="margin-top:10px;">
           <input type="time" id="schoolStart" class="time-input" />
           <input type="time" id="schoolEnd" class="time-input" />
         </div>
-      </div>
+        <div class="small" style="margin-top:8px;">École</div>
 
-      <div class="preset-setting">
-        <h3>Révisions</h3>
-        <div class="preset-grid">
+        <div class="preset-grid" style="margin-top:10px;">
           <input type="time" id="studyStart" class="time-input" />
           <input type="time" id="studyEnd" class="time-input" />
         </div>
-      </div>
+        <div class="small" style="margin-top:8px;">Révisions</div>
 
-      <div class="preset-setting">
-        <h3>Muscu</h3>
-        <div class="preset-grid">
+        <div class="preset-grid" style="margin-top:10px;">
           <input type="time" id="muscuStart" class="time-input" />
           <input type="time" id="muscuEnd" class="time-input" />
         </div>
+        <div class="small" style="margin-top:8px;">Muscu</div>
+
+        <div class="row" style="margin-top:12px">
+          <button class="btn success full" id="savePresetSettingsBtn">Sauvegarder les presets</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Progression</h2>
+          <p class="muted">Objectifs personnalisables</p>
+        </div>
       </div>
 
-      <div class="row" style="margin-top:12px">
-        <button class="btn success full" id="savePresetSettingsBtn">Sauvegarder les presets</button>
+      <div class="goal-card">
+        <h3>Révision</h3>
+        <div class="goal-grid">
+          <input type="date" id="revisionExamDateInput" class="date-input" />
+          <input type="number" id="muscuWeeklyGoalInput" class="number-input" min="0" />
+        </div>
+        <div class="small" style="margin-top:8px;">Date examen / Objectif muscu semaine</div>
+
+        <div class="goal-grid" style="margin-top:12px;">
+          <input type="number" id="goalAV" class="number-input" min="0" placeholder="AV" />
+          <input type="number" id="goalOG" class="number-input" min="0" placeholder="OG" />
+          <input type="number" id="goalETSO" class="number-input" min="0" placeholder="ETSO" />
+          <input type="number" id="goalGestion" class="number-input" min="0" placeholder="Gestion" />
+        </div>
+
+        <div class="row" style="margin-top:12px">
+          <button class="btn success full" id="saveGoalsBtn">Sauvegarder les objectifs</button>
+        </div>
       </div>
     </div>
 
@@ -834,31 +958,23 @@
       <div class="panel-title">
         <div>
           <h2>Sauvegarde</h2>
-          <p class="muted">Sécurise tes données</p>
+          <p class="muted">Locale + cloud</p>
         </div>
       </div>
       <div class="row">
         <button class="btn" id="exportBtn">Exporter mes données</button>
         <input type="file" id="importInput" accept=".json,application/json" class="text-input" />
       </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">
-        <div>
-          <h2>Notifications</h2>
-          <p class="muted">Rappel par bloc</p>
-        </div>
-      </div>
-      <div class="small">
-        Sur GitHub Pages, les notifications web peuvent marcher sur Android si le navigateur les autorise.
-      </div>
+      <div class="small" id="cloudStatus" style="margin-top:10px;">Cloud : en attente</div>
     </div>
   </section>
 
   <div class="footer-space"></div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
     const STORAGE_KEY = "myplann-main";
     const BACKUP_KEY = "myplann-backup-auto";
     const LEGACY_KEYS = [
@@ -880,77 +996,64 @@
     ];
     const CATEGORY_OPTIONS = ["À faire", "Travail", "Révisions", "Client", "Perso", "Cours", "Muscu"];
 
-    const defaultState = {
-      settings: {
-        autoApplyTemplate: true,
-        hidePassedHours: true,
-        hideDoneTasks: true,
-        editCompletedTasks: false
-      },
-      presets: {
-        work: { start: "10:00", end: "19:00", category: "Travail", label: "Travail" },
-        school: { start: "08:00", end: "18:00", category: "Cours", label: "École" },
-        study: { start: "19:00", end: "22:00", category: "Révisions", label: "Révisions" },
-        muscu: { start: "20:00", end: "21:00", category: "Muscu", label: "Muscu" }
-      },
-      longTermNotes: "",
-      templates: createEmptyTemplates(),
-      days: {}
+    const REVISION_SUBJECTS = {
+      AV: ["ANAV 2017", "ANAV 2018", "ANAV 2019", "ANAV 2022", "ANAV 2024"],
+      OG: ["OG 2017", "OG 2018", "OG 2019", "OG 2022", "OG 2024"],
+      ETSO: ["ETSO 2017", "ETSO 2018", "ETSO 2019", "ETSO 2022", "ETSO 2024"],
+      Gestion: ["Gestion 2017", "Gestion 2018", "Gestion 2019", "Gestion 2022", "Gestion 2024"]
     };
 
-    let state = loadState();
-    let selectedDate = getTodayString();
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJuERKoICwfhEM4D7bSXHN7BYAe5APyZo",
+      authDomain: "myplann-1af8e.firebaseapp.com",
+      projectId: "myplann-1af8e",
+      storageBucket: "myplann-1af8e.firebasestorage.app",
+      messagingSenderId: "593785848033",
+      appId: "1:593785848033:web:5be2508a0b03ba80b937a0"
+    };
 
-    const tabToday = document.getElementById("tabToday");
-    const tabProgress = document.getElementById("tabProgress");
-    const tabLongTerm = document.getElementById("tabLongTerm");
-    const tabSettings = document.getElementById("tabSettings");
+    let db = null;
+    let cloudAvailable = false;
+    const CLOUD_USER_ID = "atilla-main";
+    const cloudStatus = document.getElementById("cloudStatus");
 
-    const todaySection = document.getElementById("todaySection");
-    const progressSection = document.getElementById("progressSection");
-    const longTermSection = document.getElementById("longTermSection");
-    const settingsSection = document.getElementById("settingsSection");
+    try {
+      const app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      cloudAvailable = true;
+      cloudStatus.textContent = "Cloud : Firebase prêt";
+    } catch (err) {
+      cloudStatus.textContent = "Cloud : erreur d'initialisation";
+      console.error("Firebase init error", err);
+    }
 
-    const blocksContainer = document.getElementById("blocksContainer");
-    const templatesContainer = document.getElementById("templatesContainer");
-    const progressContainer = document.getElementById("progressContainer");
-    const completedTasksManager = document.getElementById("completedTasksManager");
+    async function saveToCloud(payload) {
+      if (!cloudAvailable || !db) return;
+      try {
+        await setDoc(doc(db, "users", CLOUD_USER_ID), {
+          data: payload,
+          updatedAt: new Date().toISOString()
+        });
+        cloudStatus.textContent = "Cloud : sauvegardé";
+      } catch (err) {
+        cloudStatus.textContent = "Cloud : erreur de sauvegarde";
+        console.error("Cloud save error", err);
+      }
+    }
 
-    const todayTitle = document.getElementById("todayTitle");
-    const datePicker = document.getElementById("datePicker");
-    const longTermNotes = document.getElementById("longTermNotes");
-    const priorityInput = document.getElementById("priorityInput");
-
-    const statTotal = document.getElementById("statTotal");
-    const statDone = document.getElementById("statDone");
-    const statLeft = document.getElementById("statLeft");
-    const disciplineBadge = document.getElementById("disciplineBadge");
-
-    const compareNumbers = document.getElementById("compareNumbers");
-    const compareMessage = document.getElementById("compareMessage");
-
-    const progressRange = document.getElementById("progressRange");
-    const progressMode = document.getElementById("progressMode");
-    const progressCompleted = document.getElementById("progressCompleted");
-    const progressDays = document.getElementById("progressDays");
-    const progressTop = document.getElementById("progressTop");
-
-    const toggleAutoTemplate = document.getElementById("toggleAutoTemplate");
-    const toggleHidePassed = document.getElementById("toggleHidePassed");
-    const toggleHideDone = document.getElementById("toggleHideDone");
-    const toggleEditCompleted = document.getElementById("toggleEditCompleted");
-
-    const workStart = document.getElementById("workStart");
-    const workEnd = document.getElementById("workEnd");
-    const schoolStart = document.getElementById("schoolStart");
-    const schoolEnd = document.getElementById("schoolEnd");
-    const studyStart = document.getElementById("studyStart");
-    const studyEnd = document.getElementById("studyEnd");
-    const muscuStart = document.getElementById("muscuStart");
-    const muscuEnd = document.getElementById("muscuEnd");
-
-    const exportBtn = document.getElementById("exportBtn");
-    const importInput = document.getElementById("importInput");
+    async function loadFromCloud() {
+      if (!cloudAvailable || !db) return null;
+      try {
+        const snap = await getDoc(doc(db, "users", CLOUD_USER_ID));
+        if (!snap.exists()) return null;
+        cloudStatus.textContent = "Cloud : données chargées";
+        return snap.data()?.data || null;
+      } catch (err) {
+        cloudStatus.textContent = "Cloud : erreur de chargement";
+        console.error("Cloud load error", err);
+        return null;
+      }
+    }
 
     function createEmptyTemplates() {
       const templates = {};
@@ -965,7 +1068,47 @@
       return templates;
     }
 
-    function loadState() {
+    function createRevisionChecklist() {
+      const checklist = {};
+      Object.entries(REVISION_SUBJECTS).forEach(([subject, items]) => {
+        checklist[subject] = {};
+        items.forEach(item => checklist[subject][item] = false);
+      });
+      return checklist;
+    }
+
+    const defaultState = {
+      settings: {
+        autoApplyTemplate: true,
+        hidePassedHours: true,
+        hideDoneTasks: true,
+        editCompletedTasks: false,
+        revisionExamDate: "2026-05-15",
+        muscuWeeklyGoal: 3,
+        revisionGoals: {
+          AV: 10,
+          OG: 8,
+          ETSO: 6,
+          Gestion: 5
+        }
+      },
+      presets: {
+        work: { start: "10:00", end: "19:00", category: "Travail", label: "Travail" },
+        school: { start: "08:00", end: "18:00", category: "Cours", label: "École" },
+        study: { start: "19:00", end: "22:00", category: "Révisions", label: "Révisions" },
+        muscu: { start: "20:00", end: "21:00", category: "Muscu", label: "Muscu" }
+      },
+      longTermNotes: "",
+      templates: createEmptyTemplates(),
+      revisionChecklist: createRevisionChecklist(),
+      days: {}
+    };
+
+    function deepClone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function loadStateLocal() {
       try {
         let saved = localStorage.getItem(STORAGE_KEY);
 
@@ -988,16 +1131,20 @@
           }
         }
 
-        if (!saved) return structuredClone(defaultState);
+        if (!saved) return deepClone(defaultState);
 
         const parsed = JSON.parse(saved);
 
         const merged = {
-          ...structuredClone(defaultState),
+          ...deepClone(defaultState),
           ...parsed,
           settings: {
             ...defaultState.settings,
-            ...(parsed.settings || {})
+            ...(parsed.settings || {}),
+            revisionGoals: {
+              ...defaultState.settings.revisionGoals,
+              ...((parsed.settings && parsed.settings.revisionGoals) || {})
+            }
           },
           presets: {
             ...defaultState.presets,
@@ -1023,17 +1170,39 @@
             });
           }
         }
-
         merged.templates = freshTemplates;
+
+        const freshRevision = createRevisionChecklist();
+        if (parsed.revisionChecklist) {
+          Object.keys(freshRevision).forEach(subject => {
+            Object.keys(freshRevision[subject]).forEach(item => {
+              if (parsed.revisionChecklist?.[subject]?.[item] !== undefined) {
+                freshRevision[subject][item] = !!parsed.revisionChecklist[subject][item];
+              }
+            });
+          });
+        }
+        merged.revisionChecklist = freshRevision;
         merged.days = parsed.days || {};
+
         return merged;
       } catch {
-        return structuredClone(defaultState);
+        return deepClone(defaultState);
       }
     }
 
+    let state = loadStateLocal();
+    let selectedDate = getTodayString();
+    let cloudSaveTimer = null;
+
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(BACKUP_KEY, JSON.stringify(state));
+
+      clearTimeout(cloudSaveTimer);
+      cloudSaveTimer = setTimeout(() => {
+        saveToCloud(state);
+      }, 700);
     }
 
     setInterval(() => {
@@ -1160,26 +1329,6 @@
       );
     }
 
-    function switchTab(tab) {
-      tabToday.classList.toggle("active", tab === "today");
-      tabProgress.classList.toggle("active", tab === "progress");
-      tabLongTerm.classList.toggle("active", tab === "longterm");
-      tabSettings.classList.toggle("active", tab === "settings");
-
-      todaySection.classList.toggle("active", tab === "today");
-      progressSection.classList.toggle("active", tab === "progress");
-      longTermSection.classList.toggle("active", tab === "longterm");
-      settingsSection.classList.toggle("active", tab === "settings");
-
-      if (tab === "progress") renderProgress();
-      if (tab === "settings") renderCompletedTasksManager();
-    }
-
-    tabToday.addEventListener("click", () => switchTab("today"));
-    tabProgress.addEventListener("click", () => switchTab("progress"));
-    tabLongTerm.addEventListener("click", () => switchTab("longterm"));
-    tabSettings.addEventListener("click", () => switchTab("settings"));
-
     function getCategoryClass(category) {
       if (category === "Travail") return "cat-work";
       if (category === "Révisions") return "cat-study";
@@ -1232,24 +1381,32 @@
 
     function renderDay() {
       const day = getCurrentDay();
-      datePicker.value = selectedDate;
-      todayTitle.textContent = capitalize(formatDisplayDate(selectedDate));
-      priorityInput.value = day.priority || "";
+      document.getElementById("datePicker").value = selectedDate;
+      document.getElementById("todayTitle").textContent = capitalize(formatDisplayDate(selectedDate));
+      document.getElementById("priorityInput").value = day.priority || "";
 
-      toggleAutoTemplate.classList.toggle("active", !!state.settings.autoApplyTemplate);
-      toggleHidePassed.classList.toggle("active", !!state.settings.hidePassedHours);
-      toggleHideDone.classList.toggle("active", !!state.settings.hideDoneTasks);
-      toggleEditCompleted.classList.toggle("active", !!state.settings.editCompletedTasks);
+      document.getElementById("toggleAutoTemplate").classList.toggle("active", !!state.settings.autoApplyTemplate);
+      document.getElementById("toggleHidePassed").classList.toggle("active", !!state.settings.hidePassedHours);
+      document.getElementById("toggleHideDone").classList.toggle("active", !!state.settings.hideDoneTasks);
+      document.getElementById("toggleEditCompleted").classList.toggle("active", !!state.settings.editCompletedTasks);
 
-      workStart.value = state.presets.work.start;
-      workEnd.value = state.presets.work.end;
-      schoolStart.value = state.presets.school.start;
-      schoolEnd.value = state.presets.school.end;
-      studyStart.value = state.presets.study.start;
-      studyEnd.value = state.presets.study.end;
-      muscuStart.value = state.presets.muscu.start;
-      muscuEnd.value = state.presets.muscu.end;
+      document.getElementById("workStart").value = state.presets.work.start;
+      document.getElementById("workEnd").value = state.presets.work.end;
+      document.getElementById("schoolStart").value = state.presets.school.start;
+      document.getElementById("schoolEnd").value = state.presets.school.end;
+      document.getElementById("studyStart").value = state.presets.study.start;
+      document.getElementById("studyEnd").value = state.presets.study.end;
+      document.getElementById("muscuStart").value = state.presets.muscu.start;
+      document.getElementById("muscuEnd").value = state.presets.muscu.end;
 
+      document.getElementById("revisionExamDateInput").value = state.settings.revisionExamDate;
+      document.getElementById("muscuWeeklyGoalInput").value = state.settings.muscuWeeklyGoal;
+      document.getElementById("goalAV").value = state.settings.revisionGoals.AV;
+      document.getElementById("goalOG").value = state.settings.revisionGoals.OG;
+      document.getElementById("goalETSO").value = state.settings.revisionGoals.ETSO;
+      document.getElementById("goalGestion").value = state.settings.revisionGoals.Gestion;
+
+      const blocksContainer = document.getElementById("blocksContainer");
       blocksContainer.innerHTML = "";
 
       day.blocks.forEach((block) => {
@@ -1313,31 +1470,100 @@
 
       updateStats();
       renderCompare();
+      renderRevision();
     }
 
     function updateStats() {
       const day = getCurrentDay();
-      const total = day.blocks.flatMap(b => b.tasks).length;
-      const done = day.blocks.flatMap(b => b.tasks).filter(t => t.done).length;
+
+      const allTasks = day.blocks
+        .filter(b => b.category !== "Perso")
+        .flatMap(b => b.tasks || []);
+
+      const total = allTasks.length;
+      const done = allTasks.filter(t => t.done).length;
       const left = Math.max(0, total - done);
       const percent = total === 0 ? 0 : Math.round((done / total) * 100);
 
-      statTotal.textContent = total;
-      statDone.textContent = done;
-      statLeft.textContent = left;
-      disciplineBadge.textContent = `${percent}%`;
+      document.getElementById("statTotal").textContent = total;
+      document.getElementById("statDone").textContent = done;
+      document.getElementById("statLeft").textContent = left;
+      document.getElementById("disciplineBadge").textContent = `${percent}%`;
+    }
+
+    function getStatTasks(type) {
+      const day = getCurrentDay();
+      const tasks = [];
+
+      day.blocks.forEach(block => {
+        (block.tasks || []).forEach(task => {
+          if (block.category === "Perso") return;
+
+          if (type === "total") {
+            tasks.push({ hour: block.hour, category: block.category, text: task.text, done: task.done });
+          }
+
+          if (type === "done" && task.done) {
+            tasks.push({ hour: block.hour, category: block.category, text: task.text, done: task.done });
+          }
+
+          if (type === "left" && !task.done) {
+            tasks.push({ hour: block.hour, category: block.category, text: task.text, done: task.done });
+          }
+        });
+      });
+
+      return tasks;
+    }
+
+    function showTodayTasksDetail(type) {
+      const panel = document.getElementById("todayTasksDetailPanel");
+      const title = document.getElementById("todayTasksDetailTitle");
+      const content = document.getElementById("todayTasksDetailContent");
+
+      let label = "Tâches";
+      if (type === "done") label = "Tâches finies";
+      if (type === "left") label = "Tâches restantes";
+
+      const tasks = getStatTasks(type);
+
+      title.textContent = label;
+
+      if (tasks.length === 0) {
+        content.innerHTML = `<div class="small">Aucune tâche.</div>`;
+        panel.style.display = "block";
+        return;
+      }
+
+      content.innerHTML = tasks.map(task => `
+        <div class="progress-line">
+          <div>
+            <strong>${escapeHtml(task.text)}</strong><br>
+            <span class="small">${escapeHtml(task.hour)} • ${escapeHtml(task.category)}</span>
+          </div>
+          <div class="small">${task.done ? "✅" : "⏳"}</div>
+        </div>
+      `).join("");
+
+      panel.style.display = "block";
     }
 
     function renderCompare() {
       const today = getCurrentDay();
-      const todayDone = today.blocks.flatMap(b => b.tasks).filter(t => t.done).length;
+      const todayDone = today.blocks
+        .filter(b => b.category !== "Perso")
+        .flatMap(b => b.tasks)
+        .filter(t => t.done).length;
 
       const yesterdayKey = addDays(selectedDate, -1);
       ensureDay(yesterdayKey);
       const yesterday = state.days[yesterdayKey];
-      const yesterdayDone = yesterday.blocks.flatMap(b => b.tasks).filter(t => t.done).length;
+      const yesterdayDone = yesterday.blocks
+        .filter(b => b.category !== "Perso")
+        .flatMap(b => b.tasks)
+        .filter(t => t.done).length;
 
-      compareNumbers.innerHTML = `Aujourd’hui : <strong>${todayDone}</strong> tâches finies • Hier : <strong>${yesterdayDone}</strong>`;
+      document.getElementById("compareNumbers").innerHTML = `Aujourd’hui : <strong>${todayDone}</strong> tâches finies • Hier : <strong>${yesterdayDone}</strong>`;
 
       let msg = "";
       if (todayDone > yesterdayDone) {
@@ -1348,7 +1574,7 @@
         msg = "Peux mieux faire 🙄";
       }
 
-      compareMessage.textContent = msg;
+      document.getElementById("compareMessage").textContent = msg;
     }
 
     function applyTemplateToDate(dateStr) {
@@ -1419,9 +1645,7 @@
       };
 
       saveState();
-      renderDay();
-      renderProgress();
-      renderCompletedTasksManager();
+      refreshAll();
     }
 
     function prepareTomorrow() {
@@ -1433,10 +1657,7 @@
       }
 
       selectedDate = tomorrow;
-      renderDay();
-      renderProgress();
-      renderCompletedTasksManager();
-
+      refreshAll();
       alert(`Le ${formatDisplayDate(tomorrow)} est prêt.`);
     }
 
@@ -1444,9 +1665,7 @@
       selectedDate = getTodayString();
       ensureDay(selectedDate);
       autoLoadTodayIfEmpty();
-      renderDay();
-      renderProgress();
-      renderCompletedTasksManager();
+      refreshAll();
     }
 
     function addTask(blockId, text) {
@@ -1460,9 +1679,7 @@
         hidden: false
       });
       saveState();
-      renderDay();
-      renderProgress();
-      renderCompletedTasksManager();
+      refreshAll();
     }
 
     function moveTaskToTomorrow(blockId, taskId) {
@@ -1485,9 +1702,7 @@
       block.tasks = block.tasks.filter(t => t.id !== taskId);
 
       saveState();
-      renderDay();
-      renderProgress();
-      renderCompletedTasksManager();
+      refreshAll();
     }
 
     function resetDay() {
@@ -1497,9 +1712,7 @@
         blocks: createEmptyDayBlocks()
       };
       saveState();
-      renderDay();
-      renderProgress();
-      renderCompletedTasksManager();
+      refreshAll();
     }
 
     function resetDoneVisibility() {
@@ -1510,9 +1723,7 @@
         });
       });
       saveState();
-      renderDay();
-      renderProgress();
-      renderCompletedTasksManager();
+      refreshAll();
     }
 
     function renderTemplateCategoryChips(dayKey, index, currentCats) {
@@ -1556,6 +1767,7 @@
     }
 
     function renderTemplates() {
+      const templatesContainer = document.getElementById("templatesContainer");
       templatesContainer.innerHTML = "";
 
       for (let d = 0; d < 7; d++) {
@@ -1650,6 +1862,8 @@
             if (!task.done) return;
 
             const category = block.category || "À faire";
+            if (category === "Perso") return;
+
             const sourceName = block.mainTask && block.mainTask.trim()
               ? block.mainTask.trim()
               : task.text.trim();
@@ -1657,8 +1871,7 @@
             entries.push({
               date: dateKey,
               category,
-              task: sourceName,
-              rawTask: task.text.trim()
+              task: sourceName
             });
           });
         });
@@ -1668,13 +1881,13 @@
     }
 
     function renderProgress() {
-      const range = progressRange.value;
-      const mode = progressMode.value;
+      const range = document.getElementById("progressRange").value;
+      const mode = document.getElementById("progressMode").value;
       const entries = collectCompletedEntries(range);
 
       const activeDaysSet = new Set(entries.map(e => e.date));
-      progressCompleted.textContent = entries.length;
-      progressDays.textContent = activeDaysSet.size;
+      document.getElementById("progressCompleted").textContent = entries.length;
+      document.getElementById("progressDays").textContent = activeDaysSet.size;
 
       const categoryCount = {};
       entries.forEach(e => {
@@ -1689,8 +1902,9 @@
           topCategory = cat;
         }
       });
-      progressTop.textContent = topCategory;
+      document.getElementById("progressTop").textContent = topCategory;
 
+      const progressContainer = document.getElementById("progressContainer");
       progressContainer.innerHTML = "";
 
       if (mode === "categories") {
@@ -1789,7 +2003,123 @@
       }
     }
 
+    function getExamProgressPercent(doneCount, goalCount, examDateStr) {
+      const startDate = new Date("2026-04-22T00:00:00");
+      const examDate = new Date(examDateStr + "T00:00:00");
+      const now = new Date();
+
+      const totalDuration = examDate - startDate;
+      const elapsedDuration = Math.max(0, now - startDate);
+
+      if (goalCount <= 0) return 0;
+      if (totalDuration <= 0) return 0;
+
+      const realProgress = doneCount / goalCount;
+      const idealProgress = elapsedDuration / totalDuration;
+
+      if (idealProgress <= 0) return Math.round(realProgress * 100);
+
+      return Math.round((realProgress / idealProgress) * 100);
+    }
+
+    function getDaysLeft(examDateStr) {
+      const today = new Date();
+      const examDate = new Date(examDateStr + "T00:00:00");
+      const ms = examDate - new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      return Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
+    }
+
+    function countCheckedRevision(subject) {
+      const items = state.revisionChecklist[subject] || {};
+      return Object.values(items).filter(Boolean).length;
+    }
+
+    function getWeekRange() {
+      const now = new Date();
+      const day = now.getDay();
+      const diffToMonday = day === 0 ? -6 : 1 - day;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() + diffToMonday);
+      monday.setHours(0,0,0,0);
+
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      sunday.setHours(23,59,59,999);
+
+      return { monday, sunday };
+    }
+
+    function countMuscuSessionsThisWeek() {
+      const { monday, sunday } = getWeekRange();
+      let count = 0;
+
+      Object.entries(state.days).forEach(([dateKey, day]) => {
+        const date = new Date(dateKey + "T00:00:00");
+        if (date < monday || date > sunday) return;
+
+        day.blocks.forEach(block => {
+          if (block.category !== "Muscu") return;
+          const hasDone = (block.tasks || []).some(t => t.done);
+          if (hasDone) count += 1;
+        });
+      });
+
+      return count;
+    }
+
+    function renderRevision() {
+      const examDate = state.settings.revisionExamDate;
+      document.getElementById("examDateDisplay").textContent =
+        new Date(examDate + "T00:00:00").toLocaleDateString("fr-FR");
+      document.getElementById("daysLeftDisplay").textContent = getDaysLeft(examDate);
+
+      const revisionContainer = document.getElementById("revisionContainer");
+      revisionContainer.innerHTML = "";
+
+      Object.keys(REVISION_SUBJECTS).forEach(subject => {
+        const goal = state.settings.revisionGoals[subject] || 0;
+        const done = countCheckedRevision(subject);
+        const percent = getExamProgressPercent(done, goal, examDate);
+
+        const card = document.createElement("div");
+        card.className = "revision-card";
+
+        const lines = REVISION_SUBJECTS[subject].map(item => `
+          <div class="revision-line">
+            <span>${escapeHtml(item)}</span>
+            <input type="checkbox" class="checkbox" data-revision-subject="${subject}" data-revision-item="${escapeAttr(item)}" ${state.revisionChecklist[subject][item] ? "checked" : ""}>
+          </div>
+        `).join("");
+
+        card.innerHTML = `
+          <h3>${escapeHtml(subject)}</h3>
+          <div class="progress-line">
+            <span>Annales faites</span>
+            <strong>${done} / ${goal}</strong>
+          </div>
+          <div class="progress-line">
+            <span>Progression</span>
+            <strong>${percent}%</strong>
+          </div>
+          <div style="margin-top:10px;">
+            ${lines}
+          </div>
+        `;
+
+        revisionContainer.appendChild(card);
+      });
+
+      const muscuDone = countMuscuSessionsThisWeek();
+      const muscuGoal = state.settings.muscuWeeklyGoal || 0;
+      const muscuPercent = muscuGoal > 0 ? Math.round((muscuDone / muscuGoal) * 100) : 0;
+
+      document.getElementById("muscuDoneWeek").textContent = muscuDone;
+      document.getElementById("muscuGoalWeek").textContent = muscuGoal;
+      document.getElementById("muscuPercentWeek").textContent = `${muscuPercent}%`;
+    }
+
     function renderCompletedTasksManager() {
+      const completedTasksManager = document.getElementById("completedTasksManager");
       completedTasksManager.innerHTML = "";
 
       const completedByDate = {};
@@ -1921,17 +2251,31 @@
     }
 
     function savePresetSettings() {
-      state.presets.work.start = workStart.value || "10:00";
-      state.presets.work.end = workEnd.value || "19:00";
-      state.presets.school.start = schoolStart.value || "08:00";
-      state.presets.school.end = schoolEnd.value || "18:00";
-      state.presets.study.start = studyStart.value || "19:00";
-      state.presets.study.end = studyEnd.value || "22:00";
-      state.presets.muscu.start = muscuStart.value || "20:00";
-      state.presets.muscu.end = muscuEnd.value || "21:00";
+      state.presets.work.start = document.getElementById("workStart").value || "10:00";
+      state.presets.work.end = document.getElementById("workEnd").value || "19:00";
+      state.presets.school.start = document.getElementById("schoolStart").value || "08:00";
+      state.presets.school.end = document.getElementById("schoolEnd").value || "18:00";
+      state.presets.study.start = document.getElementById("studyStart").value || "19:00";
+      state.presets.study.end = document.getElementById("studyEnd").value || "22:00";
+      state.presets.muscu.start = document.getElementById("muscuStart").value || "20:00";
+      state.presets.muscu.end = document.getElementById("muscuEnd").value || "21:00";
 
       saveState();
       alert("Presets sauvegardés.");
+    }
+
+    function saveGoals() {
+      state.settings.revisionExamDate = document.getElementById("revisionExamDateInput").value || "2026-05-15";
+      state.settings.muscuWeeklyGoal = Number(document.getElementById("muscuWeeklyGoalInput").value || 0);
+
+      state.settings.revisionGoals.AV = Number(document.getElementById("goalAV").value || 0);
+      state.settings.revisionGoals.OG = Number(document.getElementById("goalOG").value || 0);
+      state.settings.revisionGoals.ETSO = Number(document.getElementById("goalETSO").value || 0);
+      state.settings.revisionGoals.Gestion = Number(document.getElementById("goalGestion").value || 0);
+
+      saveState();
+      renderRevision();
+      alert("Objectifs sauvegardés.");
     }
 
     function exportData() {
@@ -1952,9 +2296,28 @@
       reader.onload = function(e) {
         try {
           const parsed = JSON.parse(e.target.result);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-          localStorage.setItem(BACKUP_KEY, JSON.stringify(parsed));
-          location.reload();
+          state = {
+            ...deepClone(defaultState),
+            ...parsed,
+            settings: {
+              ...defaultState.settings,
+              ...(parsed.settings || {}),
+              revisionGoals: {
+                ...defaultState.settings.revisionGoals,
+                ...((parsed.settings && parsed.settings.revisionGoals) || {})
+              }
+            },
+            presets: {
+              ...defaultState.presets,
+              ...(parsed.presets || {})
+            }
+          };
+
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          localStorage.setItem(BACKUP_KEY, JSON.stringify(state));
+          saveToCloud(state);
+          refreshAll();
+          alert("Import réussi.");
         } catch {
           alert("Fichier invalide");
         }
@@ -1974,12 +2337,55 @@
       return escapeHtml(str);
     }
 
-    document.getElementById("applyTemplateBtn").addEventListener("click", () => {
-      applyTemplateToDate(selectedDate);
-      saveState();
+    function refreshAll() {
       renderDay();
       renderProgress();
       renderCompletedTasksManager();
+      renderRevision();
+    }
+
+    const plusMenu = document.getElementById("plusMenu");
+    const tabPlus = document.getElementById("tabPlus");
+
+    document.getElementById("tabToday").addEventListener("click", () => {
+      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+      document.getElementById("todaySection").classList.add("active");
+      document.getElementById("tabToday").classList.add("active");
+      plusMenu.classList.remove("open");
+    });
+
+    tabPlus.addEventListener("click", (e) => {
+      e.stopPropagation();
+      plusMenu.classList.toggle("open");
+    });
+
+    plusMenu.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-open-section]");
+      if (!btn) return;
+
+      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+      document.getElementById("tabToday").classList.remove("active");
+
+      const section = btn.dataset.openSection;
+      if (section === "progress") document.getElementById("progressSection").classList.add("active");
+      if (section === "revision") document.getElementById("revisionSection").classList.add("active");
+      if (section === "longterm") document.getElementById("longTermSection").classList.add("active");
+      if (section === "settings") document.getElementById("settingsSection").classList.add("active");
+
+      plusMenu.classList.remove("open");
+      refreshAll();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!plusMenu.contains(e.target) && e.target !== tabPlus) {
+        plusMenu.classList.remove("open");
+      }
+    });
+
+    document.getElementById("applyTemplateBtn").addEventListener("click", () => {
+      applyTemplateToDate(selectedDate);
+      saveState();
+      refreshAll();
     });
 
     document.getElementById("prepareTomorrowBtn").addEventListener("click", prepareTomorrow);
@@ -1988,37 +2394,34 @@
     document.getElementById("resetDayBtn").addEventListener("click", resetDay);
     document.getElementById("resetDoneBtn").addEventListener("click", resetDoneVisibility);
     document.getElementById("savePresetSettingsBtn").addEventListener("click", savePresetSettings);
-    exportBtn.addEventListener("click", exportData);
-    importInput.addEventListener("change", importData);
+    document.getElementById("saveGoalsBtn").addEventListener("click", saveGoals);
+    document.getElementById("exportBtn").addEventListener("click", exportData);
+    document.getElementById("importInput").addEventListener("change", importData);
 
     document.getElementById("savePriorityBtn").addEventListener("click", () => {
       const day = getCurrentDay();
-      day.priority = priorityInput.value.trim();
+      day.priority = document.getElementById("priorityInput").value.trim();
       saveState();
-      renderDay();
-      renderProgress();
-      renderCompletedTasksManager();
+      refreshAll();
     });
 
-    datePicker.addEventListener("change", (e) => {
+    document.getElementById("datePicker").addEventListener("change", (e) => {
       selectedDate = e.target.value || getTodayString();
       ensureDay(selectedDate);
       autoLoadTodayIfEmpty();
-      renderDay();
-      renderProgress();
-      renderCompletedTasksManager();
+      refreshAll();
     });
 
-    progressRange.addEventListener("change", renderProgress);
-    progressMode.addEventListener("change", renderProgress);
+    document.getElementById("progressRange").addEventListener("change", renderProgress);
+    document.getElementById("progressMode").addEventListener("change", renderProgress);
 
-    longTermNotes.addEventListener("input", (e) => {
+    document.getElementById("longTermNotes").addEventListener("input", (e) => {
       state.longTermNotes = e.target.value;
       saveState();
     });
 
     document.getElementById("saveLongTermBtn").addEventListener("click", () => {
-      state.longTermNotes = longTermNotes.value;
+      state.longTermNotes = document.getElementById("longTermNotes").value;
       saveState();
       alert("Données long-terme sauvegardées.");
     });
@@ -2040,31 +2443,46 @@
       alert("Modèles sauvegardés.");
     });
 
-    toggleAutoTemplate.addEventListener("click", () => {
+    document.getElementById("toggleAutoTemplate").addEventListener("click", () => {
       state.settings.autoApplyTemplate = !state.settings.autoApplyTemplate;
       saveState();
       renderDay();
     });
 
-    toggleHidePassed.addEventListener("click", () => {
+    document.getElementById("toggleHidePassed").addEventListener("click", () => {
       state.settings.hidePassedHours = !state.settings.hidePassedHours;
       saveState();
       renderDay();
     });
 
-    toggleHideDone.addEventListener("click", () => {
+    document.getElementById("toggleHideDone").addEventListener("click", () => {
       state.settings.hideDoneTasks = !state.settings.hideDoneTasks;
       saveState();
       renderDay();
     });
 
-    toggleEditCompleted.addEventListener("click", () => {
+    document.getElementById("toggleEditCompleted").addEventListener("click", () => {
       state.settings.editCompletedTasks = !state.settings.editCompletedTasks;
       saveState();
       renderDay();
     });
 
-    templatesContainer.addEventListener("click", (e) => {
+    document.getElementById("statTotalCard").addEventListener("click", () => showTodayTasksDetail("total"));
+    document.getElementById("statDoneCard").addEventListener("click", () => showTodayTasksDetail("done"));
+    document.getElementById("statLeftCard").addEventListener("click", () => showTodayTasksDetail("left"));
+
+    document.getElementById("revisionContainer").addEventListener("change", (e) => {
+      const input = e.target.closest("[data-revision-subject]");
+      if (!input) return;
+
+      const subject = input.dataset.revisionSubject;
+      const item = input.dataset.revisionItem;
+      state.revisionChecklist[subject][item] = input.checked;
+      saveState();
+      renderRevision();
+    });
+
+    document.getElementById("templatesContainer").addEventListener("click", (e) => {
       const acc = e.target.closest("[data-day-accordion]");
       if (acc) {
         const card = acc.closest(".accordion-card");
@@ -2104,7 +2522,7 @@
       renderTemplates();
     });
 
-    progressContainer.addEventListener("click", (e) => {
+    document.getElementById("progressContainer").addEventListener("click", (e) => {
       const btn = e.target.closest("[data-progress-toggle]");
       if (!btn) return;
 
@@ -2117,7 +2535,7 @@
       btn.textContent = isOpen ? "Voir plus" : "Voir moins";
     });
 
-    completedTasksManager.addEventListener("click", (e) => {
+    document.getElementById("completedTasksManager").addEventListener("click", (e) => {
       const acc = e.target.closest("[data-completed-date]");
       if (acc) {
         const card = acc.closest(".accordion-card");
@@ -2152,12 +2570,10 @@
       }
 
       saveState();
-      renderDay();
-      renderProgress();
-      renderCompletedTasksManager();
+      refreshAll();
     });
 
-    blocksContainer.addEventListener("click", async (e) => {
+    document.getElementById("blocksContainer").addEventListener("click", async (e) => {
       const btn = e.target.closest("[data-action]");
       if (!btn) return;
 
@@ -2171,9 +2587,7 @@
         if (block) {
           block.category = btn.dataset.cat;
           saveState();
-          renderDay();
-          renderProgress();
-          renderCompletedTasksManager();
+          refreshAll();
         }
         return;
       }
@@ -2197,9 +2611,7 @@
           }
         }
         saveState();
-        renderDay();
-        renderProgress();
-        renderCompletedTasksManager();
+        refreshAll();
         return;
       }
 
@@ -2209,9 +2621,7 @@
           block.tasks = block.tasks.filter(t => t.id !== taskId);
         }
         saveState();
-        renderDay();
-        renderProgress();
-        renderCompletedTasksManager();
+        refreshAll();
         return;
       }
 
@@ -2226,7 +2636,7 @@
       }
     });
 
-    blocksContainer.addEventListener("input", (e) => {
+    document.getElementById("blocksContainer").addEventListener("input", (e) => {
       const target = e.target;
       const day = getCurrentDay();
 
@@ -2241,7 +2651,7 @@
       }
     });
 
-    blocksContainer.addEventListener("keydown", (e) => {
+    document.getElementById("blocksContainer").addEventListener("keydown", (e) => {
       const input = e.target;
       if (input.classList.contains("subtask-input") && e.key === "Enter") {
         const blockId = input.dataset.inputTask;
@@ -2252,68 +2662,41 @@
       }
     });
 
-    function init() {
+    async function init() {
+      const cloudData = await loadFromCloud();
+      if (cloudData) {
+        state = {
+          ...deepClone(defaultState),
+          ...cloudData,
+          settings: {
+            ...defaultState.settings,
+            ...(cloudData.settings || {}),
+            revisionGoals: {
+              ...defaultState.settings.revisionGoals,
+              ...((cloudData.settings && cloudData.settings.revisionGoals) || {})
+            }
+          },
+          presets: {
+            ...defaultState.presets,
+            ...(cloudData.presets || {})
+          }
+        };
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        localStorage.setItem(BACKUP_KEY, JSON.stringify(state));
+      }
+
       selectedDate = getTodayString();
       ensureDay(selectedDate);
       autoLoadTodayIfEmpty();
-      longTermNotes.value = state.longTermNotes || "";
+      document.getElementById("longTermNotes").value = state.longTermNotes || "";
       renderTemplates();
-      renderDay();
-      renderProgress();
-      renderCompletedTasksManager();
+      refreshAll();
       maybeSendBlockReminders();
       setInterval(maybeSendBlockReminders, 60000);
     }
 
     init();
-    <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCJuERKoICwfhEM4D7bSXHN7BYAe5APyZo",
-  authDomain: "myplann-1af8e.firebaseapp.com",
-  projectId: "myplann-1af8e",
-  storageBucket: "myplann-1af8e.firebasestorage.app",
-  messagingSenderId: "593785848033",
-  appId: "1:593785848033:web:5be2508a0b03ba80b937a0"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const CLOUD_USER_ID = "atilla-main";
-
-async function saveToCloud(data) {
-  await setDoc(doc(db, "users", CLOUD_USER_ID), {
-    data,
-    updatedAt: new Date().toISOString()
-  });
-}
-
-async function loadFromCloud() {
-  const snap = await getDoc(doc(db, "users", CLOUD_USER_ID));
-  if (!snap.exists()) return null;
-  return snap.data().data;
-}
-
-window.firebaseCloud = { saveToCloud, loadFromCloud };
-    async function init() {
-  // 1. Charger depuis Firebase
-  if (window.firebaseCloud) {
-    const cloud = await window.firebaseCloud.loadFromCloud();
-
-    if (cloud) {
-      state = cloud;
-      localStorage.setItem("myplann-main", JSON.stringify(state));
-    }
-  }
-
-  // 2. Afficher ton app
-  renderDay();
-  updateStats();
-}
-</script>
   </script>
 </body>
 </html>
