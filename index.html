@@ -4712,6 +4712,15 @@
       const deleteBtn = e.target.closest("[data-sheet-delete]");
       if (deleteBtn) deleteRevisionSheet(deleteBtn.dataset.sheetSubject, deleteBtn.dataset.sheetDelete);
     });
+    document.getElementById("revisionContainer").addEventListener("click", (e) => {
+  const head = e.target.closest(".accordion-head[data-revision-accordion]");
+  if (!head) return;
+
+  const card = head.closest(".accordion-card");
+  if (!card) return;
+
+  card.classList.toggle("open");
+});
 
     document.getElementById("templatesContainer").addEventListener("click", (e) => {
       const acc = e.target.closest("[data-day-accordion]");
