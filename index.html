@@ -1151,8 +1151,11 @@
       console.error("Firebase init error", err);
     }
 
-   async function saveToCloud(payload) {
-  if (!cloudAvailable || !db) return;
+  async function saveToCloud(payload) {
+  if (!cloudAvailable || !db) {
+    console.log("Cloud OFF");
+    return;
+  }
 
   try {
     const safePayload = JSON.parse(JSON.stringify(payload));
@@ -1162,12 +1165,12 @@
       updatedAt: new Date().toISOString()
     });
 
+    console.log("Cloud save OK");
     cloudStatus.textContent = "Cloud : sauvegardé";
 
   } catch (err) {
     console.error("Cloud save error", err);
     cloudStatus.textContent = "Cloud : erreur de sauvegarde";
-    throw err;
   }
 }
 
