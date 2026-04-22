@@ -3823,7 +3823,8 @@
   const nowDate = new Date();
 
   return nowDate >= blockEnd;
-    function isBlockCompleted(block) {
+}
+     function isBlockCompleted(block) {
       return block.tasks.length > 0 && block.tasks.every(t => t.done);
     }
 
