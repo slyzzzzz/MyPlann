@@ -1151,11 +1151,23 @@
       console.error("Firebase init error", err);
     }
 
-  async function saveToCloud(payload) {
-  if (!cloudAvailable || !db) {
-    console.log("Cloud OFF");
-    return;
+ async function saveToCloud(payload) {
+  if (!cloudAvailable || !db) return;
+
+  try {
+    const safePayload = JSON.parse(JSON.stringify(payload));
+
+    await setDoc(doc(db, "users", CLOUD_USER_ID), {
+      data: safePayload,
+      updatedAt: new Date().toISOString()
+    });
+
+    console.log("Cloud save OK");
+
+  } catch (err) {
+    console.error("Cloud save error", err);
   }
+}
 
   try {
     const safePayload = JSON.parse(JSON.stringify(payload));
