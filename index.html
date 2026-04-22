@@ -4153,18 +4153,27 @@
     function countGlobalRevisionDone() { return SUBJECTS.reduce((acc, s) => acc + countCheckedRevision(s), 0); }
     function countGlobalRevisionGoal() { return SUBJECTS.reduce((acc, s) => acc + Number(state.settings.revisionGoals[s] || 0), 0); }
 
-    function getExamProgressPercent(doneCount, goalCount, examDateStr) {
-      const startDate = new Date("2026-04-22T00:00:00");
-      const examDate = new Date(examDateStr + "T00:00:00");
-      const today = new Date();
-      const totalDuration = examDate - startDate;
-      const elapsedDuration = Math.max(0, today - startDate);
-      if (goalCount <= 0 || totalDuration <= 0) return 0;
-      const realProgress = doneCount / goalCount;
-      const idealProgress = elapsedDuration / totalDuration;
-      if (idealProgress <= 0) return Math.round(realProgress * 100);
-      return Math.round((realProgress / idealProgress) * 100);
-    }
+   function getExamProgressPercent(doneCount, goalCount, examDateStr) {
+  const startDate = new Date("2026-04-22T00:00:00");
+  const examDate = new Date(examDateStr + "T00:00:00");
+  const today = new Date();
+
+  const totalDuration = examDate - startDate;
+  const elapsedDuration = Math.max(0, today - startDate);
+
+  if (goalCount <= 0) return 0;
+  if (totalDuration <= 0) return 0;
+
+  const realProgress = doneCount / goalCount;
+  const idealProgress = elapsedDuration / totalDuration;
+
+  if (idealProgress <= 0) {
+    return Math.min(100, Math.round(realProgress * 100));
+  }
+
+  const progressVsDate = (realProgress / idealProgress) * 100;
+  return Math.min(100, Math.round(progressVsDate));
+}
 
     function getDaysLeft(examDateStr) {
       const today = new Date();
@@ -4700,9 +4709,19 @@
   const input = e.target.closest("[data-revision-subject]");
   if (!input) return;
 
+  const openCards = [...document.querySelectorAll("#revisionContainer .accordion-card.open")]
+    .map(card => card.querySelector("[data-revision-accordion]")?.dataset.revisionAccordion)
+    .filter(Boolean);
+
   state.revisionChecklist[input.dataset.revisionSubject][input.dataset.revisionItem] = input.checked;
   saveState();
+  renderRevision();
   renderProgress();
+
+  openCards.forEach(subject => {
+    const btn = document.querySelector(`#revisionContainer [data-revision-accordion="${subject}"]`);
+    if (btn) btn.closest(".accordion-card").classList.add("open");
+  });
 });
     document.getElementById("revisionSheetsContainer").addEventListener("click", (e) => {
       const toggleBtn = e.target.closest("[data-sheet-toggle]");
