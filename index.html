@@ -42,25 +42,23 @@
       background: rgba(15,17,21,.92);
       padding: 10px 0 12px; margin-bottom: 10px;
     }
-  .app-title {
-  position: relative;
+ .app-title {
   display: flex;
-  justify-content: center;
+  justify-content: space-between; /* 🔥 sépare gauche / droite */
   align-items: center;
   margin-bottom: 12px;
 }
 
 .title-center {
-  text-align: center;
+  text-align: left; /* 🔥 texte à gauche */
 }
 
-/* LE TRUC IMPORTANT POUR LE DÉCALAGE */
 .sub {
   font-size: 11px;
   opacity: 0.6;
   letter-spacing: 1px;
-  margin-left: 210px; /* 🔥 ajuste cette valeur */
-  margin-top: -30px; /* 🔥 ça monte le texte */
+  margin-left: 10px; /* petit décalage stylé */
+  transform: translateY(-3px);
 }
 
 .app-title h1 {
@@ -69,12 +67,8 @@
   letter-spacing: .2px;
 }
 
-/* badge à droite */
 .badge {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  /* rien de spécial */
 }
     .sub { color: var(--muted); font-size: .93rem; margin-top: 4px; }
     .tabs { display: grid; grid-template-columns: 1fr auto; gap: 10px; position: relative; }
