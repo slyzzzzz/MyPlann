@@ -42,7 +42,7 @@
       background: rgba(15,17,21,.92);
       padding: 10px 0 12px; margin-bottom: 10px;
     }
-   .app-title {
+  .app-title {
   position: relative;
   display: flex;
   justify-content: center;
@@ -54,31 +54,18 @@
   text-align: center;
 }
 
-.app-title h1 {
-  font-size: 1.55rem;
-  font-weight: 900;
-  letter-spacing: .2px;
-}
-
-/* ligne + texte */
-.signature {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.line {
-  width: 40px;
-  height: 1px;
-  background: #ccc;
-}
-
+/* LE TRUC IMPORTANT POUR LE DÉCALAGE */
 .sub {
   font-size: 11px;
   opacity: 0.6;
   letter-spacing: 1px;
+  margin-left: 60px; /* 🔥 ajuste cette valeur */
+}
+
+.app-title h1 {
+  font-size: 1.55rem;
+  font-weight: 900;
+  letter-spacing: .2px;
 }
 
 /* badge à droite */
@@ -184,13 +171,10 @@
 <style id="ReanimatedPredefinedWebAnimationsStyle"></style><style id="ReanimatedCustomWebAnimationsStyle"></style><style id="ReanimatedCSSStyleTag"></style></head>
 <body>
   <div class="topbar">
-    <div class="app-title">
+   <div class="app-title">
   <div class="title-center">
     <h1>MyPlann</h1>
-    <div class="signature">
-      <span class="line"></span>
-      <span class="sub">by AkVision</span>
-    </div>
+    <p class="sub">by AK Vision</p>
   </div>
   <div class="badge" id="disciplineBadge">20%</div>
 </div>
