@@ -50,23 +50,38 @@
   margin-bottom: 12px;
 }
 
-.app-title h1 {
-  font-size: 1.55rem;
-  font-weight: 900;
-  letter-spacing: .2px;
-  text-align: center;
-}
-
 .title-center {
   text-align: center;
 }
 
+.app-title h1 {
+  font-size: 1.55rem;
+  font-weight: 900;
+  letter-spacing: .2px;
+}
+
+/* ligne + texte */
+.signature {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.line {
+  width: 40px;
+  height: 1px;
+  background: #ccc;
+}
+
 .sub {
-  font-size: 12px;
+  font-size: 11px;
   opacity: 0.6;
   letter-spacing: 1px;
 }
 
+/* badge à droite */
 .badge {
   position: absolute;
   right: 0;
@@ -172,7 +187,10 @@
     <div class="app-title">
   <div class="title-center">
     <h1>MyPlann</h1>
-    <p class="sub">by AkVision</p>
+    <div class="signature">
+      <span class="line"></span>
+      <span class="sub">by AkVision</span>
+    </div>
   </div>
   <div class="badge" id="disciplineBadge">20%</div>
 </div>
